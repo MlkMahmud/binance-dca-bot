@@ -1,9 +1,0 @@
-{
-  "**/*.{ts,tsx,js,jsx}": [
-    "eslint --fix",
-    "tsc --noEmit"
-  ],
-  "**/*.{md,yml,json,prettierrc}": [
-    "prettier --write"
-  ]
-}
