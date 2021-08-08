@@ -16,7 +16,7 @@ const tscFlags = [
 ];
 
 module.exports = {
-	'**/*.{ts,tsx, js, jsx}': [
+	'**/*.{ts, tsx, js, jsx}': [
 		(files) => `tsc ${tscFlags.join(' ')} ${files.map((file) => `'${file}'`).join(' ')}`,
 		'eslint --fix',
 	],
