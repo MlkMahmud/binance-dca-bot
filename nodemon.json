@@ -1,6 +1,6 @@
 {
   "watch": ["."],
-  "exec": "ts-node server/index.ts",
-  "ext": "ts, tsx",
-  "ignore": ["next-env.d.ts", "node_modules"]
+  "exec": "node -r esm server/index.js",
+  "ext": "js, jsx",
+  "ignore": ["node_modules"]
 }
