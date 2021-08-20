@@ -1,12 +1,10 @@
 import React from 'react';
-import { Typography } from 'antd';
+import Page from '../components/Page';
 
 const Index = () => (
-  <>
-    <Typography.Title>This is the title</Typography.Title>
-    <Typography.Text type="danger">Danger Text</Typography.Text>
-    <Typography.Text type="success">Success Text</Typography.Text>
-  </>
+  <Page>
+    <h5>What it do, baybee!!!</h5>
+  </Page>
 );
 
 export default Index;

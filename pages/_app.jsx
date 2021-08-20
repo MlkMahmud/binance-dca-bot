@@ -1,9 +1,13 @@
-import 'antd/dist/antd.min.css';
+/* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
 import React from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
 
-// eslint-disable-next-line react/jsx-props-no-spreading
-const App = ({ Component, pageProps }) => <Component {...pageProps} />;
+const App = ({ Component, pageProps }) => (
+  <ChakraProvider>
+    <Component {...pageProps} />
+  </ChakraProvider>
+);
 
 App.propTypes = {
   Component: PropTypes.elementType.isRequired,
