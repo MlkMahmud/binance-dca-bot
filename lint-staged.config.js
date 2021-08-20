@@ -1,5 +1,5 @@
 module.exports = {
-  '**/*.{js, jsx}': [
+  '**/*.{js,jsx}': [
     'eslint --fix',
   ],
   '**/*.{md,yml,json}': [
