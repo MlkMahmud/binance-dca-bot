@@ -10,12 +10,18 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
+import Loading from './Loading';
 
-const Portfolio = () => {
+export default function Portfolio() {
   const [balances] = useState([]);
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState('USDT');
+  const [isLoading] = useState(true);
   const currentAsset = balances.find(({ asset }) => asset === selectedAsset);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Box
@@ -75,11 +81,11 @@ const Portfolio = () => {
         </Grid>
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Free:</Text>
-          <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset.free} ${selectedAsset}`}</Text>
+          <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset?.free} ${selectedAsset}`}</Text>
         </Flex>
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Locked:</Text>
-          <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset.locked} ${selectedAsset}`}</Text>
+          <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset?.locked} ${selectedAsset}`}</Text>
         </Flex>
       </Box>
       <Flex
@@ -89,10 +95,8 @@ const Portfolio = () => {
         p={2.5}
       >
         <Text fontWeight="semibold">Total:</Text>
-        <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset.total} ${selectedAsset}`}</Text>
+        <Text fontWeight="medium">{isBalanceHidden ? '***' : `${currentAsset?.total} ${selectedAsset}`}</Text>
       </Flex>
     </Box>
   );
-};
-
-export default Portfolio;
+}

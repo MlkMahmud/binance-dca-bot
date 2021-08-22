@@ -4,11 +4,12 @@
   "description": "A dollar cost averaging bot for the Binance Exchange.",
   "main": "index.js",
   "scripts": {
+    "build": "npm-run-all build:*",
     "build:next": "next build",
     "build:server": "babel server --out-dir dist",
     "dev": "cross-env NODE_ENV=development nodemon",
     "prepare": "husky install",
-    "prestart": "npm-run-all build:*",
+    "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production node dist/index"
   },
   "repository": {
