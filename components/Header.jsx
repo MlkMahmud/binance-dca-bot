@@ -1,4 +1,5 @@
 import {
+  Icon,
   IconButton,
   Flex,
 } from '@chakra-ui/react';
@@ -10,10 +11,10 @@ const Header = ({ handleClick }) => (
   <Flex
     align="center"
     as="header"
-    borderBottom="1px solid #d2d5d9"
     justify="space-between"
     px={[2, 5]}
     py={[2, 3]}
+    shadow="rgb(0 0 0 / 25%) 0px 2px 2px 2px"
   >
     <a href="/" aria-label="homepage">
       <svg
@@ -37,9 +38,8 @@ const Header = ({ handleClick }) => (
     </a>
     <IconButton
       aria-label="settings"
-      fontSize="35px"
       variant="unstyled"
-      icon={<AiFillSetting />}
+      icon={<Icon as={AiFillSetting} boxSize="35px" />}
       onClick={handleClick}
     />
   </Flex>

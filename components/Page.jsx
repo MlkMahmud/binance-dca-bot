@@ -10,6 +10,8 @@ const Page = ({ children }) => (
     <Box
       as="main"
       minH={['calc(100vh - 179px)', 'calc(100vh - 147px)']}
+      px={[2, 5]}
+      py={[2, 5]}
     >
       {children}
     </Box>

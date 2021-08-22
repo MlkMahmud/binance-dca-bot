@@ -19,8 +19,12 @@ const Footer = () => (
     py={4}
     spacing={[4, null]}
   >
-    <Text>&copy; 2021 Malik Mahmud</Text>
-    <Stack direction="row" spacing={4}>
+    <Text>
+      Copyright &copy;
+      {' '}
+      <b>Malik Mahmud, 2021.</b>
+    </Text>
+    <Stack direction="row" spacing={1}>
       <Link
         aria-label="github"
         href="https://github.com/MlkMahmud"

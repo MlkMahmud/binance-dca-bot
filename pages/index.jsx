@@ -1,9 +1,10 @@
 import React from 'react';
 import Page from '../components/Page';
+import Portfolio from '../components/Portfolio';
 
 const Index = () => (
   <Page>
-    <h5>What it do, baybee!!!</h5>
+    <Portfolio />
   </Page>
 );
 
