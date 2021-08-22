@@ -2,7 +2,6 @@ import {
   Box,
   Flex,
   Grid,
-  HStack,
   Icon,
   IconButton,
   Select,
@@ -10,18 +9,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
-import Loading from './Loading';
 
 export default function Portfolio() {
   const [balances] = useState([]);
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState('USDT');
-  const [isLoading] = useState(true);
   const currentAsset = balances.find(({ asset }) => asset === selectedAsset);
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <Box
@@ -42,7 +35,7 @@ export default function Portfolio() {
         >
           Portfolio
         </Text>
-        <HStack spacing={2}>
+        <Box>
           <IconButton
             aria-label={`${isBalanceHidden ? 'show' : 'hide'} balance`}
             h={['35px', '40px']}
@@ -58,7 +51,7 @@ export default function Portfolio() {
             minW={['35px', '40px']}
             variant="unstyled"
           />
-        </HStack>
+        </Box>
       </Flex>
       <Box
         p="15px 10px"

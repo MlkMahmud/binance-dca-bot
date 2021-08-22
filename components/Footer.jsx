@@ -12,8 +12,7 @@ export default function Footer() {
     <Stack
       align="center"
       as="footer"
-      bgColor="#000"
-      color="#FFF"
+      borderTop="1px solid black"
       direction={['column', 'row']}
       justify={['center', 'space-between']}
       px={[2, 5]}
