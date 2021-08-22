@@ -1,11 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { ChakraProvider } from '@chakra-ui/react';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
+import theme from '../theme';
 
 export default function App({ Component, pageProps }) {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Component {...pageProps} />
     </ChakraProvider>
   );
