@@ -10,7 +10,7 @@ export default function Page({ children }) {
       <Header />
       <Box
         as="main"
-        minH={['calc(100vh - 179px)', 'calc(100vh - 147px)']}
+        minH={['calc(100vh - 153.68px)', 'calc(100vh - 132.88px)']}
         px={[2, 5]}
         py={[2, 5]}
       >
