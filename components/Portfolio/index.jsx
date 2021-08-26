@@ -4,9 +4,9 @@ import {
   Grid,
   Icon,
   IconButton,
-  Select,
   Text,
 } from '@chakra-ui/react';
+import Select from 'react-select';
 import React, { useState } from 'react';
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
 
@@ -64,13 +64,13 @@ export default function Portfolio() {
         >
           <Text fontWeight="bold">Asset:</Text>
           <Select
-            onChange={(e) => setSelectedAsset(e.target.value)}
+            onChange={(({ value }) => setSelectedAsset(value))}
             value={selectedAsset}
-          >
-            {balances.map(({ asset }) => (
-              <option key={asset} value={asset}>{asset}</option>
-            ))}
-          </Select>
+            options={balances.map(({ asset }) => ({
+              label: asset,
+              value: asset,
+            }))}
+          />
         </Grid>
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Free:</Text>

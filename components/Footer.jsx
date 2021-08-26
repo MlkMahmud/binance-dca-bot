@@ -58,12 +58,11 @@ export default function Footer() {
         </ListItem>
       </List>
       <Text
-        color="#3C4043"
         fontSize="14px"
       >
-        Copyright &copy;
+        Created by
         {' '}
-        <b>Malik Mahmud, 2021.</b>
+        <b>Malik Mahmud</b>
       </Text>
     </Stack>
   );

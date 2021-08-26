@@ -40,7 +40,7 @@ export default function Header({ handleClick }) {
       <IconButton
         aria-label="settings"
         variant="unstyled"
-        icon={<Icon as={AiFillSetting} boxSize="35px" />}
+        icon={<Icon as={AiFillSetting} boxSize="30px" />}
         onClick={handleClick}
       />
     </Flex>
