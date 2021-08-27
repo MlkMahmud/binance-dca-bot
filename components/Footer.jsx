@@ -60,7 +60,7 @@ export default function Footer() {
       <Text
         fontSize="14px"
       >
-        Created by
+        Designed and Created by
         {' '}
         <b>Malik Mahmud</b>
       </Text>
