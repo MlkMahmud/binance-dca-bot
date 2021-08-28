@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 /* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 
@@ -18,4 +17,11 @@ export function useMediaQuery(query) {
   }, [matches, query]);
 
   return matches;
+}
+
+export function generateSelectOption(value) {
+  return {
+    label: value,
+    value,
+  };
 }
