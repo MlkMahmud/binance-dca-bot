@@ -35,7 +35,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import { VscQuestion } from 'react-icons/vsc';
@@ -69,87 +69,95 @@ Info.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
-function Wrapper({
-  children, handleClose, isLoading, isOpen,
-}) {
-  const isMobile = useMediaQuery('(max-width: 600px)');
-  if (isMobile) {
+const Overlay = React.forwardRef(
+  ({
+    children, handleClose, isLoading, isOpen,
+  }, ref) => {
+    const isMobile = useMediaQuery('(max-width: 600px)');
+
+    const SaveButton = () => (
+      <Button
+        colorScheme="black"
+        form="settings"
+        isFullWidth={isMobile}
+        isLoading={isLoading}
+        mb={isMobile ? '10px' : 0}
+        ref={ref}
+        type="submit"
+      >
+        Save
+      </Button>
+    );
+
+    const CancelButton = () => (
+      <Button
+        colorScheme="red"
+        isFullWidth={isMobile}
+        mr={isMobile ? '0' : '10px'}
+        onClick={handleClose}
+      >
+        Cancel
+      </Button>
+    );
+
+    if (isMobile) {
+      return (
+        <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
+          <DrawerOverlay />
+          <DrawerContent>
+            <Box borderBottom="1px solid #E2E8F0">
+              <DrawerHeader>
+                <Text color="gray.900" fontSize="lg" fontWeight="bold">
+                  Settings
+                </Text>
+                <Text color="gray.600" fontSize="sm">
+                  Edit your global timezone and notification settings here.
+                </Text>
+              </DrawerHeader>
+            </Box>
+            <DrawerCloseButton />
+            <DrawerBody>{children}</DrawerBody>
+            <DrawerFooter
+              borderTop="1px solid #E2E8F0"
+              display="flex"
+              flexDirection="column"
+              mt="20px"
+            >
+              <SaveButton />
+              <CancelButton />
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      );
+    }
+
     return (
-      <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
-        <DrawerOverlay />
-        <DrawerContent>
+      <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
           <Box borderBottom="1px solid #E2E8F0">
-            <DrawerHeader>
+            <ModalHeader>
               <Text color="gray.900" fontSize="lg" fontWeight="bold">
                 Settings
               </Text>
               <Text color="gray.600" fontSize="sm">
                 Edit your global timezone and notification settings here.
               </Text>
-            </DrawerHeader>
+            </ModalHeader>
           </Box>
-          <DrawerCloseButton />
-          <DrawerBody>{children}</DrawerBody>
-          <DrawerFooter
-            borderTop="1px solid #E2E8F0"
-            display="flex"
-            flexDirection="column"
-            mt="20px"
-          >
-            <Button
-              colorScheme="black"
-              form="settings"
-              isFullWidth
-              isLoading={isLoading}
-              mb="10px"
-              type="submit"
-            >
-              Save
-            </Button>
-            <Button colorScheme="red" isFullWidth onClick={handleClose}>
-              Cancel
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+          <ModalCloseButton />
+          <ModalBody>{children}</ModalBody>
+          <ModalFooter borderTop="1px solid #E2E8F0" mt="20px">
+            <CancelButton />
+            <SaveButton />
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     );
-  }
+  },
+);
 
-  return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        <Box borderBottom="1px solid #E2E8F0">
-          <ModalHeader>
-            <Text color="gray.900" fontSize="lg" fontWeight="bold">
-              Settings
-            </Text>
-            <Text color="gray.600" fontSize="sm">
-              Edit your global timezone and notification settings here.
-            </Text>
-          </ModalHeader>
-        </Box>
-        <ModalCloseButton />
-        <ModalBody>{children}</ModalBody>
-        <ModalFooter borderTop="1px solid #E2E8F0" mt="20px">
-          <Button colorScheme="red" mr="8px" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            colorScheme="black"
-            form="settings"
-            isLoading={isLoading}
-            type="submit"
-          >
-            Save
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-}
-
-Wrapper.propTypes = {
+Overlay.propTypes = {
   children: PropTypes.node.isRequired,
   handleClose: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
@@ -163,19 +171,33 @@ const timezones = [
   'Asia/Tokyo',
 ];
 
-export default function Settings({ handleClose, initialValues, isOpen }) {
-  const [isLoading] = useState(false);
-  const [isSlackVisible, setIsSlackVisible] = useState(false);
-  const [isBotTokenVisible, setIsBotTokenVisible] = useState(false);
-  const [isChatIdVisible, setIsChatIdVisible] = useState(false);
+export default function Settings({
+  handleClose,
+  handleUpdate,
+  initialValues,
+  isOpen,
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const btnRef = useRef();
 
-  const onSubmit = () => {};
+  const onSubmit = async (values) => {
+    setIsLoading(true);
+    const sleep = () => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(null);
+      }, 2000);
+    });
+    await sleep();
+    handleUpdate(values);
+    handleClose();
+  };
 
   return (
-    <Wrapper
+    <Overlay
       isLoading={isLoading}
       isOpen={isOpen}
       handleClose={handleClose}
+      ref={btnRef}
     >
       <Form
         initialValues={initialValues}
@@ -186,87 +208,64 @@ export default function Settings({ handleClose, initialValues, isOpen }) {
         }}
         onSubmit={onSubmit}
       >
-        {(({ form, handleSubmit, values }) => (
-          <form id="settings" onSubmit={handleSubmit}>
-            <Stack spacing={4}>
-              <Field name="timezone">
-                {() => (
-                  <FormControl id="timezone">
-                    <FormLabel mb="0">
-                      <Stack align="center" isInline spacing={1}>
-                        <Text fontSize="17px" fontWeight="bold">
-                          Timezone
-                        </Text>
-                        <Info title="Default timezone">
-                          Unless otherwise specified, this
-                          is the timezone used when scheduling your jobs.
-                        </Info>
-                      </Stack>
-                    </FormLabel>
-                    <Select
-                      onChange={({ value }) => form.mutators.updateTimezone(value)}
-                      options={timezones.map((timezone) => generateSelectOption(timezone))}
-                      placeholder="Africa/Lagos"
-                      value={generateSelectOption(values.timezone)}
-                    />
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="slack">
-                {(({ input }) => (
-                  <FormControl id="slack">
-                    <FormLabel mb="0">
-                      <Stack align="center" isInline spacing={1}>
-                        <Text fontSize="17px" fontWeight="bold">
-                          Slack
-                        </Text>
-                        <Info title="Slack notifications">
-                          Your Slack webhook is used to send you updates about your jobs.
-                          {' '}
-                          <Text fontWeight="bold">If you'd like to disable this feature, clear this field and save your changes.</Text>
-                          {' '}
-                          To learn more about Slack's incoming webhooks, click
-                          {' '}
-                          <Link color="blue.500" href="https://api.slack.com/messaging/webhooks" isExternal>here</Link>
-                        </Info>
-                      </Stack>
-                    </FormLabel>
-                    <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <Icon as={FaSlack} boxSize="25px" />
-                      </InputRightElement>
-                      <Input
-                        name={input.name}
-                        onBlur={() => setIsSlackVisible(false)}
-                        onChange={input.onChange}
-                        onFocus={() => setIsSlackVisible(true)}
-                        type={isSlackVisible ? 'url' : 'password'}
-                        value={input.value}
+        {({
+          form, handleSubmit, pristine, values,
+        }) => {
+          if (btnRef.current) {
+            if (pristine) {
+              btnRef.current.disabled = true;
+            } else {
+              btnRef.current.disabled = false;
+            }
+          }
+          return (
+            <form id="settings" onSubmit={handleSubmit}>
+              <Stack spacing={4}>
+                <Field name="timezone">
+                  {() => (
+                    <FormControl id="timezone">
+                      <FormLabel mb="0">
+                        <Stack align="center" isInline spacing={1}>
+                          <Text fontSize="17px" fontWeight="bold">
+                            Timezone
+                          </Text>
+                          <Info title="Default timezone">
+                            Unless otherwise specified, this is the timezone
+                            used when scheduling your jobs.
+                          </Info>
+                        </Stack>
+                      </FormLabel>
+                      <Select
+                        onChange={({ value }) => form.mutators.updateTimezone(value)}
+                        options={timezones.map((timezone) => generateSelectOption(timezone))}
+                        placeholder="Africa/Lagos"
+                        value={generateSelectOption(values.timezone)}
                       />
-                    </InputGroup>
-                  </FormControl>
-                ))}
-              </Field>
-              <Stack direction={['column', 'row']} spacing={3}>
-                <Field name="telegramBotToken">
-                  {(({ input }) => (
-                    <FormControl>
+                    </FormControl>
+                  )}
+                </Field>
+                <Field name="slack">
+                  {({ input }) => (
+                    <FormControl id="slack">
                       <FormLabel mb="0">
                         <Stack align="center" isInline spacing={1}>
                           <Text fontSize="17px" fontWeight="bold">
-                            Telegram bot token
+                            Slack
                           </Text>
-                          <Info title="Telegram Notifications">
-                            Your Telegam bot token is used in tandem with your Telegam
-                            chatId to send you updates about your jobs.
+                          <Info title="Slack notifications">
+                            Your Slack webhook is used to send you updates about
+                            your jobs.
                             {' '}
-                            <Text fontWeight="bold">If you'd like to disable this feature, clear this field and save your changes.</Text>
+                            <Text fontWeight="bold">
+                              If you'd like to disable this feature, clear this
+                              field and save your changes.
+                            </Text>
                             {' '}
-                            To learn more about Telegram bots, click
+                            To learn more about Slack's incoming webhooks, click
                             {' '}
                             <Link
                               color="blue.500"
-                              href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                              href="https://api.slack.com/messaging/webhooks"
                               isExternal
                             >
                               here
@@ -276,73 +275,117 @@ export default function Settings({ handleClose, initialValues, isOpen }) {
                       </FormLabel>
                       <InputGroup>
                         <InputRightElement pointerEvents="none">
-                          <Icon as={FaTelegramPlane} boxSize="25px" />
+                          <Icon as={FaSlack} boxSize="25px" />
                         </InputRightElement>
                         <Input
                           name={input.name}
-                          onBlur={() => setIsBotTokenVisible(false)}
                           onChange={input.onChange}
-                          onFocus={() => setIsBotTokenVisible(true)}
-                          type={isBotTokenVisible ? 'text' : 'password'}
                           value={input.value}
                         />
                       </InputGroup>
                     </FormControl>
-                  ))}
+                  )}
                 </Field>
-                <Field name="telegramChatId">
-                  {(({ input }) => (
-                    <FormControl>
-                      <FormLabel mb="0">
-                        <Stack align="center" isInline spacing={1}>
-                          <Text fontSize="17px" fontWeight="bold">
-                            Telegram chatId
-                          </Text>
-                          <Info title="Telegram Notifications">
-                            Your Telegam chatId is used in tandem with your Telegam
-                            bot token to send you updates about your jobs.
-                            {' '}
-                            <Text fontWeight="bold">If you'd like to disable this feature, clear this field and save your changes.</Text>
-                            {' '}
-                            To learn more about Telegram bots, click
-                            {' '}
-                            <Link
-                              color="blue.500"
-                              href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
-                              isExternal
-                            >
-                              here
-                            </Link>
-                          </Info>
-                        </Stack>
-                      </FormLabel>
-                      <InputGroup>
-                        <InputRightElement pointerEvents="none">
-                          <Icon as={FaTelegramPlane} boxSize="25px" />
-                        </InputRightElement>
-                        <Input
-                          name={input.name}
-                          onBlur={() => setIsChatIdVisible(false)}
-                          onChange={input.onChange}
-                          onFocus={() => setIsChatIdVisible(true)}
-                          type={isChatIdVisible ? 'text' : 'password'}
-                          value={input.value}
-                        />
-                      </InputGroup>
-                    </FormControl>
-                  ))}
-                </Field>
+                <Stack direction={['column', 'row']} spacing={3}>
+                  <Field name="telegramBotToken">
+                    {({ input }) => (
+                      <FormControl>
+                        <FormLabel mb="0">
+                          <Stack align="center" isInline spacing={1}>
+                            <Text fontSize="17px" fontWeight="bold">
+                              Telegram bot token
+                            </Text>
+                            <Info title="Telegram Notifications">
+                              Your Telegam bot token is used in tandem with your
+                              Telegam chatId to send you updates about your
+                              jobs.
+                              {' '}
+                              <Text fontWeight="bold">
+                                If you'd like to disable this feature, clear
+                                this field and save your changes.
+                              </Text>
+                              {' '}
+                              To learn more about Telegram bots, click
+                              {' '}
+                              <Link
+                                color="blue.500"
+                                href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                                isExternal
+                              >
+                                here
+                              </Link>
+                            </Info>
+                          </Stack>
+                        </FormLabel>
+                        <InputGroup>
+                          <InputRightElement pointerEvents="none">
+                            <Icon as={FaTelegramPlane} boxSize="25px" />
+                          </InputRightElement>
+                          <Input
+                            name={input.name}
+                            onChange={input.onChange}
+                            value={input.value}
+                          />
+                        </InputGroup>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="telegramChatId">
+                    {({ input }) => (
+                      <FormControl>
+                        <FormLabel mb="0">
+                          <Stack align="center" isInline spacing={1}>
+                            <Text fontSize="17px" fontWeight="bold">
+                              Telegram chatId
+                            </Text>
+                            <Info title="Telegram Notifications">
+                              Your Telegam chatId is used in tandem with your
+                              Telegam bot token to send you updates about your
+                              jobs.
+                              {' '}
+                              <Text fontWeight="bold">
+                                If you'd like to disable this feature, clear
+                                this field and save your changes.
+                              </Text>
+                              {' '}
+                              To learn more about Telegram bots, click
+                              {' '}
+                              <Link
+                                color="blue.500"
+                                href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                                isExternal
+                              >
+                                here
+                              </Link>
+                            </Info>
+                          </Stack>
+                        </FormLabel>
+                        <InputGroup>
+                          <InputRightElement pointerEvents="none">
+                            <Icon as={FaTelegramPlane} boxSize="25px" />
+                          </InputRightElement>
+                          <Input
+                            name={input.name}
+                            onChange={input.onChange}
+                            value={input.value}
+                          />
+                        </InputGroup>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Stack>
               </Stack>
-            </Stack>
-          </form>
-        ))}
+            </form>
+          );
+        }}
       </Form>
-    </Wrapper>
+    </Overlay>
   );
 }
 
 Settings.propTypes = {
   handleClose: PropTypes.func.isRequired,
+  handleUpdate: PropTypes.func.isRequired,
   initialValues: PropTypes.shape({
     slack: PropTypes.string,
     telegramBotToken: PropTypes.string,
