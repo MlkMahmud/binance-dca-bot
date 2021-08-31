@@ -102,7 +102,11 @@ const Overlay = React.forwardRef(
 
     if (isMobile) {
       return (
-        <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
+        <Drawer
+          isOpen={isOpen}
+          onClose={handleClose}
+          placement="bottom"
+        >
           <DrawerOverlay />
           <DrawerContent>
             <Box borderBottom="1px solid #E2E8F0">
@@ -196,7 +200,11 @@ export default function Settings({
     <Overlay
       isLoading={isLoading}
       isOpen={isOpen}
-      handleClose={handleClose}
+      handleClose={() => {
+        if (!isLoading) {
+          handleClose();
+        }
+      }}
       ref={btnRef}
     >
       <Form
