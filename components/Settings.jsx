@@ -39,7 +39,7 @@ import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import { VscQuestion } from 'react-icons/vsc';
-import Select from 'react-select';
+import Select from './Select';
 import { generateSelectOption, useMediaQuery } from '../utils';
 
 function Info({ children, title }) {
@@ -246,7 +246,6 @@ export default function Settings({
                       <Select
                         onChange={({ value }) => form.mutators.updateTimezone(value)}
                         options={timezones.map((timezone) => generateSelectOption(timezone))}
-                        placeholder="Africa/Lagos"
                         value={generateSelectOption(values.timezone)}
                       />
                     </FormControl>
