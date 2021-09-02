@@ -7,7 +7,7 @@ const dev = process.env.NODE_ENV === 'development';
 const server = next({ dev, dir: path.dirname(__dirname) });
 const handler = server.getRequestHandler();
 
-(async function () {
+(async function start() {
   try {
     await server.prepare();
 

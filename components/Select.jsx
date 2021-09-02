@@ -4,10 +4,15 @@ import PropTypes from 'prop-types';
 import List from 'react-tiny-virtual-list';
 
 const HEIGHT = 35;
+
 const styles = {
   control: (base) => ({
     ...base,
     border: '1px solid #E2E8F0',
+  }),
+  menu: (base) => ({
+    ...base,
+    zIndex: 3,
   }),
 };
 

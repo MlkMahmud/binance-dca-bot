@@ -41,6 +41,7 @@ import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import { VscQuestion } from 'react-icons/vsc';
 import Select from './Select';
 import { generateSelectOption, useMediaQuery } from '../utils';
+import timezones from '../data/timezones.json';
 
 function Info({ children, title }) {
   return (
@@ -102,11 +103,7 @@ const Overlay = React.forwardRef(
 
     if (isMobile) {
       return (
-        <Drawer
-          isOpen={isOpen}
-          onClose={handleClose}
-          placement="bottom"
-        >
+        <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
           <DrawerOverlay />
           <DrawerContent>
             <Box borderBottom="1px solid #E2E8F0">
@@ -167,13 +164,6 @@ Overlay.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };
-
-const timezones = [
-  'Africa/Lagos',
-  'Africa/Accra',
-  'Europe/London',
-  'Asia/Tokyo',
-];
 
 export default function Settings({
   handleClose,
