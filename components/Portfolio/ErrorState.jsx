@@ -8,7 +8,7 @@ import {
 import { SpeechBubble } from 'react-kawaii';
 import PropTypes from 'prop-types';
 
-export default function Error({ handleClick }) {
+export default function ErrorState({ handleClick }) {
   return (
     <Box
       bgColor="#FFF"
@@ -39,6 +39,6 @@ export default function Error({ handleClick }) {
   );
 }
 
-Error.propTypes = {
+ErrorState.propTypes = {
   handleClick: PropTypes.func.isRequired,
 };

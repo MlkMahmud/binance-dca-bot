@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Heading } from '@chakra-ui/react';
-import Loading from './Loading';
+import EmptyState from './EmptyState';
 
 export default function JobList() {
   return (
@@ -10,12 +10,12 @@ export default function JobList() {
     >
       <Heading
         as="h2"
-        fontSize="3xl"
+        fontSize="2xl"
         mb="15px"
       >
-        Jobs (0)
+        Jobs(0)
       </Heading>
-      <Loading />
+      <EmptyState />
     </Box>
   );
 }

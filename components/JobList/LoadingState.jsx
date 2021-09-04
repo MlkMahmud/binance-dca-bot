@@ -3,7 +3,7 @@ import {
   Flex, Spinner, Stack, Text,
 } from '@chakra-ui/react';
 
-export default function Loading() {
+export default function LoadingState() {
   return (
     <Flex
       align="center"

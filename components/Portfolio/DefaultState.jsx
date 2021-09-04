@@ -11,7 +11,7 @@ import {
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
 import PropTypes from 'prop-types';
 
-export default function Portfolio({ assets, handleChange, selectedSymbol }) {
+export default function DefaultState({ assets, handleChange, selectedSymbol }) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const { free, locked } = assets.find(
     ({ symbol }) => symbol === selectedSymbol,
@@ -105,7 +105,7 @@ export default function Portfolio({ assets, handleChange, selectedSymbol }) {
   );
 }
 
-Portfolio.propTypes = {
+DefaultState.propTypes = {
   assets: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,

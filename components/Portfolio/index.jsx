@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import LoadingState from './LoadingState';
 
-const Loading = dynamic(() => import('./Loading'), { ssr: false });
-const Portfolio = dynamic(() => import('./Portfolio'), { ssr: false });
+const DefaultState = dynamic(() => import('./DefaultState'), { ssr: false });
 
-export default function Component() {
+export default function Portfolio() {
   const [assets, updateAssets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSymbol, setSelectedSymbol] = useState('USDT');
@@ -23,11 +23,11 @@ export default function Component() {
   }, []);
 
   if (isLoading) {
-    return <Loading />;
+    return <LoadingState />;
   }
 
   return (
-    <Portfolio
+    <DefaultState
       assets={assets}
       handleChange={setSelectedSymbol}
       selectedSymbol={selectedSymbol}
