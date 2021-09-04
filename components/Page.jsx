@@ -1,4 +1,4 @@
-import { Box, useDisclosure } from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -19,14 +19,7 @@ export default function Page({ children }) {
   return (
     <>
       <Header handleClick={onOpen} />
-      <Box
-        as="main"
-        minH={['calc(100vh - 153.68px)', 'calc(100vh - 132.88px)']}
-        px={[2, 5]}
-        py={[2, 5]}
-      >
-        {children}
-      </Box>
+      {children}
       <Footer />
       {isOpen && (
         <Settings

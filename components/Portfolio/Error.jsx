@@ -12,9 +12,11 @@ export default function Error({ handleClick }) {
   return (
     <Box
       bgColor="#FFF"
+      border="1px solid #DADCE0"
+      borderRadius="5px"
       maxW="400px"
+      mb="10px"
       py={5}
-      shadow="rgb(0 0 0 / 16%) 0px 1px 2px -2px, rgb(0 0 0 / 12%) 0px 3px 6px 0px, rgb(0 0 0 / 9%) 0px 5px 12px 4px"
     >
       <VStack spacing={4}>
         <SpeechBubble color="#596881" mood="sad" size={100} />
