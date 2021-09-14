@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
-export default function EmptyState({ handleClick }) {
+export default function ErrorState({ handleClick }) {
   return (
     <Flex
       align="center"
@@ -24,7 +24,7 @@ export default function EmptyState({ handleClick }) {
         <Img
           height="auto"
           maxW="100%"
-          src="/empty.png"
+          src="/error.png"
         />
       </Box>
       <Stack align="center" spacing={5}>
@@ -33,14 +33,16 @@ export default function EmptyState({ handleClick }) {
           fontWeight="bold"
           textTransform="uppercase"
         >
-          no jobs found
+          Uh oh!
         </Text>
         <Text
           color="#36454F"
           maxW="300px"
           textAlign="center"
         >
-          You have not created any jobs yet. Would you like to add a new one now?
+          We seem to have run into some trouble fetching your jobs.
+          {' '}
+          Would you like to give it another try?
         </Text>
         <Button
           borderRadius="20px"
@@ -49,7 +51,7 @@ export default function EmptyState({ handleClick }) {
           maxW="200px"
           onClick={handleClick}
         >
-          Add Job
+          Try Again
         </Button>
       </Stack>
       <Text
@@ -61,10 +63,10 @@ export default function EmptyState({ handleClick }) {
         {' '}
         <Link
           color="blue.500"
-          href="https://icons8.com/illustrations/author/5dca95ef01d036001426e2bc"
+          href="https://icons8.com/illustrations/author/5dbbfa9e01d0360016457560"
           textDecor="underline"
         >
-          Ivan Haidutsk
+          Sara Maese
           {' '}
         </Link>
         from
@@ -81,6 +83,6 @@ export default function EmptyState({ handleClick }) {
   );
 }
 
-EmptyState.propTypes = {
+ErrorState.propTypes = {
   handleClick: PropTypes.func.isRequired,
 };
