@@ -1,14 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 import {
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
   FormControl,
   FormLabel,
   Icon,
@@ -17,13 +8,6 @@ import {
   InputGroup,
   InputRightElement,
   Link,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -39,8 +23,9 @@ import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import { VscQuestion } from 'react-icons/vsc';
+import Overlay from './Overlay';
 import Select from './Select';
-import { generateSelectOption, useMediaQuery } from '../utils';
+import { generateSelectOption } from '../utils';
 import timezones from '../data/timezones.json';
 
 function Info({ children, title }) {
@@ -68,101 +53,6 @@ function Info({ children, title }) {
 Info.propTypes = {
   children: PropTypes.node.isRequired,
   title: PropTypes.string.isRequired,
-};
-
-const Overlay = React.forwardRef(
-  ({
-    children, handleClose, isLoading, isOpen,
-  }, ref) => {
-    const isMobile = useMediaQuery('(max-width: 600px)');
-
-    const SaveButton = () => (
-      <Button
-        colorScheme="black"
-        form="settings"
-        isFullWidth={isMobile}
-        isLoading={isLoading}
-        mb={isMobile ? '10px' : 0}
-        ref={ref}
-        type="submit"
-      >
-        Save
-      </Button>
-    );
-
-    const CancelButton = () => (
-      <Button
-        colorScheme="red"
-        isFullWidth={isMobile}
-        mr={isMobile ? '0' : '10px'}
-        onClick={handleClose}
-      >
-        Cancel
-      </Button>
-    );
-
-    if (isMobile) {
-      return (
-        <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
-          <DrawerOverlay />
-          <DrawerContent>
-            <Box borderBottom="1px solid #E2E8F0">
-              <DrawerHeader>
-                <Text color="gray.900" fontSize="lg" fontWeight="bold">
-                  Settings
-                </Text>
-                <Text color="gray.600" fontSize="sm">
-                  Edit your global timezone and notification settings here.
-                </Text>
-              </DrawerHeader>
-            </Box>
-            <DrawerCloseButton />
-            <DrawerBody>{children}</DrawerBody>
-            <DrawerFooter
-              borderTop="1px solid #E2E8F0"
-              display="flex"
-              flexDirection="column"
-              mt="20px"
-            >
-              <SaveButton />
-              <CancelButton />
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      );
-    }
-
-    return (
-      <Modal isOpen={isOpen} onClose={handleClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <Box borderBottom="1px solid #E2E8F0">
-            <ModalHeader>
-              <Text color="gray.900" fontSize="lg" fontWeight="bold">
-                Settings
-              </Text>
-              <Text color="gray.600" fontSize="sm">
-                Edit your global timezone and notification settings here.
-              </Text>
-            </ModalHeader>
-          </Box>
-          <ModalCloseButton />
-          <ModalBody>{children}</ModalBody>
-          <ModalFooter borderTop="1px solid #E2E8F0" mt="20px">
-            <CancelButton />
-            <SaveButton />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
-  },
-);
-
-Overlay.propTypes = {
-  children: PropTypes.node.isRequired,
-  handleClose: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  isOpen: PropTypes.bool.isRequired,
 };
 
 export default function Settings({
@@ -196,6 +86,8 @@ export default function Settings({
         }
       }}
       ref={btnRef}
+      subTitle="Edit your global timezone and notification settings here."
+      title="Settings"
     >
       <Form
         initialValues={initialValues}

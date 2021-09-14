@@ -16,7 +16,6 @@ export default function LoadingState() {
       border="1px solid #DADCE0"
       borderRadius="5px"
       maxW="650px"
-      mb="10px"
     >
       <Flex
         align="center"

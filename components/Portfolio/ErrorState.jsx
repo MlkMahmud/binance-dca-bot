@@ -15,7 +15,6 @@ export default function ErrorState({ handleClick }) {
       border="1px solid #DADCE0"
       borderRadius="5px"
       maxW="400px"
-      mb="10px"
       py={5}
     >
       <VStack spacing={4}>
