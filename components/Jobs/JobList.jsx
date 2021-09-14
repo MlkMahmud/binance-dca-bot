@@ -1,9 +1,16 @@
 import React from 'react';
-import { Grid, Stack, Text } from '@chakra-ui/react';
+import {
+  Grid,
+  Icon,
+  IconButton,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
+import { FaPlus } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import Job from './Job';
 
-export default function JobList({ jobs }) {
+export default function JobList({ handleClick, jobs }) {
   return (
     <Stack spacing={3}>
       <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
@@ -25,10 +32,26 @@ export default function JobList({ jobs }) {
           />
         ))}
       </Grid>
+      <IconButton
+        aria-label="add new job"
+        bgColor="black"
+        borderRadius="50%"
+        bottom="40px"
+        color="white"
+        colorScheme="black"
+        height="60px"
+        icon={<Icon as={FaPlus} boxSize="24px" />}
+        onClick={handleClick}
+        pos="fixed"
+        right="20px"
+        width="60px"
+        variant="unstyled"
+      />
     </Stack>
   );
 }
 
 JobList.propTypes = {
+  handleClick: PropTypes.func.isRequired,
   jobs: PropTypes.arrayOf().isRequired,
 };
