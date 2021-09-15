@@ -22,6 +22,7 @@ export default function ErrorState({ handleClick }) {
         mb="20px"
       >
         <Img
+          alt=""
           height="auto"
           maxW="100%"
           src="/error.png"
