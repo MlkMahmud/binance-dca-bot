@@ -25,6 +25,7 @@ const Overlay = React.forwardRef(
   ({
     children,
     handleClose,
+    formId,
     isLoading,
     isOpen,
     subTitle,
@@ -34,7 +35,7 @@ const Overlay = React.forwardRef(
     const SaveButton = () => (
       <Button
         colorScheme="black"
-        form="settings"
+        form={formId}
         isFullWidth={isMobile}
         isLoading={isLoading}
         mb={isMobile ? '10px' : 0}
@@ -116,6 +117,7 @@ const Overlay = React.forwardRef(
 Overlay.propTypes = {
   children: PropTypes.node.isRequired,
   handleClose: PropTypes.func.isRequired,
+  formId: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   subTitle: PropTypes.string,

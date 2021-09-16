@@ -45,6 +45,7 @@ export default function Settings({
     <Overlay
       isLoading={isLoading}
       isOpen={isOpen}
+      formId="settings"
       handleClose={() => {
         if (!isLoading) {
           handleClose();
