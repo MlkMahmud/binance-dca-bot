@@ -3,18 +3,10 @@ import {
   FormControl,
   FormLabel,
   Icon,
-  IconButton,
   Input,
   InputGroup,
   InputRightElement,
   Link,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
   Stack,
   Text,
 } from '@chakra-ui/react';
@@ -22,38 +14,11 @@ import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
-import { VscQuestion } from 'react-icons/vsc';
 import Overlay from './Overlay';
+import Popover from './Popover';
 import Select from './Select';
 import { generateSelectOption } from '../utils';
 import timezones from '../data/timezones.json';
-
-function Info({ children, title }) {
-  return (
-    <Popover isLazy>
-      <PopoverTrigger>
-        <IconButton
-          icon={<Icon as={VscQuestion} />}
-          minW="fit-content"
-          variant="unstyled"
-        />
-      </PopoverTrigger>
-      <PopoverContent>
-        <PopoverHeader>
-          <Text fontWeight="extrabold">{title}</Text>
-        </PopoverHeader>
-        <PopoverCloseButton />
-        <PopoverArrow />
-        <PopoverBody>{children}</PopoverBody>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-Info.propTypes = {
-  children: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
-};
 
 export default function Settings({
   handleClose,
@@ -119,10 +84,10 @@ export default function Settings({
                           <Text fontSize="17px" fontWeight="bold">
                             Timezone
                           </Text>
-                          <Info title="Default timezone">
+                          <Popover title="Default timezone">
                             Unless otherwise specified, this is the timezone
                             used when scheduling your jobs.
-                          </Info>
+                          </Popover>
                         </Stack>
                       </FormLabel>
                       <Select
@@ -141,7 +106,7 @@ export default function Settings({
                           <Text fontSize="17px" fontWeight="bold">
                             Slack
                           </Text>
-                          <Info title="Slack notifications">
+                          <Popover title="Slack notifications">
                             Your Slack webhook is used to send you updates about
                             your jobs.
                             {' '}
@@ -159,7 +124,7 @@ export default function Settings({
                             >
                               here
                             </Link>
-                          </Info>
+                          </Popover>
                         </Stack>
                       </FormLabel>
                       <InputGroup>
@@ -184,7 +149,7 @@ export default function Settings({
                             <Text fontSize="17px" fontWeight="bold">
                               Telegram bot token
                             </Text>
-                            <Info title="Telegram Notifications">
+                            <Popover title="Telegram Notifications">
                               Your Telegam bot token is used in tandem with your
                               Telegam chatId to send you updates about your
                               jobs.
@@ -203,7 +168,7 @@ export default function Settings({
                               >
                                 here
                               </Link>
-                            </Info>
+                            </Popover>
                           </Stack>
                         </FormLabel>
                         <InputGroup>
@@ -227,7 +192,7 @@ export default function Settings({
                             <Text fontSize="17px" fontWeight="bold">
                               Telegram chatId
                             </Text>
-                            <Info title="Telegram Notifications">
+                            <Popover title="Telegram Notifications">
                               Your Telegam chatId is used in tandem with your
                               Telegam bot token to send you updates about your
                               jobs.
@@ -246,7 +211,7 @@ export default function Settings({
                               >
                                 here
                               </Link>
-                            </Info>
+                            </Popover>
                           </Stack>
                         </FormLabel>
                         <InputGroup>
