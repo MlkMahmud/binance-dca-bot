@@ -12,12 +12,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import { AiFillEdit } from 'react-icons/ai';
 import { BsThreeDots } from 'react-icons/bs';
-import { FaPause, FaPlay, FaTrashAlt } from 'react-icons/fa';
+import { FaTrashAlt } from 'react-icons/fa';
 
-export default function Job({
-  baseAsset, id, interval, isActive, name, quoteAsset,
-}) {
+export default function Job({ onEdit, job }) {
+  const {
+    baseAsset, id, interval, isActive, name, quoteAsset,
+  } = job;
   const borderColor = isActive ? '#5EDC1F' : '#FF2400';
 
   return (
@@ -39,9 +41,12 @@ export default function Job({
             variant="unstyled"
           />
           <MenuList>
-            {isActive
-              ? (<MenuItem icon={<Icon as={FaPause} />}>Pause Job</MenuItem>)
-              : (<MenuItem icon={<Icon as={FaPlay} />}>Resume Job</MenuItem>)}
+            <MenuItem
+              icon={<Icon as={AiFillEdit} />}
+              onClick={onEdit}
+            >
+              Edit Job
+            </MenuItem>
             <MenuItem icon={<Icon as={FaTrashAlt} />}>Delete Job</MenuItem>
           </MenuList>
         </Menu>
@@ -72,10 +77,6 @@ export default function Job({
 }
 
 Job.propTypes = {
-  baseAsset: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  interval: PropTypes.string.isRequired,
-  isActive: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  quoteAsset: PropTypes.string.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  job: PropTypes.shape().isRequired,
 };
