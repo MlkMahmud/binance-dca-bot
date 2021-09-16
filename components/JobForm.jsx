@@ -101,7 +101,7 @@ export default function JobForm({ handleClose, isOpen, job }) {
                           <Text fontSize="17px" fontWeight="bold">
                             Symbol
                           </Text>
-                          <Popover title="Job name">
+                          <Popover title="Symbol">
                             This is the base asset and quote asset pair you want to trade
                             {' '}
                             e.g BTCUSDT
