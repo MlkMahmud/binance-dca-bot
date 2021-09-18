@@ -34,24 +34,29 @@ function MenuList({
 
   if (isLoading) {
     return (
-      <Flex
-        align="center"
-        height="200px"
-        justify="center"
-        width="100%"
-      >
+      <Flex align="center" height="100px" justify="center" width="100%">
         <Text>Loading...</Text>
       </Flex>
     );
   }
 
+  if (options.length < 1) {
+    return (
+      <Flex align="center" height="100px" justify="center" width="100%">
+        <Text>No Options</Text>
+      </Flex>
+    );
+  }
+
   const renderItem = ({ index, style }) => (
-    <div key={index} style={style}>{items[index]}</div>
+    <div key={index} style={style}>
+      {items[index]}
+    </div>
   );
 
   return (
     <List
-      height={(HEIGHT * numberOfList) + 6}
+      height={HEIGHT * numberOfList + 6}
       scrollOffset={initialOffset}
       itemCount={children.length}
       itemSize={HEIGHT}
