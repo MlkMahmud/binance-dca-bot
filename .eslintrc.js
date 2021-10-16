@@ -7,7 +7,11 @@ module.exports = {
     'plugin:react/recommended',
     'airbnb',
   ],
+  parser: '@babel/eslint-parser',
   parserOptions: {
+    babelOptions: {
+      configFile: './.babelrc',
+    },
     ecmaFeatures: {
       jsx: true,
     },

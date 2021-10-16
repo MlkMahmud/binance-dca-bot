@@ -1,8 +1,8 @@
-import * as Sentry from '@sentry/node';
+import * as sentry from '@sentry/node';
 
-Sentry.init({
+sentry.init({
   dsn: process.env.SENTRY_DSN,
   enabled: process.env.SENTRY_DSN && (process.env.NODE_ENV === 'production'),
 });
 
-export default Sentry;
+export default sentry;
