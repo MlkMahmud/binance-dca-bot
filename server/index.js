@@ -16,11 +16,10 @@ const appLogger = logger.child({ module: 'app' });
     app.all('*', (req, res) => handler(req, res));
     app.use(Sentry.Handlers.errorHandler());
     // eslint-disable-next-line no-unused-vars
-    app.use((err, req, res, nextFunc) => {
+    app.use((err, req, res, _) => {
       appLogger.error({ err, req });
       res.status(err.status || 500);
       res.end();
-      nextFunc();
     });
     app.listen(port, () => {
       appLogger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
