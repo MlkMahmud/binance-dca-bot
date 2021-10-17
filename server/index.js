@@ -1,8 +1,10 @@
+import mongoose from 'mongoose';
 import next from 'next';
 import path from 'path';
 import app from './app';
 import logger from './lib/logger';
 import sentry from './lib/sentry';
+import User from './models';
 
 const port = Number(process.env.PORT) || 3000;
 const dev = process.env.NODE_ENV === 'development';
@@ -21,6 +23,8 @@ const appLogger = logger.child({ module: 'app' });
       res.status(err.status || 500);
       res.end();
     });
+    await mongoose.connect(process.env.DB_URL);
+    await User.findOneAndUpdate({}, {}, { upsert: true, setDefaultsOnInsert: true });
     app.listen(port, () => {
       appLogger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
     });
