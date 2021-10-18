@@ -6,6 +6,7 @@ const {
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID,
   TELEGRAM_ENABLED,
+  TIME_ZONE,
 } = process.env;
 
 export default model(
@@ -18,13 +19,18 @@ export default model(
 
     slack: {
       enabled: { type: Boolean, default: SLACK_ENABLED === 'true' },
-      webhookUrl: { type: String, default: SLACK_WEBHOOK_URL },
+      url: { type: String, default: SLACK_WEBHOOK_URL },
     },
 
     telegram: {
       botToken: { type: String, defualt: TELEGRAM_BOT_TOKEN },
       chatId: { type: String, default: TELEGRAM_CHAT_ID },
       enabled: { type: Boolean, default: TELEGRAM_ENABLED === 'true' },
+    },
+
+    timezone: {
+      type: String,
+      default: TIME_ZONE,
     },
   }),
 );
