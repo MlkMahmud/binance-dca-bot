@@ -22,4 +22,13 @@ router.get('/balance', async (req, res, next) => {
   }
 });
 
+router.route('/settings/password').post(async (req, res, next) => {
+  try {
+    const { status, message } = await controller.setPassword(req.body);
+    res.status(status).json({ message });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
