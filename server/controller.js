@@ -1,5 +1,5 @@
 import Joi, { ValidationError } from 'joi';
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import binance from './lib/binance';
 import User from './models';
 import { generateSelectOption } from '../utils';
@@ -48,6 +48,51 @@ export default {
         status: 201,
         message: 'Password successfully enabled',
       };
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        const [{ message }] = e.details;
+        return { status: 400, message };
+      }
+      throw e;
+    }
+  },
+
+  async updatePassword({ action, password = '', newPassword }) {
+    try {
+      const {
+        password: { hash },
+      } = await User.findOne();
+
+      if (!hash) {
+        return { status: 403, message: 'Password has not been set yet.' };
+      }
+
+      if (!compareSync(password, hash)) {
+        return { status: 403, message: 'Password is incorrect' };
+      }
+
+      if (action === 'enable') {
+        await User.findOneAndUpdate({}, { $set: { 'password.enabled': true } });
+        return { status: 200, message: 'Password sucessfully enabled' };
+      }
+
+      if (action === 'disable') {
+        await User.findOneAndUpdate({}, { $set: { 'password.enabled': false } });
+        return { status: 200, message: 'Password sucessfully disabled' };
+      }
+
+      if (action === 'update') {
+        await Joi
+          .object({
+            newPassword: Joi.string().min(8).required(),
+          }).validateAsync({ newPassword });
+        await User.findOneAndUpdate(
+          {},
+          { $set: { 'password.hash': hashSync(newPassword, 10) } },
+        );
+        return { status: 200, message: 'Password sucessfully updated' };
+      }
+      return { status: 400, message: 'Invalid action' };
     } catch (e) {
       if (e instanceof ValidationError) {
         const [{ message }] = e.details;
