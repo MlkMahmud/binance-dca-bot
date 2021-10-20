@@ -68,7 +68,7 @@ function generateMessage(event, job) {
       );
       break;
     default:
-      throw new BaseError(`Invalid event: ${event}`, 'SlackError');
+      throw new BaseError('SlackError', `Invalid event: ${event}`);
   }
   return message;
 }
@@ -90,7 +90,7 @@ export default {
         if (response.ok) logger.info(`${event} notification sent successfully`);
         else {
           const errorMessage = await response.text();
-          throw new BaseError(errorMessage, 'SlackError');
+          throw new BaseError('SlackError', errorMessage);
         }
       }
     } catch (err) {

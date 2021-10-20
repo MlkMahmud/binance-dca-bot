@@ -14,7 +14,7 @@ function generateMessageText(event, job) {
       text = `*Job Error*\n_${new Date(job.lastFinishedAt)}_\n\n*Job Name: *${job.name}\n*Reason: *${job.reason}`;
       break;
     default:
-      throw new BaseError(`Invalid event ${event}`, 'TelegramError');
+      throw new BaseError('TelegramError', `Invalid event ${event}`);
   }
   return text;
 }
@@ -42,7 +42,7 @@ export default {
         if (response.ok) logger.info(`${event} notification sent successfully`);
         else {
           const { description } = await response.json();
-          throw new BaseError(description, 'TelegramError');
+          throw new BaseError('TelegramError', description);
         }
       }
     } catch (err) {
