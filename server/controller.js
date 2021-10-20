@@ -42,7 +42,7 @@ export default {
       }).validateAsync(data);
       await User.findOneAndUpdate(
         {},
-        { password: { enabled: true, hash: hashSync(password) } },
+        { password: { enabled: true, hash: hashSync(password, 10) } },
       );
       return {
         status: 201,
