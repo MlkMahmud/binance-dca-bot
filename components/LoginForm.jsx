@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Field, Form, Formik } from 'formik';
+import { Field, Form } from 'react-final-form';
 import {
   Box,
   Button,
@@ -13,12 +13,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import * as Yup from 'yup';
 import Logo from './Logo';
-
-const validationSchema = Yup.object({
-  password: Yup.string().required(),
-});
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,16 +23,16 @@ export default function LoginForm() {
       <Box mx="auto">
         <Logo height="80" width="80" />
       </Box>
-      <Formik
+      <Form
         initialValues={{ password: '' }}
-        validationSchema={validationSchema}
+        onSubmit={() => {}}
       >
-        {() => (
-          <Form>
+        {({ handleSubmit }) => (
+          <form onSubmit={handleSubmit}>
             <Stack spacing={4}>
               <Box>
-                <Field name="password">
-                  {({ field, meta }) => (
+                <Field name="password" validate={(value) => (value ? undefined : 'password is required')}>
+                  {({ input, meta }) => (
                     <FormControl
                       isInvalid={meta.error && meta.touched}
                       isRequired
@@ -46,11 +41,11 @@ export default function LoginForm() {
                       <InputGroup>
                         <Input
                           id="password"
-                          name={field.name}
-                          onBlur={field.onBlur}
-                          onChange={field.onChange}
+                          name={input.name}
+                          onBlur={input.onBlur}
+                          onChange={input.onChange}
                           type={showPassword ? 'text' : 'password'}
-                          value={field.value}
+                          value={input.value}
                         />
                         <InputRightElement>
                           <IconButton
@@ -70,9 +65,9 @@ export default function LoginForm() {
                 Login
               </Button>
             </Stack>
-          </Form>
+          </form>
         )}
-      </Formik>
+      </Form>
     </Stack>
   );
 }
