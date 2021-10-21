@@ -1,5 +1,6 @@
 import Joi, { ValidationError } from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import binance from './lib/binance';
 import User from './models';
 import { generateSelectOption } from '../utils';
@@ -100,5 +101,16 @@ export default {
       }
       throw e;
     }
+  },
+
+  async loginUser(password) {
+    const user = await User.findOne();
+    if (compareSync(password, user.password.hash)) {
+      // This is a single user system.
+      // so it seems pointless to encode any unique attribute in the jwt payload
+      const accessToken = jwt.sign({}, process.env.JWT_SECRET);
+      return { status: 200, accessToken, message: 'success' };
+    }
+    return { status: 403, message: 'password is incorrect' };
   },
 };

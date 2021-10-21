@@ -40,4 +40,16 @@ router
     }
   });
 
+router.post('/login', async (req, res) => {
+  const { password } = req.body;
+  const { accessToken, message, status } = await controller.loginUser(password);
+  if (accessToken) {
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    });
+  }
+  res.status(status).json({ message });
+});
+
 export default router;
