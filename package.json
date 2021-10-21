@@ -47,6 +47,7 @@
     "prettier": "^2.3.2"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.16",
     "@chakra-ui/react": "^1.6.6",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
@@ -60,6 +61,7 @@
     "cross-fetch": "^3.1.4",
     "express": "^4.17.1",
     "final-form": "^4.20.2",
+    "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
     "helmet": "^4.6.0",
     "joi": "^17.4.2",
@@ -72,7 +74,8 @@
     "react-icons": "^4.2.0",
     "react-kawaii": "^0.17.0",
     "react-select": "^4.3.1",
-    "react-tiny-virtual-list": "^2.2.0"
+    "react-tiny-virtual-list": "^2.2.0",
+    "yup": "^0.32.11"
   },
   "engines": {
     "node": "14.x",
