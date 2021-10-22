@@ -3,7 +3,7 @@ import controller from './controller';
 
 const router = Router();
 
-router.get('/symbols', async (req, res, next) => {
+router.get('/api/symbols', async (req, res, next) => {
   try {
     const symbols = await controller.fetchSymbols(req.query.q);
     res.json(symbols);
@@ -12,7 +12,7 @@ router.get('/symbols', async (req, res, next) => {
   }
 });
 
-router.get('/balance', async (req, res, next) => {
+router.get('/api/balance', async (req, res, next) => {
   try {
     const balances = await controller.fetchAccountBalance();
     res.json(balances);
@@ -22,7 +22,7 @@ router.get('/balance', async (req, res, next) => {
 });
 
 router
-  .route('/settings/password')
+  .route('/api/settings/password')
   .post(async (req, res, next) => {
     try {
       const { status, message } = await controller.setPassword(req.body);

@@ -2,11 +2,11 @@ import { Schema, model } from 'mongoose';
 
 const {
   SLACK_ENABLED,
-  SLACK_WEBHOOK_URL,
-  TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_ID,
+  SLACK_WEBHOOK_URL = '',
+  TELEGRAM_BOT_TOKEN = '',
+  TELEGRAM_CHAT_ID = '',
   TELEGRAM_ENABLED,
-  TIME_ZONE,
+  TIME_ZONE = '',
 } = process.env;
 
 export default model(

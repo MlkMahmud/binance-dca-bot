@@ -22,3 +22,17 @@ export default function Index() {
     </Page>
   );
 }
+
+export async function getServerSideProps({ req }) {
+  const { user } = await req;
+  if (!user) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/login',
+      },
+    };
+  }
+
+  return { props: { user } };
+}

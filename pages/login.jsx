@@ -9,3 +9,16 @@ export default function Login() {
     </Flex>
   );
 }
+
+export async function getServerSideProps({ req }) {
+  const { user } = req;
+  if (user) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+    };
+  }
+  return { props: {} };
+}
