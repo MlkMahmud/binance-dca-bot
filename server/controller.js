@@ -3,7 +3,6 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import binance from './lib/binance';
 import User from './models';
-import { generateSelectOption } from '../utils';
 
 export default {
   async fetchSymbols(query = '') {
@@ -11,7 +10,7 @@ export default {
     const options = [];
     symbols.forEach(({ isSpotTradingAllowed, symbol }) => {
       if (isSpotTradingAllowed && symbol.includes(query.toUpperCase())) {
-        options.push(generateSelectOption(symbol));
+        options.push({ label: symbol, value: symbol });
       }
     });
     return options;
