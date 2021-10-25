@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import next from 'next';
 import path from 'path';
 import app from './app';
-import logger from './lib/logger';
+import rootLogger from './lib/logger';
 import sentry from './lib/sentry';
 import User from './models';
 
@@ -10,7 +10,7 @@ const port = Number(process.env.PORT) || 3000;
 const dev = process.env.NODE_ENV === 'development';
 const nextApp = next({ dev, dir: path.dirname(__dirname) });
 const handler = nextApp.getRequestHandler();
-const appLogger = logger.child({ module: 'app' });
+const logger = rootLogger.child({ module: 'app' });
 
 (async function start() {
   try {
@@ -19,17 +19,17 @@ const appLogger = logger.child({ module: 'app' });
     app.use(sentry.Handlers.errorHandler());
     // eslint-disable-next-line no-unused-vars
     app.use((err, req, res, _) => {
-      appLogger.error({ err, req });
+      logger.error({ err, req });
       res.status(err.status || 500);
       res.end();
     });
     await mongoose.connect(process.env.DB_URL);
     await User.findOneAndUpdate({}, {}, { upsert: true, setDefaultsOnInsert: true });
     app.listen(port, () => {
-      appLogger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
+      logger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
     });
   } catch (err) {
-    appLogger.error({ err });
+    logger.error({ err });
     process.exit(1);
   }
 }());

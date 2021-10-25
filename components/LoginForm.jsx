@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/* eslint-env browser */
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,

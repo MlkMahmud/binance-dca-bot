@@ -1,35 +1,52 @@
+/* eslint-env browser */
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import LoadingState from './LoadingState';
 
-const DefaultState = dynamic(() => import('./DefaultState'), { ssr: false });
+const DefaultState = dynamic(() => import('./DefaultState'), { loading: () => <LoadingState /> });
+const ErrorState = dynamic(() => import('./ErrorState'), { loading: () => <LoadingState /> });
 
 export default function Portfolio() {
   const [assets, updateAssets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSymbol, setSelectedSymbol] = useState('USDT');
+  const [error, setError] = useState(false);
+
+  const fetchAssets = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/balance');
+      if (response.ok) {
+        const balances = await response.json();
+        updateAssets(balances);
+        setIsLoading(false);
+        setError(false);
+      } else {
+        throw new Error(response.statusText);
+      }
+    } catch (e) {
+      setError(true);
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setIsLoading(false);
-      updateAssets([
-        { free: 2000, locked: 450, symbol: 'USDT' },
-        { free: 5, locked: 2, symbol: 'BNB' },
-        { free: 1240, locked: 0, symbol: 'DOGE' },
-        { free: 2, locked: 0.5, symbol: 'BTC' },
-      ]);
-    }, 2000);
-    return () => clearTimeout(timeoutId);
+    fetchAssets();
   }, []);
 
   if (isLoading) {
     return <LoadingState />;
   }
 
+  if (error) {
+    return <ErrorState handleClick={() => fetchAssets()} />;
+  }
+
   return (
     <DefaultState
       assets={assets}
-      handleChange={setSelectedSymbol}
+      onChange={setSelectedSymbol}
+      onRefresh={fetchAssets}
       selectedSymbol={selectedSymbol}
     />
   );

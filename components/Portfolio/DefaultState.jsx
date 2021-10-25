@@ -11,10 +11,12 @@ import {
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
 import PropTypes from 'prop-types';
 
-export default function DefaultState({ assets, handleChange, selectedSymbol }) {
+export default function DefaultState({
+  assets, onChange, onRefresh, selectedSymbol,
+}) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
-  const { free, locked } = assets.find(
-    ({ symbol }) => symbol === selectedSymbol,
+  const { free, locked, total } = assets.find(
+    ({ asset }) => asset === selectedSymbol,
   );
   return (
     <Box
@@ -51,6 +53,7 @@ export default function DefaultState({ assets, handleChange, selectedSymbol }) {
             h={['35px', '40px']}
             icon={<Icon as={HiRefresh} boxSize={['25px', '30px']} />}
             minW={['35px', '40px']}
+            onClick={onRefresh}
             variant="unstyled"
           />
         </Box>
@@ -64,10 +67,10 @@ export default function DefaultState({ assets, handleChange, selectedSymbol }) {
         >
           <Text fontWeight="bold">Asset:</Text>
           <Select
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => onChange(e.target.value)}
             value={selectedSymbol}
           >
-            {assets.map(({ symbol }) => (
+            {assets.map(({ asset: symbol }) => (
               <option key={symbol} value={symbol}>
                 {symbol}
               </option>
@@ -77,13 +80,13 @@ export default function DefaultState({ assets, handleChange, selectedSymbol }) {
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Free:</Text>
           <Text fontWeight="medium">
-            {isBalanceHidden ? '***' : `${free} ${selectedSymbol}`}
+            {isBalanceHidden ? '***' : `${Number(free).toFixed(2)} ${selectedSymbol}`}
           </Text>
         </Flex>
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Locked:</Text>
           <Text fontWeight="medium">
-            {isBalanceHidden ? '***' : `${locked} ${selectedSymbol}`}
+            {isBalanceHidden ? '***' : `${Number(locked).toFixed(2)} ${selectedSymbol}`}
           </Text>
         </Flex>
       </Box>
@@ -97,7 +100,7 @@ export default function DefaultState({ assets, handleChange, selectedSymbol }) {
         <Text fontWeight="medium">
           {isBalanceHidden
             ? '***'
-            : `${Number(free + locked).toFixed(2)} ${selectedSymbol}`}
+            : `${(total).toFixed(2)} ${selectedSymbol}`}
         </Text>
       </Flex>
     </Box>
@@ -107,11 +110,13 @@ export default function DefaultState({ assets, handleChange, selectedSymbol }) {
 DefaultState.propTypes = {
   assets: PropTypes.arrayOf(
     PropTypes.shape({
-      symbol: PropTypes.string,
-      free: PropTypes.number,
-      locked: PropTypes.number,
+      asset: PropTypes.string,
+      free: PropTypes.string,
+      locked: PropTypes.string,
+      total: PropTypes.number,
     }),
   ).isRequired,
-  handleChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onRefresh: PropTypes.func.isRequired,
   selectedSymbol: PropTypes.string.isRequired,
 };

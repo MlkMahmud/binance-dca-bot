@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-env browser */
 import React, { useRef, useState } from 'react';
 import {
   FormControl,
@@ -15,8 +15,7 @@ import Select from './Select';
 import { generateSelectOption } from '../utils';
 
 export default function JobForm({ handleClose, isOpen, job }) {
-  // eslint-disable-next-line no-unneeded-ternary
-  const isEditMode = job ? true : false;
+  const isEditMode = !!job;
   const initialValues = isEditMode ? job : {};
   const subTitle = isEditMode ? 'Edit your job details' : 'Create a new recurring job';
   const title = isEditMode ? 'Edit Job' : 'Create Job';
@@ -87,7 +86,10 @@ export default function JobForm({ handleClose, isOpen, job }) {
                         </Stack>
                       </FormLabel>
                       <Input
-                        {...input}
+                        name={input.name}
+                        onBlur={input.onBlur}
+                        onChange={input.onChange}
+                        value={input.value}
                         placeholder="BNB Daily"
                       />
                     </FormControl>
@@ -111,7 +113,6 @@ export default function JobForm({ handleClose, isOpen, job }) {
                       <Select
                         isAsync
                         loadOptions={async (query) => {
-                          // eslint-disable-next-line no-undef
                           const response = await fetch(
                             `/api/symbols?q=${query}`,
                           );
