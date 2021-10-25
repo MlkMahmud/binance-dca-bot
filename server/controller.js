@@ -3,6 +3,7 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import binance from './lib/binance';
 import User from './models';
+import { cleanUserObject, getTimezone } from './utils';
 
 export default {
   async fetchSymbols(query = '') {
@@ -111,5 +112,29 @@ export default {
       return { status: 200, accessToken, message: 'success' };
     }
     return { status: 403, message: 'password is incorrect' };
+  },
+
+  async updateSettings(payload) {
+    try {
+      const data = await Joi.object({
+        slack: Joi.object({ enabled: Joi.bool(), url: Joi.string().uri() }),
+        telegram: Joi.object({ enabled: Joi.bool(), botToken: Joi.string(), chatId: Joi.string() }),
+        timezone: Joi.string().custom((value, helper) => {
+          const timezone = getTimezone(value);
+          if (!timezone) {
+            return helper.message(`Timezone ${value} is invalid`);
+          }
+          return timezone.name;
+        }),
+      }).validateAsync(payload);
+      const userObject = await User.findOneAndUpdate({}, data, { new: true });
+      return { status: 200, user: cleanUserObject(userObject) };
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        const [{ message }] = e.details;
+        return { status: 400, message };
+      }
+      throw e;
+    }
   },
 };

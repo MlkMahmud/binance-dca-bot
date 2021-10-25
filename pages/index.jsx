@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
+import PropTypes from 'prop-types';
 import Page from '../components/Page';
 import Portfolio from '../components/Portfolio';
 import Jobs from '../components/Jobs';
 
-export default function Index() {
+export default function Index({ user }) {
   return (
-    <Page>
+    <Page user={user}>
       <Box
         as="main"
         d="grid"
@@ -22,6 +23,10 @@ export default function Index() {
     </Page>
   );
 }
+
+Index.propTypes = {
+  user: PropTypes.shape({}).isRequired,
+};
 
 export async function getServerSideProps({ req }) {
   const { user } = await req;

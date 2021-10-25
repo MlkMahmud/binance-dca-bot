@@ -67,6 +67,7 @@
     "helmet": "^4.6.0",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
+    "moment-timezone": "^0.5.33",
     "mongoose": "^6.0.11",
     "next": "^11.1.2",
     "prop-types": "^15.7.2",

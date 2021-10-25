@@ -40,6 +40,15 @@ router
     }
   });
 
+router.put('/api/settings/general', async (req, res, next) => {
+  try {
+    const { status, user, message } = await controller.updateSettings(req.body);
+    res.status(status).json({ user, message });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/login', async (req, res) => {
   const { password } = req.body;
   const { accessToken, message, status } = await controller.loginUser(password);

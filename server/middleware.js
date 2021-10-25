@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from './models';
+import { cleanUserObject } from './utils';
 
 function isApiRoute(path) {
   return path.startsWith('/api/');
@@ -9,15 +10,9 @@ export default async function authenticateRequest(req, res, next) {
   const {
     password, slack, telegram, timezone,
   } = await User.findOne().lean();
-  const user = {
-    password: {
-      enabled: password.enabled,
-      isSet: password.hash.length > 0,
-    },
-    slack,
-    telegram,
-    timezone,
-  };
+  const user = cleanUserObject({
+    password, slack, telegram, timezone,
+  });
 
   if (!password.enabled) {
     req.user = user;

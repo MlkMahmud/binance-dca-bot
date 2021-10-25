@@ -1,5 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
+/* eslint-env browser */
 import {
+  Box,
   FormControl,
   FormLabel,
   Icon,
@@ -8,6 +10,7 @@ import {
   InputRightElement,
   Link,
   Stack,
+  Switch,
   Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -21,24 +24,29 @@ import { generateSelectOption } from '../utils';
 import timezones from '../data/timezones.json';
 
 export default function Settings({
-  handleClose,
-  handleUpdate,
+  onClose,
+  onUpdate,
   initialValues,
   isOpen,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef();
 
-  const onSubmit = async (values) => {
-    setIsLoading(true);
-    const sleep = () => new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null);
-      }, 2000);
-    });
-    await sleep();
-    handleUpdate(values);
-    handleClose();
+  const onSubmit = async ({ timezone, slack, telegram }) => {
+    try {
+      const response = await fetch('/api/settings/general', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ timezone, slack, telegram }),
+      });
+      if (response.ok) {
+        const { user } = await response.json();
+        onUpdate(user);
+        onClose();
+      } else { throw new Error(response.statusText); }
+    } catch (e) {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,7 +56,7 @@ export default function Settings({
       formId="settings"
       handleClose={() => {
         if (!isLoading) {
-          handleClose();
+          onClose();
         }
       }}
       ref={btnRef}
@@ -58,6 +66,12 @@ export default function Settings({
       <Form
         initialValues={initialValues}
         mutators={{
+          enableSlack([value], state, { changeValue }) {
+            changeValue(state, 'slack.enabled', () => value);
+          },
+          enableTelegram([value], state, { changeValue }) {
+            changeValue(state, 'telegram.enabled', () => value);
+          },
           updateTimezone([value], state, { changeValue }) {
             changeValue(state, 'timezone', () => value);
           },
@@ -77,94 +91,48 @@ export default function Settings({
           return (
             <form id="settings" onSubmit={handleSubmit}>
               <Stack spacing={4}>
-                <Field name="timezone">
-                  {() => (
-                    <FormControl id="timezone">
-                      <FormLabel mb="0">
-                        <Stack align="center" isInline spacing={1}>
-                          <Text fontSize="17px" fontWeight="bold">
-                            Timezone
-                          </Text>
-                          <Popover title="Default timezone">
-                            Unless otherwise specified, this is the timezone
-                            used when scheduling your jobs.
-                          </Popover>
-                        </Stack>
-                      </FormLabel>
-                      <Select
-                        onChange={({ value }) => form.mutators.updateTimezone(value)}
-                        options={timezones.map((timezone) => generateSelectOption(timezone))}
-                        value={generateSelectOption(values.timezone)}
-                      />
-                    </FormControl>
-                  )}
-                </Field>
-                <Field name="slack">
-                  {({ input }) => (
-                    <FormControl id="slack">
-                      <FormLabel mb="0">
-                        <Stack align="center" isInline spacing={1}>
-                          <Text fontSize="17px" fontWeight="bold">
-                            Slack
-                          </Text>
-                          <Popover title="Slack notifications">
-                            Your Slack webhook is used to send you updates about
-                            your jobs.
-                            {' '}
-                            <Text fontWeight="bold">
-                              If you'd like to disable this feature, clear this
-                              field and save your changes.
+                <Box>
+                  <Field name="timezone">
+                    {() => (
+                      <FormControl id="timezone">
+                        <FormLabel mb="0">
+                          <Stack align="center" isInline spacing={1}>
+                            <Text fontSize="17px" fontWeight="bold">
+                              Timezone
                             </Text>
-                            {' '}
-                            To learn more about Slack's incoming webhooks, click
-                            {' '}
-                            <Link
-                              color="blue.500"
-                              href="https://api.slack.com/messaging/webhooks"
-                              isExternal
-                            >
-                              here
-                            </Link>
-                          </Popover>
-                        </Stack>
-                      </FormLabel>
-                      <InputGroup>
-                        <InputRightElement pointerEvents="none">
-                          <Icon as={FaSlack} boxSize="25px" />
-                        </InputRightElement>
-                        <Input
-                          name={input.name}
-                          onChange={input.onChange}
-                          value={input.value}
+                            <Popover title="Default timezone">
+                              Unless otherwise specified, this is the timezone
+                              used when scheduling your jobs.
+                            </Popover>
+                          </Stack>
+                        </FormLabel>
+                        <Select
+                          onChange={({ value }) => form.mutators.updateTimezone(value)}
+                          options={timezones.map((timezone) => generateSelectOption(timezone))}
+                          value={generateSelectOption(values.timezone)}
                         />
-                      </InputGroup>
-                    </FormControl>
-                  )}
-                </Field>
-                <Stack direction={['column', 'row']} spacing={3}>
-                  <Field name="telegramBotToken">
+                      </FormControl>
+                    )}
+                  </Field>
+                </Box>
+                <Box>
+                  <Field name="slack.url">
                     {({ input }) => (
-                      <FormControl>
+                      <FormControl id="slackUrl">
                         <FormLabel mb="0">
                           <Stack align="center" isInline spacing={1}>
                             <Text fontSize="17px" fontWeight="bold">
-                              Telegram bot token
+                              Slack
                             </Text>
-                            <Popover title="Telegram Notifications">
-                              Your Telegam bot token is used in tandem with your
-                              Telegam chatId to send you updates about your
-                              jobs.
+                            <Popover title="Slack notifications">
+                              Your Slack webhook is used to send you updates about
+                              your jobs.
                               {' '}
-                              <Text fontWeight="bold">
-                                If you'd like to disable this feature, clear
-                                this field and save your changes.
-                              </Text>
-                              {' '}
-                              To learn more about Telegram bots, click
+                              To learn more about Slack's incoming webhooks, click
                               {' '}
                               <Link
                                 color="blue.500"
-                                href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                                href="https://api.slack.com/messaging/webhooks"
                                 isExternal
                               >
                                 here
@@ -174,10 +142,12 @@ export default function Settings({
                         </FormLabel>
                         <InputGroup>
                           <InputRightElement pointerEvents="none">
-                            <Icon as={FaTelegramPlane} boxSize="25px" />
+                            <Icon as={FaSlack} boxSize="25px" />
                           </InputRightElement>
                           <Input
+                            isDisabled={!values.slack.enabled}
                             name={input.name}
+                            onBlur={input.onBlur}
                             onChange={input.onChange}
                             value={input.value}
                           />
@@ -185,50 +155,123 @@ export default function Settings({
                       </FormControl>
                     )}
                   </Field>
-                  <Field name="telegramChatId">
-                    {({ input }) => (
-                      <FormControl>
-                        <FormLabel mb="0">
-                          <Stack align="center" isInline spacing={1}>
-                            <Text fontSize="17px" fontWeight="bold">
-                              Telegram chatId
-                            </Text>
-                            <Popover title="Telegram Notifications">
-                              Your Telegam chatId is used in tandem with your
-                              Telegam bot token to send you updates about your
-                              jobs.
-                              {' '}
-                              <Text fontWeight="bold">
-                                If you'd like to disable this feature, clear
-                                this field and save your changes.
+                  <Field name="slack.enabled">
+                    {() => (
+                      <Text
+                        color="gray.500"
+                        fontSize="sm"
+                        mt="0.5rem"
+                      >
+                        Enable Slack Notifications ?
+                        {'  '}
+                        <Switch
+                          isChecked={values.slack.enabled}
+                          onChange={({ target }) => form.mutators.enableSlack(target.checked)}
+                        />
+                      </Text>
+                    )}
+                  </Field>
+                </Box>
+                <Box>
+                  <Stack direction={['column', 'row']} spacing={3}>
+                    <Field name="telegram.botToken">
+                      {({ input }) => (
+                        <FormControl id="botToken">
+                          <FormLabel mb="0">
+                            <Stack align="center" isInline spacing={1}>
+                              <Text fontSize="17px" fontWeight="bold">
+                                Telegram bot token
                               </Text>
-                              {' '}
-                              To learn more about Telegram bots, click
-                              {' '}
-                              <Link
-                                color="blue.500"
-                                href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
-                                isExternal
-                              >
-                                here
-                              </Link>
-                            </Popover>
-                          </Stack>
-                        </FormLabel>
-                        <InputGroup>
-                          <InputRightElement pointerEvents="none">
-                            <Icon as={FaTelegramPlane} boxSize="25px" />
-                          </InputRightElement>
-                          <Input
-                            name={input.name}
-                            onChange={input.onChange}
-                            value={input.value}
-                          />
-                        </InputGroup>
-                      </FormControl>
+                              <Popover title="Telegram Notifications">
+                                Your Telegam bot token is used in tandem with your
+                                Telegam chatId to send you updates about your
+                                jobs.
+                                {' '}
+                                To learn more about Telegram bots, click
+                                {' '}
+                                <Link
+                                  color="blue.500"
+                                  href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                                  isExternal
+                                >
+                                  here
+                                </Link>
+                              </Popover>
+                            </Stack>
+                          </FormLabel>
+                          <InputGroup>
+                            <InputRightElement pointerEvents="none">
+                              <Icon as={FaTelegramPlane} boxSize="25px" />
+                            </InputRightElement>
+                            <Input
+                              isDisabled={!values.telegram.enabled}
+                              name={input.name}
+                              onBlur={input.onBlur}
+                              onChange={input.onChange}
+                              value={input.value}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="telegram.chatId">
+                      {({ input }) => (
+                        <FormControl id="chatId">
+                          <FormLabel mb="0">
+                            <Stack align="center" isInline spacing={1}>
+                              <Text fontSize="17px" fontWeight="bold">
+                                Telegram chatId
+                              </Text>
+                              <Popover title="Telegram Notifications">
+                                Your Telegam chatId is used in tandem with your
+                                Telegam bot token to send you updates about your
+                                jobs.
+                                {' '}
+                                To learn more about Telegram bots, click
+                                {' '}
+                                <Link
+                                  color="blue.500"
+                                  href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
+                                  isExternal
+                                >
+                                  here
+                                </Link>
+                              </Popover>
+                            </Stack>
+                          </FormLabel>
+                          <InputGroup>
+                            <InputRightElement pointerEvents="none">
+                              <Icon as={FaTelegramPlane} boxSize="25px" />
+                            </InputRightElement>
+                            <Input
+                              isDisabled={!values.telegram.enabled}
+                              name={input.name}
+                              onBlur={input.onBlur}
+                              onChange={input.onChange}
+                              value={input.value}
+                            />
+                          </InputGroup>
+                        </FormControl>
+                      )}
+                    </Field>
+                  </Stack>
+                  <Field name="telegram.enabled">
+                    {() => (
+                      <Text
+                        color="gray.500"
+                        fontSize="sm"
+                        mt="0.5rem"
+                      >
+                        Enable Telegram Notifications ?
+                        {'  '}
+                        <Switch
+                          isChecked={values.telegram.enabled}
+                          onChange={({ target }) => form.mutators.enableTelegram(target.checked)}
+                        />
+                      </Text>
                     )}
                   </Field>
-                </Stack>
+                </Box>
               </Stack>
             </form>
           );
@@ -239,8 +282,8 @@ export default function Settings({
 }
 
 Settings.propTypes = {
-  handleClose: PropTypes.func.isRequired,
-  handleUpdate: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   initialValues: PropTypes.shape({
     slack: PropTypes.string,
     telegramBotToken: PropTypes.string,
