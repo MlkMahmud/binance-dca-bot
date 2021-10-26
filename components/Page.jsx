@@ -34,6 +34,7 @@ export default function Page({ children, user }) {
           isOpen={isPasswordSettingsOpen}
           onClose={() => setIsPasswordSettingsOpen(false)}
           onUpdate={() => {}}
+          user={user}
         />
       )}
     </>

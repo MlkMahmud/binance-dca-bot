@@ -16,6 +16,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -26,35 +27,33 @@ const Overlay = React.forwardRef(
     children,
     handleClose,
     formId,
+    footer,
     isLoading,
     isOpen,
     subTitle,
     title,
   }, ref) => {
     const isMobile = useMediaQuery('(max-width: 600px)');
-    const SaveButton = () => (
-      <Button
-        colorScheme="black"
-        form={formId}
-        isFullWidth={isMobile}
-        isLoading={isLoading}
-        mb={isMobile ? '10px' : 0}
-        ref={ref}
-        type="submit"
-      >
-        Save
-      </Button>
-    );
-
-    const CancelButton = () => (
-      <Button
-        colorScheme="red"
-        isFullWidth={isMobile}
-        mr={isMobile ? '0' : '10px'}
-        onClick={handleClose}
-      >
-        Cancel
-      </Button>
+    const footerContent = footer || (
+      <Stack spacing={2} width="100%">
+        <Button
+          colorScheme="black"
+          form={formId}
+          isFullWidth
+          isLoading={isLoading}
+          ref={ref}
+          type="submit"
+        >
+          Save
+        </Button>
+        <Button
+          colorScheme="red"
+          isFullWidth
+          onClick={handleClose}
+        >
+          Cancel
+        </Button>
+      </Stack>
     );
 
     if (isMobile) {
@@ -76,12 +75,9 @@ const Overlay = React.forwardRef(
             <DrawerBody>{children}</DrawerBody>
             <DrawerFooter
               borderTop="1px solid #E2E8F0"
-              display="flex"
-              flexDirection="column"
               mt="20px"
             >
-              <SaveButton />
-              <CancelButton />
+              {footerContent}
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
@@ -104,9 +100,11 @@ const Overlay = React.forwardRef(
           </Box>
           <ModalCloseButton />
           <ModalBody>{children}</ModalBody>
-          <ModalFooter borderTop="1px solid #E2E8F0" mt="20px">
-            <CancelButton />
-            <SaveButton />
+          <ModalFooter
+            borderTop="1px solid #E2E8F0"
+            mt="20px"
+          >
+            {footerContent}
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -118,6 +116,7 @@ Overlay.propTypes = {
   children: PropTypes.node.isRequired,
   handleClose: PropTypes.func.isRequired,
   formId: PropTypes.string.isRequired,
+  footer: PropTypes.node,
   isLoading: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   subTitle: PropTypes.string,
@@ -125,6 +124,7 @@ Overlay.propTypes = {
 };
 
 Overlay.defaultProps = {
+  footer: null,
   subTitle: '',
 };
 
