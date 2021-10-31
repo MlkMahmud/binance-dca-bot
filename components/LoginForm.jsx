@@ -1,15 +1,10 @@
 /* eslint-env browser */
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
   Stack,
   useToast,
 } from '@chakra-ui/react';
@@ -17,9 +12,9 @@ import React, { useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
+import PasswordInput from './PasswordInput';
 
 export default function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const toast = useToast();
@@ -78,30 +73,24 @@ export default function LoginForm() {
                     isRequired
                   >
                     <FormLabel htmlFor="password">Password:</FormLabel>
-                    <InputGroup>
-                      <Input
-                        id="password"
-                        name={input.name}
-                        onBlur={input.onBlur}
-                        onChange={input.onChange}
-                        type={showPassword ? 'text' : 'password'}
-                        value={input.value}
-                      />
-                      <InputRightElement>
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                          onClick={() => setShowPassword(!showPassword)}
-                          variant="unstyled"
-                        />
-                      </InputRightElement>
-                    </InputGroup>
+                    <PasswordInput
+                      id="password"
+                      name={input.name}
+                      onBlur={input.onBlur}
+                      onChange={input.onChange}
+                      value={input.value}
+                    />
                     <FormErrorMessage>{meta.error}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
             </Box>
-            <Button colorScheme="black" type="submit" isFullWidth isLoading={isLoading}>
+            <Button
+              colorScheme="black"
+              type="submit"
+              isFullWidth
+              isLoading={isLoading}
+            >
               Login
             </Button>
           </form>
