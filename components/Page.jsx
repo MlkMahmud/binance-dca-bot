@@ -33,7 +33,7 @@ export default function Page({ children, user }) {
         <PasswordSettings
           isOpen={isPasswordSettingsOpen}
           onClose={() => setIsPasswordSettingsOpen(false)}
-          onUpdate={() => {}}
+          onUpdate={updateUserConfig}
           user={user}
         />
       )}

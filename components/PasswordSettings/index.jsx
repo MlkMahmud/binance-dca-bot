@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import Overlay from '../Overlay';
+import DisablePasswordForm from './DisablePasswordForm';
 import EnablePasswordForm from './EnablePasswordForm';
 
 const actions = [
@@ -49,7 +50,9 @@ function Action(props) {
   );
 }
 
-export default function PasswordSettings({ isOpen, onClose, user }) {
+export default function PasswordSettings({
+  isOpen, onClose, onUpdate, user,
+}) {
   const [showActionScreen, setShowActionScreen] = useState(true);
   const [action, setAction] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +100,11 @@ export default function PasswordSettings({ isOpen, onClose, user }) {
         <>
           <Button
             leftIcon={<ArrowBackIcon />}
-            onClick={() => setShowActionScreen(true)}
+            onClick={() => {
+              if (!isLoading) {
+                setShowActionScreen(true);
+              }
+            }}
             padding={0}
             size="lg"
             variant=""
@@ -105,10 +112,25 @@ export default function PasswordSettings({ isOpen, onClose, user }) {
             Back
           </Button>
           <Box mt="10px">
+            {(action === 'enable' && (
             <EnablePasswordForm
               hasSetPassword={user.password.isSet}
+              onUpdate={() => {
+                onUpdate({ ...user, password: { enabled: true, isSet: true } });
+                onClose();
+              }}
               setIsLoading={setIsLoading}
             />
+            ))}
+            {(action === 'disable' && (
+            <DisablePasswordForm
+              onUpdate={() => {
+                onUpdate({ ...user, password: { enabled: false } });
+                onClose();
+              }}
+              setIsLoading={setIsLoading}
+            />
+            ))}
           </Box>
         </>
       )}
