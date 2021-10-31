@@ -104,7 +104,7 @@ export default function PasswordSettings({ isOpen, onClose, user }) {
           >
             Back
           </Button>
-          <Box mt="20px">
+          <Box mt="10px">
             <EnablePasswordForm
               hasSetPassword={user.password.isSet}
               setIsLoading={setIsLoading}
