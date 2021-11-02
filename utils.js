@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { createStandaloneToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
 export function useMediaQuery(query) {
@@ -24,4 +25,15 @@ export function generateSelectOption(value) {
     label: value,
     value,
   };
+}
+
+export function displayToast({ description, status = 'error', title }) {
+  const toast = createStandaloneToast();
+  toast({
+    description,
+    duration: 5000,
+    isClosable: true,
+    status,
+    title,
+  });
 }

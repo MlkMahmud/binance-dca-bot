@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
 import PasswordInput from '../PasswordInput';
+import { displayToast } from '../../utils';
 
 export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
   const onSubmit = async (values) => {
@@ -19,12 +20,27 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(values),
       });
+      const { message: description } = await response.json();
       if (response.ok) {
-        const { user } = await response.json();
-        onUpdate(user);
+        displayToast({
+          description,
+          status: 'success',
+          title: 'Success',
+        });
+        onUpdate();
+      } else {
+        setIsLoading(false);
+        displayToast({
+          description,
+          title: 'Error',
+        });
       }
     } catch (e) {
       setIsLoading(false);
+      displayToast({
+        description: 'Something went wrong, please try again.',
+        title: 'Error',
+      });
     }
   };
 

@@ -1,6 +1,9 @@
 /* eslint-env browser */
 import {
-  FormControl, FormLabel, Stack, Text,
+  FormControl,
+  FormLabel,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,18 +11,13 @@ import { Field, Form } from 'react-final-form';
 import PasswordInput from '../PasswordInput';
 import { displayToast } from '../../utils';
 
-export default function EnablePasswordForm({
-  hasSetPassword,
-  onUpdate,
-  setIsLoading,
-}) {
+export default function UpdatePasswordForm({ setIsLoading, onUpdate }) {
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const method = hasSetPassword ? 'PUT' : 'POST';
       const response = await fetch('/api/settings/password', {
+        method: 'PUT',
         headers: { 'content-type': 'application/json' },
-        method,
         body: JSON.stringify(values),
       });
       const { message: description } = await response.json();
@@ -37,7 +35,7 @@ export default function EnablePasswordForm({
           title: 'Error',
         });
       }
-    } catch {
+    } catch (e) {
       setIsLoading(false);
       displayToast({
         description: 'Something went wrong, please try again.',
@@ -50,25 +48,23 @@ export default function EnablePasswordForm({
     <>
       <Stack mb="20px">
         <Text fontSize="xl" fontWeight="semibold">
-          Enable password protection
+          Update password
         </Text>
         <Text colorScheme="gray.600" fontWeight="normal">
-          {hasSetPassword
-            ? 'You must confirm your password to enable the password protection feature'
-            : 'You must create a new password in order to enable the password protection feature'}
+          Please ensure your new password and your old password are not the same.
         </Text>
       </Stack>
       <Form
         initialValues={{
-          ...(hasSetPassword && { action: 'enable' }),
-          ...(!hasSetPassword && { confirmPassword: '' }),
+          action: 'update',
+          newPassword: '',
           password: '',
         }}
         onSubmit={onSubmit}
       >
         {({ handleSubmit }) => (
-          <form id="enable" onSubmit={handleSubmit}>
-            {hasSetPassword ? (
+          <form id="update" onSubmit={handleSubmit}>
+            <Stack spacing={3}>
               <Field name="password">
                 {({ input }) => (
                   <FormControl id="password">
@@ -81,34 +77,19 @@ export default function EnablePasswordForm({
                   </FormControl>
                 )}
               </Field>
-            ) : (
-              <Stack spacing={3}>
-                <Field name="password">
-                  {({ input }) => (
-                    <FormControl id="password">
-                      <FormLabel>New password: </FormLabel>
-                      <PasswordInput
-                        onBlur={input.onBlur}
-                        onChange={input.onChange}
-                        value={input.value}
-                      />
-                    </FormControl>
-                  )}
-                </Field>
-                <Field name="confirmPassword">
-                  {({ input }) => (
-                    <FormControl id="confirmPassword">
-                      <FormLabel>Confirm password: </FormLabel>
-                      <PasswordInput
-                        onBlur={input.onBlur}
-                        onChange={input.onChange}
-                        value={input.value}
-                      />
-                    </FormControl>
-                  )}
-                </Field>
-              </Stack>
-            )}
+              <Field name="newPassword">
+                {({ input }) => (
+                  <FormControl id="newPassword">
+                    <FormLabel>New Password: </FormLabel>
+                    <PasswordInput
+                      onBlur={input.onBlur}
+                      onChange={input.onChange}
+                      value={input.value}
+                    />
+                  </FormControl>
+                )}
+              </Field>
+            </Stack>
           </form>
         )}
       </Form>
@@ -116,8 +97,7 @@ export default function EnablePasswordForm({
   );
 }
 
-EnablePasswordForm.propTypes = {
-  hasSetPassword: PropTypes.bool.isRequired,
-  onUpdate: PropTypes.func.isRequired,
+UpdatePasswordForm.propTypes = {
   setIsLoading: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };

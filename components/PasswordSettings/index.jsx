@@ -12,10 +12,12 @@ import {
   useRadio,
   useRadioGroup,
 } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import Overlay from '../Overlay';
 import DisablePasswordForm from './DisablePasswordForm';
 import EnablePasswordForm from './EnablePasswordForm';
+import UpdatePasswordForm from './UpdatePasswordForm';
 
 const actions = [
   { title: 'Enable password', description: 'Turn on password protection', value: 'enable' },
@@ -53,6 +55,7 @@ function Action(props) {
 export default function PasswordSettings({
   isOpen, onClose, onUpdate, user,
 }) {
+  const router = useRouter();
   const [showActionScreen, setShowActionScreen] = useState(true);
   const [action, setAction] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +120,7 @@ export default function PasswordSettings({
               hasSetPassword={user.password.isSet}
               onUpdate={() => {
                 onUpdate({ ...user, password: { enabled: true, isSet: true } });
-                onClose();
+                router.replace('/login');
               }}
               setIsLoading={setIsLoading}
             />
@@ -131,6 +134,14 @@ export default function PasswordSettings({
               setIsLoading={setIsLoading}
             />
             ))}
+            {(action === 'update') && (
+              <UpdatePasswordForm
+                onUpdate={() => {
+                  router.replace('/login');
+                }}
+                setIsLoading={setIsLoading}
+              />
+            )}
           </Box>
         </>
       )}

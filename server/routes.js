@@ -34,6 +34,9 @@ router
   .put(async (req, res, next) => {
     try {
       const { status, message } = await controller.updatePassword(req.body);
+      if (status < 400) {
+        res.clearCookie('accessToken');
+      }
       res.status(status).json({ message });
     } catch (err) {
       next(err);

@@ -87,6 +87,9 @@ export default {
           .object({
             newPassword: Joi.string().min(8).required(),
           }).validateAsync({ newPassword });
+        if (password === newPassword) {
+          return { status: 400, message: 'new password cannot be the same as the old.' };
+        }
         await User.findOneAndUpdate(
           {},
           { $set: { 'password.hash': hashSync(newPassword, 10) } },
