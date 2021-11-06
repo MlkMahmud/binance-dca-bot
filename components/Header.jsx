@@ -19,10 +19,15 @@ export default function Header({
     <Flex
       align="center"
       as="header"
+      bgColor="#FFF"
       justify="space-between"
+      left="0"
+      position="sticky"
       px={[2, 5]}
       py={[2, 3]}
       shadow="rgb(0 0 0 / 25%) 0px 2px 2px 2px"
+      top="0"
+      zIndex={1}
     >
       <Logo />
       <Box>
