@@ -20,7 +20,7 @@ import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
-import { generateSelectOption } from '../utils';
+import { displayToast, generateSelectOption } from '../utils';
 import timezones from '../data/timezones.json';
 
 export default function Settings({
@@ -34,18 +34,33 @@ export default function Settings({
 
   const onSubmit = async ({ timezone, slack, telegram }) => {
     try {
+      setIsLoading(true);
       const response = await fetch('/api/settings/general', {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ timezone, slack, telegram }),
       });
+      const { user, message: description } = await response.json();
       if (response.ok) {
-        const { user } = await response.json();
+        displayToast({
+          description: 'Settings updated',
+          status: 'success',
+          title: 'Success',
+        });
         onUpdate(user);
         onClose();
-      } else { throw new Error(response.statusText); }
+      } else {
+        displayToast({
+          description,
+          title: 'Error',
+        });
+      }
     } catch (e) {
       setIsLoading(false);
+      displayToast({
+        description: 'Something went wrong, please try again.',
+        title: 'Error',
+      });
     }
   };
 
