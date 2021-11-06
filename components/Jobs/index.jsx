@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import LoadingState from './LoadingState';
 
-const EmptyState = dynamic(() => import('./EmptyState'));
-const JobList = dynamic(() => import('./JobList'));
+const EmptyState = dynamic(() => import('./EmptyState'), { loading: () => <LoadingState /> });
+const JobList = dynamic(() => import('./JobList'), { loading: () => <LoadingState /> });
 
 export default function Jobs() {
   const [isLoading, setIsloading] = useState(true);

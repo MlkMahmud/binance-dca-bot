@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Header from './Header';
 import Footer from './Footer';
+import Loading from './Loading';
 
-const Settings = dynamic(() => import('./Settings'));
-const PasswordSettings = dynamic(() => import('./PasswordSettings'));
+const Settings = dynamic(() => import('./Settings'), { loading: () => <Loading /> });
+const PasswordSettings = dynamic(() => import('./PasswordSettings'), { loading: () => <Loading /> });
 
 export default function Page({ children, user }) {
-  const [isGlobalSettingsOpen, setIsGlobalSettingsOpen] = useState(false);
+  const [isGeneralSettingsOpen, setIsGeneralSettingsOpen] = useState(false);
   const [isPasswordSettingsOpen, setIsPasswordSettingsOpen] = useState(false);
   const [userConfig, updateUserConfig] = useState(user);
 
@@ -16,16 +17,16 @@ export default function Page({ children, user }) {
     <>
       <Header
         isPasswordEnabled={userConfig.password.enabled}
-        onGlobalSettingsClick={() => setIsGlobalSettingsOpen(true)}
+        onGlobalSettingsClick={() => setIsGeneralSettingsOpen(true)}
         onPasswordSettingsClick={() => setIsPasswordSettingsOpen(true)}
       />
       {children}
       <Footer />
-      {isGlobalSettingsOpen && (
+      {isGeneralSettingsOpen && (
         <Settings
           initialValues={userConfig}
-          isOpen={isGlobalSettingsOpen}
-          onClose={() => setIsGlobalSettingsOpen(false)}
+          isOpen={isGeneralSettingsOpen}
+          onClose={() => setIsGeneralSettingsOpen(false)}
           onUpdate={updateUserConfig}
         />
       )}

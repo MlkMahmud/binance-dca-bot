@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
 import { ArrowBackIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import {
   Box,
@@ -12,12 +11,16 @@ import {
   useRadio,
   useRadioGroup,
 } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import Loading from '../Loading';
 import Overlay from '../Overlay';
-import DisablePasswordForm from './DisablePasswordForm';
-import EnablePasswordForm from './EnablePasswordForm';
-import UpdatePasswordForm from './UpdatePasswordForm';
+
+const DisablePasswordForm = dynamic(() => import('./DisablePasswordForm'), { loading: () => <Loading /> });
+const EnablePasswordForm = dynamic(() => import('./EnablePasswordForm'), { loading: () => <Loading /> });
+const UpdatePasswordForm = dynamic(() => import('./UpdatePasswordForm'), { loading: () => <Loading /> });
 
 const actions = [
   { title: 'Enable password', description: 'Turn on password protection', value: 'enable' },

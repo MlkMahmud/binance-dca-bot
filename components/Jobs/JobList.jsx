@@ -11,8 +11,9 @@ import dynamic from 'next/dynamic';
 import { FaPlus } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import Job from './Job';
+import Loading from '../Loading';
 
-const JobForm = dynamic(() => import('../JobForm'));
+const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
 
 export default function JobList({ jobs }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
