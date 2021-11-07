@@ -3,6 +3,11 @@ import controller from './controller';
 
 const router = Router();
 
+router.get('/api/timezones', (req, res) => {
+  const timezones = controller.fetchTimezones(req.query.q);
+  res.json(timezones);
+});
+
 router.get('/api/symbols', async (req, res, next) => {
   try {
     const symbols = await controller.fetchSymbols(req.query.q);

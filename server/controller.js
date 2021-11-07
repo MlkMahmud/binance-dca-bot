@@ -3,15 +3,28 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import binance from './lib/binance';
 import User from './models';
+import timezones from './timezones.json';
 import { cleanUserObject, getTimezone } from './utils';
 
 export default {
+  fetchTimezones(query = '') {
+    return timezones
+      .filter((timezone) => timezone.toLowerCase().includes(query.toLowerCase()))
+      .map((timezone) => ({ label: timezone, value: timezone }));
+  },
   async fetchSymbols(query = '') {
     const { symbols } = await binance.exchangeInfo();
     const options = [];
-    symbols.forEach(({ isSpotTradingAllowed, symbol }) => {
+    symbols.forEach(({
+      filters, isSpotTradingAllowed, quoteAsset, symbol,
+    }) => {
       if (isSpotTradingAllowed && symbol.includes(query.toUpperCase())) {
-        options.push({ label: symbol, value: symbol });
+        const { minNotional } = filters.find(({ filterType }) => filterType === 'MIN_NOTIONAL');
+        options.push({
+          symbol,
+          minNotional: Number(minNotional),
+          quoteAsset,
+        });
       }
     });
     return options;
