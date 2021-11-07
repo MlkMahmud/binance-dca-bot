@@ -13,14 +13,15 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
+import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
-import { displayToast, generateSelectOption } from '../utils';
+import { displayToast, generateSelectOption, getTimezones } from '../utils';
 
 export default function Settings({
   onClose,
@@ -30,6 +31,10 @@ export default function Settings({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef();
+
+  const loadTimezones = useCallback(debounce((input, cb) => {
+    getTimezones(input).then((timezones) => cb(timezones));
+  }, 700), []);
 
   const onSubmit = async ({ timezone, slack, telegram }) => {
     try {
@@ -122,16 +127,7 @@ export default function Settings({
                         </FormLabel>
                         <Select
                           isAsync
-                          loadOptions={async (query) => {
-                            const response = await fetch(
-                              `/api/timezones?q=${query}`,
-                            );
-                            if (response.ok) {
-                              const timezones = await response.json();
-                              return timezones;
-                            }
-                            return [];
-                          }}
+                          loadOptions={loadTimezones}
                           onChange={({ value }) => form.mutators.updateTimezone(value)}
                           value={generateSelectOption(values.timezone)}
                         />

@@ -37,3 +37,25 @@ export function displayToast({ description, status = 'error', title }) {
     title,
   });
 }
+
+export async function getSymbols(query) {
+  const response = await fetch(
+    `/api/symbols?q=${query}`,
+  );
+  if (response.ok) {
+    const symbols = await response.json();
+    return symbols;
+  }
+  return [];
+}
+
+export async function getTimezones(query) {
+  const response = await fetch(
+    `/api/timezones?q=${query}`,
+  );
+  if (response.ok) {
+    const timezones = await response.json();
+    return timezones;
+  }
+  return [];
+}

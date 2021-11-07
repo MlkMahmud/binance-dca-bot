@@ -14,10 +14,15 @@ import {
   Text,
 } from '@chakra-ui/react';
 import cronstrue from 'cronstrue';
+import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
-import { generateSelectOption } from '../utils';
+import {
+  generateSelectOption,
+  getSymbols,
+  getTimezones,
+} from '../utils';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
@@ -38,6 +43,14 @@ export default function JobForm({
   const [minNotional, setMinNotional] = useState(0);
   const [cronTime, setCronTime] = useState('');
   const btnRef = useRef();
+
+  const loadSymbols = useCallback(debounce((input, cb) => {
+    getSymbols(input).then((symbols) => cb(symbols));
+  }, 700), []);
+
+  const loadTimezones = useCallback(debounce((input, cb) => {
+    getTimezones(input).then((timezones) => cb(timezones));
+  }, 700), []);
 
   function validate(values) {
     const errors = {};
@@ -89,7 +102,6 @@ export default function JobForm({
       }, 2000);
     });
     await sleep();
-    alert(JSON.stringify(values, null, 2));
     setIsLoading(false);
   };
 
@@ -184,16 +196,7 @@ export default function JobForm({
                       </FormLabel>
                       <Select
                         isAsync
-                        loadOptions={async (query) => {
-                          const response = await fetch(
-                            `/api/symbols?q=${query}`,
-                          );
-                          if (response.ok) {
-                            const symbols = await response.json();
-                            return symbols;
-                          }
-                          return [];
-                        }}
+                        loadOptions={loadSymbols}
                         getOptionLabel={(option) => option.symbol}
                         getOptionValue={(option) => option.symbol}
                         onChange={(option) => {
@@ -305,16 +308,7 @@ export default function JobForm({
                         <Select
                           isAsync
                           isDisabled={values.useDefaultTimezone}
-                          loadOptions={async (query) => {
-                            const response = await fetch(
-                              `/api/timezones?q=${query}`,
-                            );
-                            if (response.ok) {
-                              const timezones = await response.json();
-                              return timezones;
-                            }
-                            return [];
-                          }}
+                          loadOptions={loadTimezones}
                           onChange={({ value }) => {
                             form.mutators.updateTimezone(value);
                           }}
@@ -342,8 +336,6 @@ export default function JobForm({
                           onChange={({ target }) => {
                             if (target.checked) {
                               form.mutators.updateTimezone(defaultTimezone);
-                            } else {
-                              form.mutators.updateTimezone('');
                             }
                             form.mutators.updateUseDefaultTimezone(target.checked);
                           }}
