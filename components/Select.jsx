@@ -80,6 +80,8 @@ MenuList.propTypes = {
 
 export default function Select({
   isAsync,
+  getOptionLabel,
+  getOptionValue,
   loadOptions,
   onChange,
   options,
@@ -93,6 +95,8 @@ export default function Select({
         components={{ MenuList }}
         defaultOptions
         filterOption={createFilter({ ignoreAccents: false })}
+        getOptionLabel={getOptionLabel}
+        getOptionValue={getOptionValue}
         loadOptions={loadOptions}
         onChange={onChange}
         placeholder={placeholder}
@@ -117,6 +121,8 @@ export default function Select({
 Select.propTypes = {
   isAsync: PropTypes.bool,
   loadOptions: PropTypes.func.isRequired,
+  getOptionLabel: PropTypes.func,
+  getOptionValue: PropTypes.func,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(option).isRequired,
   placeholder: PropTypes.string,
@@ -124,6 +130,8 @@ Select.propTypes = {
 };
 
 Select.defaultProps = {
+  getOptionLabel: undefined,
+  getOptionValue: undefined,
   isAsync: false,
   placeholder: '',
 };
