@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import PropTypes from 'prop-types';
 import LoadingState from './LoadingState';
 
 const EmptyState = dynamic(() => import('./EmptyState'), { loading: () => <LoadingState /> });
 const JobList = dynamic(() => import('./JobList'), { loading: () => <LoadingState /> });
 
-export default function Jobs() {
+export default function Jobs({ defaultTimezone }) {
   const [isLoading, setIsloading] = useState(true);
   const [jobs, updateJobs] = useState([]);
 
@@ -19,6 +20,7 @@ export default function Jobs() {
           isActive: true,
           name: 'Btc-Usdt Daily',
           quoteAsset: 'USDT',
+          useDefaultTimezone: true,
         },
         {
           baseAsset: 'BNB',
@@ -50,5 +52,9 @@ export default function Jobs() {
     return <EmptyState />;
   }
 
-  return <JobList jobs={jobs} />;
+  return <JobList defaultTimezone={defaultTimezone} jobs={jobs} />;
 }
+
+Jobs.propTypes = {
+  defaultTimezone: PropTypes.string.isRequired,
+};

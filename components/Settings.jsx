@@ -21,7 +21,6 @@ import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
 import { displayToast, generateSelectOption } from '../utils';
-import timezones from '../data/timezones.json';
 
 export default function Settings({
   onClose,
@@ -69,7 +68,7 @@ export default function Settings({
       isLoading={isLoading}
       isOpen={isOpen}
       formId="settings"
-      handleClose={() => {
+      onClose={() => {
         if (!isLoading) {
           onClose();
         }
@@ -122,8 +121,18 @@ export default function Settings({
                           </Stack>
                         </FormLabel>
                         <Select
+                          isAsync
+                          loadOptions={async (query) => {
+                            const response = await fetch(
+                              `/api/timezones?q=${query}`,
+                            );
+                            if (response.ok) {
+                              const timezones = await response.json();
+                              return timezones;
+                            }
+                            return [];
+                          }}
                           onChange={({ value }) => form.mutators.updateTimezone(value)}
-                          options={timezones.map((timezone) => generateSelectOption(timezone))}
                           value={generateSelectOption(values.timezone)}
                         />
                       </FormControl>

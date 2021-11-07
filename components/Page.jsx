@@ -20,7 +20,7 @@ export default function Page({ children, user }) {
         onGlobalSettingsClick={() => setIsGeneralSettingsOpen(true)}
         onPasswordSettingsClick={() => setIsPasswordSettingsOpen(true)}
       />
-      {children}
+      {children(userConfig)}
       <Footer />
       {isGeneralSettingsOpen && (
         <Settings

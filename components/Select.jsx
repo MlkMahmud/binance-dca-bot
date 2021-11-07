@@ -80,6 +80,7 @@ MenuList.propTypes = {
 
 export default function Select({
   isAsync,
+  isDisabled,
   getOptionLabel,
   getOptionValue,
   loadOptions,
@@ -95,6 +96,7 @@ export default function Select({
         components={{ MenuList }}
         defaultOptions
         filterOption={createFilter({ ignoreAccents: false })}
+        isDisabled={isDisabled}
         getOptionLabel={getOptionLabel}
         getOptionValue={getOptionValue}
         loadOptions={loadOptions}
@@ -109,6 +111,7 @@ export default function Select({
     <ReactSelect
       components={{ MenuList }}
       filterOption={createFilter({ ignoreAccents: false })}
+      isDisabled={isDisabled}
       onChange={onChange}
       options={options}
       placeholder={placeholder}
@@ -120,6 +123,7 @@ export default function Select({
 
 Select.propTypes = {
   isAsync: PropTypes.bool,
+  isDisabled: PropTypes.bool,
   loadOptions: PropTypes.func.isRequired,
   getOptionLabel: PropTypes.func,
   getOptionValue: PropTypes.func,
@@ -134,4 +138,5 @@ Select.defaultProps = {
   getOptionValue: undefined,
   isAsync: false,
   placeholder: '',
+  isDisabled: false,
 };

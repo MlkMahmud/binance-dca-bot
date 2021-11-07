@@ -71,7 +71,7 @@ export default function PasswordSettings({
   return (
     <Overlay
       formId={action}
-      handleClose={onClose}
+      onClose={onClose}
       isLoading={isLoading}
       isOpen={isOpen}
       title="Security settings"

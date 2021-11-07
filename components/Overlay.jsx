@@ -25,11 +25,11 @@ import { useMediaQuery } from '../utils';
 const Overlay = React.forwardRef(
   ({
     children,
-    handleClose,
     formId,
     footer,
     isLoading,
     isOpen,
+    onClose,
     subTitle,
     title,
   }, ref) => {
@@ -49,7 +49,7 @@ const Overlay = React.forwardRef(
         <Button
           colorScheme="red"
           isFullWidth
-          onClick={handleClose}
+          onClick={onClose}
         >
           Cancel
         </Button>
@@ -58,7 +58,7 @@ const Overlay = React.forwardRef(
 
     if (isMobile) {
       return (
-        <Drawer isOpen={isOpen} onClose={handleClose} placement="bottom">
+        <Drawer isOpen={isOpen} onClose={onClose} placement="bottom">
           <DrawerOverlay />
           <DrawerContent>
             <Box borderBottom="1px solid #E2E8F0">
@@ -85,7 +85,7 @@ const Overlay = React.forwardRef(
     }
 
     return (
-      <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <Box borderBottom="1px solid #E2E8F0">
@@ -114,7 +114,7 @@ const Overlay = React.forwardRef(
 
 Overlay.propTypes = {
   children: PropTypes.node.isRequired,
-  handleClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   formId: PropTypes.string.isRequired,
   footer: PropTypes.node,
   isLoading: PropTypes.bool.isRequired,

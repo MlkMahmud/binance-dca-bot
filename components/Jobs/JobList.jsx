@@ -15,8 +15,8 @@ import Loading from '../Loading';
 
 const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
 
-export default function JobList({ jobs }) {
-  const { isOpen, onClose, onOpen } = useDisclosure();
+export default function JobList({ defaultTimezone, jobs }) {
+  const { isOpen, onClose: handleClose, onOpen } = useDisclosure();
   const [selectedJob, setSelectedJob] = useState(null);
 
   const openJobForm = (job = null) => {
@@ -56,7 +56,8 @@ export default function JobList({ jobs }) {
       />
       {isOpen && (
         <JobForm
-          handleClose={onClose}
+          defaultTimezone={defaultTimezone}
+          onFormClose={handleClose}
           isOpen={isOpen}
           job={selectedJob}
         />
@@ -66,5 +67,6 @@ export default function JobList({ jobs }) {
 }
 
 JobList.propTypes = {
+  defaultTimezone: PropTypes.string.isRequired,
   jobs: PropTypes.arrayOf().isRequired,
 };
