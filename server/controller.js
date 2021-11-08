@@ -8,9 +8,13 @@ import { cleanUserObject, getTimezone } from './utils';
 
 export default {
   fetchTimezones(query = '') {
-    return timezones
-      .filter((timezone) => timezone.toLowerCase().includes(query.toLowerCase()))
-      .map((timezone) => ({ label: timezone, value: timezone }));
+    const tzs = [];
+    timezones.forEach((timezone) => {
+      if (timezone.toLowerCase().includes(query.toLowerCase())) {
+        tzs.push({ label: timezone, value: timezone });
+      }
+    });
+    return tzs;
   },
   async fetchSymbols(query = '') {
     const { symbols } = await binance.exchangeInfo();
