@@ -6,32 +6,17 @@ import {
   FormErrorMessage,
   FormLabel,
   Stack,
-  useToast,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
 import PasswordInput from './PasswordInput';
+import { displayToast } from '../utils';
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const toast = useToast();
-  const id = 'toastId';
-
-  const displayToast = (description) => {
-    if (!toast.isActive(id)) {
-      toast({
-        id,
-        title: 'Authentication error',
-        isClosable: true,
-        duration: 5000,
-        status: 'error',
-        description,
-      });
-    }
-  };
 
   const onSubmit = async (values) => {
     try {
@@ -41,16 +26,22 @@ export default function LoginForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(values),
       });
-      const { message } = await response.json();
+      const { message: description } = await response.json();
       if (response.ok) {
         router.replace('/');
       } else {
         setIsLoading(false);
-        displayToast(message);
+        displayToast({
+          description,
+          title: 'Authentication error',
+        });
       }
     } catch (e) {
       setIsLoading(false);
-      displayToast('Something went wrong please try again');
+      displayToast({
+        description: 'Something went wrong please try again',
+        title: 'Authentication error',
+      });
     }
   };
 
