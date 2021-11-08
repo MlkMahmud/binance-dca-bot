@@ -22,12 +22,6 @@ const DisablePasswordForm = dynamic(() => import('./DisablePasswordForm'), { loa
 const EnablePasswordForm = dynamic(() => import('./EnablePasswordForm'), { loading: () => <Loading /> });
 const UpdatePasswordForm = dynamic(() => import('./UpdatePasswordForm'), { loading: () => <Loading /> });
 
-const actions = [
-  { title: 'Enable password', description: 'Turn on password protection', value: 'enable' },
-  { title: 'Disable password', description: 'Turn off password protection', value: 'disable' },
-  { title: 'Update password', description: 'Update your current password', value: 'update' },
-];
-
 function Action(props) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
@@ -67,7 +61,6 @@ export default function PasswordSettings({
     onChange: (value) => setAction(value),
   });
   const group = getRootProps();
-
   return (
     <Overlay
       formId={action}
@@ -90,17 +83,27 @@ export default function PasswordSettings({
     >
       {showActionScreen ? (
         <Stack spacing={4} {...group}>
-          {actions.map(({ title, description, value }) => {
-            const radio = getRadioProps({ value });
-            return (
-              <Action
-                description={description}
-                key={value}
-                title={title}
-                {...radio}
-              />
-            );
-          })}
+          {!user.password.enabled && (
+            <Action
+              description="Turn on password protection"
+              title="Enable password"
+              {...getRadioProps({ value: 'enable' })}
+            />
+          )}
+          {user.password.enabled && (
+            <Action
+              description="Turn off password protection"
+              title="Disable password"
+              {...getRadioProps({ value: 'disable' })}
+            />
+          )}
+          {user.password.isSet && (
+            <Action
+              description="Update your current password"
+              title="Update password"
+              {...getRadioProps({ value: 'update' })}
+            />
+          )}
         </Stack>
       ) : (
         <>
@@ -131,7 +134,7 @@ export default function PasswordSettings({
             {(action === 'disable' && (
             <DisablePasswordForm
               onUpdate={() => {
-                onUpdate({ ...user, password: { enabled: false } });
+                onUpdate({ ...user, password: { enabled: false, isSet: true } });
                 onClose();
               }}
               setIsLoading={setIsLoading}
