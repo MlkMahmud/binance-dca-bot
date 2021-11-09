@@ -13,6 +13,7 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
+import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
@@ -72,8 +73,8 @@ export default function JobForm({
       errors.schedule = 'Please provide a valid schedule';
     } else {
       try {
-        const interval = cronstrue.toString(values.schedule, { verbose: true });
-        setCronTime(interval);
+        parseExpression(values.schedule);
+        setCronTime(cronstrue.toString(values.schedule, { verbose: true }));
       } catch {
         errors.schedule = 'Invalid cron syntax';
       }
@@ -269,10 +270,10 @@ export default function JobForm({
                             {' '}
                             <Link
                               color="blue.500"
-                              href="http://www.cronmaker.com/"
+                              href="https://crontab.cronhub.io/"
                               isExternal
                             >
-                              CronMaker
+                              CronTab
                             </Link>
                           </Popover>
                         </Stack>
