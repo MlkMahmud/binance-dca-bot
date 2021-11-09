@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import next from 'next';
 import path from 'path';
 import app from './app';
+import agenda from './lib/agenda';
 import rootLogger from './lib/logger';
 import sentry from './lib/sentry';
 import User from './models';
@@ -25,6 +26,8 @@ const logger = rootLogger.child({ module: 'app' });
     });
     await mongoose.connect(process.env.DB_URL);
     await User.findOneAndUpdate({}, {}, { upsert: true, setDefaultsOnInsert: true });
+    agenda.mongo(mongoose.connection.getClient().db(), 'jobs');
+    agenda.start();
     app.listen(port, () => {
       logger.info(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
     });

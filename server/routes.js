@@ -69,4 +69,13 @@ router.post('/login', async (req, res) => {
   res.status(status).json({ message });
 });
 
+router.get('/api/jobs', async (req, res, next) => {
+  try {
+    const jobs = await controller.fetchAllJobs();
+    res.json(jobs);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

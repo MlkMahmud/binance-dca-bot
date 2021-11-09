@@ -1,6 +1,7 @@
 import Joi, { ValidationError } from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import agenda from './lib/agenda';
 import binance from './lib/binance';
 import User from './models';
 import timezones from './timezones.json';
@@ -156,5 +157,10 @@ export default {
       }
       throw e;
     }
+  },
+
+  async fetchAllJobs() {
+    const jobs = await agenda.jobs({});
+    return jobs;
   },
 };
