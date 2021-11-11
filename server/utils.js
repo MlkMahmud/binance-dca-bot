@@ -14,6 +14,10 @@ export function cleanUserObject({
   };
 }
 
-export function getTimezone(timezone) {
-  return moment.tz.zone(timezone);
+export function validateTimezone(tz, helper) {
+  const timezone = moment.tz.zone(tz);
+  if (!timezone) {
+    return helper.message(`Timezone ${tz} is invalid`);
+  }
+  return timezone.name;
 }
