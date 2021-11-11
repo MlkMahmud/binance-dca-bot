@@ -1,3 +1,5 @@
+import { parseExpression } from 'cron-parser';
+import cronstrue from 'cronstrue';
 import moment from 'moment-timezone';
 
 export function cleanUserObject({
@@ -14,10 +16,22 @@ export function cleanUserObject({
   };
 }
 
+// Joi validation functions
+
 export function validateTimezone(tz, helper) {
   const timezone = moment.tz.zone(tz);
   if (!timezone) {
     return helper.message(`Timezone ${tz} is invalid`);
   }
   return timezone.name;
+}
+
+export function validateCronSyntax(schedule, helper) {
+  try {
+    parseExpression(schedule);
+    cronstrue.toString(schedule);
+    return schedule;
+  } catch {
+    return helper.message(`Cron syntax ${schedule} is invalid`);
+  }
 }

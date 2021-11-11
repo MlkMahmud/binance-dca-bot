@@ -5,7 +5,11 @@ import agenda from './lib/agenda';
 import binance from './lib/binance';
 import User from './models';
 import timezones from './timezones.json';
-import { cleanUserObject, getTimezone } from './utils';
+import {
+  cleanUserObject,
+  validateCronSyntax,
+  validateTimezone,
+} from './utils';
 
 export default {
   fetchTimezones(query = '') {
@@ -140,13 +144,7 @@ export default {
       const data = await Joi.object({
         slack: Joi.object({ enabled: Joi.bool(), url: Joi.string().uri() }),
         telegram: Joi.object({ enabled: Joi.bool(), botToken: Joi.string(), chatId: Joi.string() }),
-        timezone: Joi.string().custom((value, helper) => {
-          const timezone = getTimezone(value);
-          if (!timezone) {
-            return helper.message(`Timezone ${value} is invalid`);
-          }
-          return timezone.name;
-        }),
+        timezone: Joi.string().custom(validateTimezone),
       }).validateAsync(payload);
       const userObject = await User.findOneAndUpdate({}, data, { new: true });
       return { status: 200, user: cleanUserObject(userObject) };
@@ -162,5 +160,58 @@ export default {
   async fetchAllJobs() {
     const jobs = await agenda.jobs({});
     return jobs;
+  },
+
+  async createJob(config) {
+    try {
+      const {
+        amount,
+        name: jobName,
+        schedule,
+        quoteAsset,
+        symbol,
+        timezone,
+        useDefaultTimezone,
+      } = await Joi.object({
+        amount: Joi.number().required(),
+        name: Joi.string().required(),
+        schedule: Joi.string().required().custom(validateCronSyntax),
+        symbol: Joi.string().required().external(async (value) => {
+          try {
+            await binance.exchangeInfo({ symbol: value });
+            return value;
+          } catch {
+            throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }]);
+          }
+        }),
+        timezone: Joi.string().required().custom(validateTimezone),
+        quoteAsset: Joi.string().required().custom((value, helpers) => {
+          if (config.symbol.endsWith(value)) {
+            return value;
+          }
+          return helpers.message(`${value} is an invalid asset.`);
+        }),
+        useDefaultTimezone: Joi.bool().required(),
+      }).validateAsync(config);
+      const job = agenda.create('buy-crypto', {
+        amount,
+        jobName,
+        quoteAsset,
+        symbol,
+        useDefaultTimezone,
+      });
+      job.repeatEvery(schedule, {
+        skipImmediate: true,
+        timezone,
+      });
+      job.save();
+      return { status: 200, job: job.toJSON() };
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        const [{ message }] = e.details;
+        return { status: 400, message };
+      }
+      throw e;
+    }
   },
 };

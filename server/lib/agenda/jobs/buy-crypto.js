@@ -8,7 +8,7 @@ module.exports = (agenda) => {
   agenda.define('buy-crypto', async (job) => {
     try {
       const { data } = job.attrs;
-      logger.info({ data }, `> Running ${data.jobName}`);
+      logger.info({ data }, `> Running Job: ${data.jobName}`);
       await binance.order({
         symbol: data.symbol,
         side: 'BUY',

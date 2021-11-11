@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import {
+  displayToast,
   generateSelectOption,
   getSymbols,
   getTimezones,
@@ -88,22 +89,35 @@ export default function JobForm({
 
   // eslint-disable-next-line consistent-return
   const onSubmit = async (values) => {
-    setIsLoading(true);
-    if (isEditMode) {
-      const response = await fetch(`/api/symbols?q=${values.symbol}`);
-      const [symbol] = await response.json();
-      if (symbol.minNotional > +values.amount) {
-        setIsLoading(false);
-        return { amount: `Amount must be greater than or eqaul to ${symbol.minNotional}` };
+    try {
+      setIsLoading(true);
+      if (isEditMode) {
+        const response = await fetch(`/api/symbols?q=${values.symbol}`);
+        const [symbol] = await response.json();
+        if (symbol.minNotional > +values.amount) {
+          setIsLoading(false);
+          return { amount: `Amount must be greater than or eqaul to ${symbol.minNotional}` };
+        }
       }
+      const response = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      if (response.ok) {
+        displayToast({
+          description: 'Job created successfully',
+          status: 'success',
+          title: 'Success',
+        });
+      } else { throw new Error(response.statusText); }
+    } catch {
+      setIsLoading(false);
+      displayToast({
+        description: 'Failed to create job',
+        title: 'Error',
+      });
     }
-    const sleep = () => new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(null);
-      }, 2000);
-    });
-    await sleep();
-    setIsLoading(false);
   };
 
   return (
@@ -227,7 +241,7 @@ export default function JobForm({
                             <Text fontSize="17px" fontWeight="bold">
                               Amount
                             </Text>
-                            <Popover title="amount">
+                            <Popover title="Amount">
                               This is the total amount of the quote asset you are
                               willing to spend—, e.g, a value of 10 for BNBUSDT
                               would equate to buying 10 USDT worth of BNB.
@@ -261,7 +275,7 @@ export default function JobForm({
                           <Text fontSize="17px" fontWeight="bold">
                             Schedule
                           </Text>
-                          <Popover title="schedule">
+                          <Popover title="Schedule">
                             Your schedule determines when your job runs.
                             {' '}
                             If you need help generating the cron syntax for your job,
@@ -299,7 +313,7 @@ export default function JobForm({
                             <Text fontSize="17px" fontWeight="bold">
                               Timezone
                             </Text>
-                            <Popover title="schedule">
+                            <Popover title="Timezone">
                               Set a specific timezone for your job schedule or
                               {' '}
                               use your global default.
