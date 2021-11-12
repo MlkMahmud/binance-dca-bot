@@ -20,7 +20,7 @@ function generateMessage(event, job) {
           type: 'context',
           elements: [
             {
-              text: new Date(job.transactTime),
+              text: job.transactTime,
               type: 'mrkdwn',
             },
           ],
@@ -30,11 +30,11 @@ function generateMessage(event, job) {
           type: 'section',
           fields: [
             { type: 'mrkdwn', text: `*Job Name:*\n${job.name}` },
-            { type: 'mrkdwn', text: `Status:*\n${job.status}` },
+            { type: 'mrkdwn', text: `*Status:*\n${job.status}` },
             { type: 'mrkdwn', text: `*Original Quantity:*\n${job.origQty}` },
             { type: 'mrkdwn', text: `*Executed Quantity:*\n${job.executedQty}` },
             { type: 'mrkdwn', text: `*Cummulative Quote Quantity:*\n${job.cummulativeQuoteQty}` },
-            { type: 'mrkdwn', text: `*NextRunAt:*\n${new Date(job.nextRunAt)}` },
+            { type: 'mrkdwn', text: `*NextRunAt:*\n${job.nextRunAt}` },
           ],
         },
       );
@@ -52,7 +52,7 @@ function generateMessage(event, job) {
           type: 'context',
           elements: [
             {
-              text: new Date(job.lastFinishedAt),
+              text: job.date,
               type: 'mrkdwn',
             },
           ],

@@ -1,14 +1,21 @@
+import mongoose from 'mongoose';
 import binance from '../../binance';
+import notifications from '../../notifications';
 import rootLogger from '../../logger';
 import sentry from '../../sentry';
 import { Order } from '../../../models';
+import { formatDateString } from '../../../utils';
 
 const logger = rootLogger.child({ module: 'agenda' });
 
 module.exports = (agenda) => {
   agenda.define('buy-crypto', async (job) => {
+    const {
+      data,
+      nextRunAt,
+      repeatTimezone,
+    } = job.attrs;
     try {
-      const { data } = job.attrs;
       logger.info({ data }, `> Running Job: ${data.jobName}`);
       const order = await binance.order({
         symbol: data.symbol,
@@ -17,11 +24,33 @@ module.exports = (agenda) => {
         newOrderRespType: 'FULL',
         quoteOrderQty: data.amount,
       });
-      await Order.create(order);
-    // send notification message
+      logger.info({ data }, `> Job: ${data.jobName} ran successfully`);
+      Order.create(order);
+      notifications.sendMessage('success', {
+        cummulativeQuoteQty: order.cummulativeQuoteQty,
+        executedQty: order.executedQty,
+        name: data.jobName,
+        nextRunAt: formatDateString(
+          new Date(nextRunAt), { timeZone: repeatTimezone },
+        ),
+        origQty: order.origQty,
+        status: order.status,
+        transactTime: formatDateString(
+          new Date(order.transactTime), { timeZone: repeatTimezone },
+        ),
+      });
     } catch (err) {
       logger.error({ err });
       sentry.captureException(err);
+      if (!(err instanceof mongoose.Error)) {
+        notifications.sendMessage('error', {
+          date: formatDateString(
+            new Date(), { timeZone: repeatTimezone },
+          ),
+          name: data.jobName,
+          reason: err.message,
+        });
+      }
     }
   });
 };

@@ -35,3 +35,16 @@ export function validateCronSyntax(schedule, helper) {
     return helper.message(`Cron syntax ${schedule} is invalid`);
   }
 }
+
+export function formatDateString(date, options = {}) {
+  return date.toLocaleString('en-US', {
+    day: '2-digit',
+    hour: '2-digit',
+    year: 'numeric',
+    month: 'short',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'long',
+    ...options,
+  });
+}

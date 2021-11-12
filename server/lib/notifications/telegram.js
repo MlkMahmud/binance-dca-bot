@@ -1,4 +1,5 @@
 import fetch from 'cross-fetch';
+import markdownEscape from 'markdown-escape';
 import BaseError from '../../error';
 import { User } from '../../models';
 import rootLogger from '../logger';
@@ -8,10 +9,10 @@ function generateMessageText(event, job) {
   let text;
   switch (event) {
     case 'success':
-      text = `*Job Success*\n_${new Date(job.transactTime)}_\n\n*Job Name: *${job.name}\n*Status: *${job.status}\n*Original Quantity :*${job.origQty}\n*Executed Quantity: *${job.executedQty}\n*Cummulative Quote Quantity: *${job.cummulativeQuoteQty}\n*NextRunAt: *${new Date(job.nextRunAt)}`;
+      text = `*Job Success*\n_${job.transactTime}_\n\n\n*Job Name:* ${job.name}\n\n*Status:* ${job.status}\n\n*Original Quantity:* ${job.origQty}\n\n*Executed Quantity:* ${job.executedQty}\n\n*Cummulative Quote Quantity:* ${job.cummulativeQuoteQty}\n\n*NextRunAt:* ${job.nextRunAt}`;
       break;
     case 'error':
-      text = `*Job Error*\n_${new Date(job.lastFinishedAt)}_\n\n*Job Name: *${job.name}\n*Reason: *${job.reason}`;
+      text = `*Job Error*\n_${job.date}_\n\n\n*Job Name:* ${job.name}\n\n*Reason:* ${markdownEscape(job.reason)}`;
       break;
     default:
       throw new BaseError('TelegramError', `Invalid event ${event}`);

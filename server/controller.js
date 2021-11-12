@@ -1,10 +1,11 @@
 import Joi, { ValidationError } from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
+import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import agenda from './lib/agenda';
 import binance from './lib/binance';
 import { User } from './models';
-import timezones from './timezones.json';
+
 import {
   cleanUserObject,
   validateCronSyntax,
@@ -14,7 +15,7 @@ import {
 export default {
   fetchTimezones(query = '') {
     const tzs = [];
-    timezones.forEach((timezone) => {
+    moment.tz.names().forEach((timezone) => {
       if (timezone.toLowerCase().includes(query.toLowerCase())) {
         tzs.push({ label: timezone, value: timezone });
       }
