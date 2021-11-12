@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 import BaseError from '../../error';
-import User from '../../models';
+import { User } from '../../models';
 import rootLogger from '../logger';
 import sentry from '../sentry';
 

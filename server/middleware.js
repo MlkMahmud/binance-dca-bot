@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from './models';
+import { User } from './models';
 import { cleanUserObject } from './utils';
 
 function isApiRoute(path) {

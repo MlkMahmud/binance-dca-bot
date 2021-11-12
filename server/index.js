@@ -5,7 +5,7 @@ import app from './app';
 import agenda from './lib/agenda';
 import rootLogger from './lib/logger';
 import sentry from './lib/sentry';
-import User from './models';
+import { User } from './models';
 
 const port = Number(process.env.PORT) || 3000;
 const dev = process.env.NODE_ENV === 'development';

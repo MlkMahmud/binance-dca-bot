@@ -3,7 +3,7 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import agenda from './lib/agenda';
 import binance from './lib/binance';
-import User from './models';
+import { User } from './models';
 import timezones from './timezones.json';
 import {
   cleanUserObject,
