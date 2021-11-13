@@ -12,7 +12,7 @@ export default model(
       qty: { required: true, type: String },
       tradeId: { required: true, type: Number },
     }],
-    jobId: { type: String },
+    jobId: { required: true, type: String },
     orderId: { required: true, type: Number },
     origQty: { required: true, type: String },
     status: { required: true, type: String },

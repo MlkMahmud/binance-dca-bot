@@ -11,6 +11,7 @@ const logger = rootLogger.child({ module: 'agenda' });
 module.exports = (agenda) => {
   agenda.define('buy-crypto', async (job) => {
     const {
+      _id,
       data,
       nextRunAt,
       repeatTimezone,
@@ -25,7 +26,7 @@ module.exports = (agenda) => {
         quoteOrderQty: data.amount,
       });
       logger.info({ data }, `> Job: ${data.jobName} ran successfully`);
-      Order.create(order);
+      Order.create({ jobId: _id, ...order });
       notifications.sendMessage('success', {
         cummulativeQuoteQty: order.cummulativeQuoteQty,
         executedQty: order.executedQty,

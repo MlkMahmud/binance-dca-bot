@@ -1,6 +1,8 @@
 import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import moment from 'moment-timezone';
+import Joi, { ValidationError } from 'joi';
+import binance from './lib/binance';
 
 export function cleanUserObject({
   password, slack, telegram, timezone,
@@ -26,7 +28,7 @@ export function validateTimezone(tz, helper) {
   return timezone.name;
 }
 
-export function validateCronSyntax(schedule, helper) {
+function validateCronSyntax(schedule, helper) {
   try {
     parseExpression(schedule);
     cronstrue.toString(schedule);
@@ -47,4 +49,39 @@ export function formatDateString(date, options = {}) {
     timeZoneName: 'long',
     ...options,
   });
+}
+
+export async function validateJobConfig(config, mode = 'required') {
+  const schema = Joi.object({
+    amount: Joi.number().presence(mode),
+    name: Joi.string().presence(mode),
+    schedule: Joi.string().presence(mode).custom(validateCronSyntax),
+    symbol: Joi.string().presence(mode).external(async (value) => {
+      if (mode === 'required') {
+        try {
+          await binance.exchangeInfo({ symbol: value });
+        } catch {
+          throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }]);
+        }
+      }
+    }),
+    timezone: Joi.string().presence(mode).custom(validateTimezone),
+    quoteAsset: Joi.string().presence(mode).custom((value, helpers) => {
+      if (config.symbol.endsWith(value)) {
+        return value;
+      }
+      return helpers.message(`${value} is an invalid asset.`);
+    }),
+    useDefaultTimezone: Joi.bool().presence(mode),
+  });
+  const validatedConfig = await schema.validateAsync(config);
+  return validatedConfig;
+}
+
+export function handleJoiValidationError(err) {
+  if (err instanceof ValidationError) {
+    const [{ message }] = err.details;
+    return { status: 400, message };
+  }
+  throw err;
 }

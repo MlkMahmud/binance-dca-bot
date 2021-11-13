@@ -1,5 +1,6 @@
-import Joi, { ValidationError } from 'joi';
+import Joi from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
+import mongoose from 'mongoose';
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
 import agenda from './lib/agenda';
@@ -8,7 +9,8 @@ import { User } from './models';
 
 import {
   cleanUserObject,
-  validateCronSyntax,
+  handleJoiValidationError,
+  validateJobConfig,
   validateTimezone,
 } from './utils';
 
@@ -73,11 +75,8 @@ export default {
         message: 'Password successfully enabled',
       };
     } catch (e) {
-      if (e instanceof ValidationError) {
-        const [{ message }] = e.details;
-        return { status: 400, message };
-      }
-      throw e;
+      const response = handleJoiValidationError(e);
+      return response;
     }
   },
 
@@ -121,11 +120,8 @@ export default {
       }
       return { status: 400, message: 'Invalid action' };
     } catch (e) {
-      if (e instanceof ValidationError) {
-        const [{ message }] = e.details;
-        return { status: 400, message };
-      }
-      throw e;
+      const response = handleJoiValidationError(e);
+      return response;
     }
   },
 
@@ -150,17 +146,19 @@ export default {
       const userObject = await User.findOneAndUpdate({}, data, { new: true });
       return { status: 200, user: cleanUserObject(userObject) };
     } catch (e) {
-      if (e instanceof ValidationError) {
-        const [{ message }] = e.details;
-        return { status: 400, message };
-      }
-      throw e;
+      const response = handleJoiValidationError(e);
+      return response;
     }
   },
 
   async fetchAllJobs() {
     const jobs = await agenda.jobs({});
     return jobs;
+  },
+
+  async fetchJob(jobId) {
+    const job = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
+    return job;
   },
 
   async createJob(config) {
@@ -173,27 +171,7 @@ export default {
         symbol,
         timezone,
         useDefaultTimezone,
-      } = await Joi.object({
-        amount: Joi.number().required(),
-        name: Joi.string().required(),
-        schedule: Joi.string().required().custom(validateCronSyntax),
-        symbol: Joi.string().required().external(async (value) => {
-          try {
-            await binance.exchangeInfo({ symbol: value });
-            return value;
-          } catch {
-            throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }]);
-          }
-        }),
-        timezone: Joi.string().required().custom(validateTimezone),
-        quoteAsset: Joi.string().required().custom((value, helpers) => {
-          if (config.symbol.endsWith(value)) {
-            return value;
-          }
-          return helpers.message(`${value} is an invalid asset.`);
-        }),
-        useDefaultTimezone: Joi.bool().required(),
-      }).validateAsync(config);
+      } = await validateJobConfig(config);
       const job = agenda.create('buy-crypto', {
         amount,
         jobName,
@@ -205,14 +183,25 @@ export default {
         skipImmediate: true,
         timezone,
       });
-      job.save();
-      return { status: 200, job: job.toJSON() };
+      await job.save();
+      return { status: 200, job };
     } catch (e) {
-      if (e instanceof ValidationError) {
-        const [{ message }] = e.details;
-        return { status: 400, message };
-      }
-      throw e;
+      const response = handleJoiValidationError(e);
+      return response;
+    }
+  },
+
+  async updateJob(jobId, config) {
+    try {
+      const { timezone, ...rest } = await validateJobConfig(config, 'optional');
+      const [job] = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
+      job.attrs.data = { ...job.attrs.data, ...rest };
+      job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
+      await job.save();
+      return { status: 200, job };
+    } catch (e) {
+      const response = handleJoiValidationError(e);
+      return response;
     }
   },
 };

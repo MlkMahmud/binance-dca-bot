@@ -87,4 +87,20 @@ router.route('/api/jobs')
     }
   });
 
+router.route('/api/jobs/:jobId')
+  .get(async (req, res, next) => {
+    try {
+      const job = await controller.fetchJob(req.params.jobId);
+      res.json({ job });
+    } catch (err) {
+      next(err);
+    }
+  })
+  .put(async (req, res, next) => {
+    try {
+      const job = await controller.updateJob(req.params.jobId, req.body);
+      res.json({ job });
+    } catch (err) { next(err); }
+  });
+
 export default router;
