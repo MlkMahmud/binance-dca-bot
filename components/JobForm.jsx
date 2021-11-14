@@ -298,6 +298,7 @@ export default function JobForm({
                         onChange={input.onChange}
                         placeholder="* * * * *"
                         value={input.value}
+                        isDisabled={isEditMode}
                       />
                       {!meta.error && <FormHelperText>{cronTime}</FormHelperText>}
                       <FormErrorMessage>{meta.error}</FormErrorMessage>
@@ -328,9 +329,7 @@ export default function JobForm({
                             form.mutators.updateTimezone(value);
                           }}
                           placeholder="Africa/Lagos"
-                          value={values.useDefaultTimezone
-                            ? generateSelectOption(defaultTimezone)
-                            : generateSelectOption(values.timezone)}
+                          value={generateSelectOption(values.timezone)}
                         />
                         <FormErrorMessage>{meta.error}</FormErrorMessage>
                       </FormControl>

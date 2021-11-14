@@ -21,6 +21,8 @@ export default function Jobs({ defaultTimezone }) {
           name: 'Btc-Usdt Daily',
           quoteAsset: 'USDT',
           useDefaultTimezone: true,
+          schedule: '*/5 * * * *',
+          timezone: 'America/Los_Angeles',
         },
         {
           baseAsset: 'BNB',
