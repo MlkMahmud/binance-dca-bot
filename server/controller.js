@@ -195,8 +195,8 @@ export default {
     try {
       const { timezone, ...rest } = await validateJobConfig(config, 'optional');
       const [job] = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
-      if (job.isRunning) {
-        return { status: 400, message: 'Job is currently running, try again later' };
+      if (!job) {
+        return { status: 400, message: `Failed to find job with id: ${jobId}` };
       }
       job.attrs.data = { ...job.attrs.data, ...rest };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
@@ -206,5 +206,16 @@ export default {
       const response = handleJoiValidationError(e);
       return response;
     }
+  },
+
+  async deleteJob(jobId) {
+    // eslint-disable-next-line no-underscore-dangle
+    const _id = mongoose.Types.ObjectId(jobId);
+    const [job] = await agenda.jobs({ _id });
+    if (!job) {
+      return { status: 400, message: `Failed to find job with id: ${jobId}` };
+    }
+    await agenda.cancel({ _id });
+    return { status: 200, message: 'Job successfully deleted' };
   },
 };

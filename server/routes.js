@@ -88,6 +88,14 @@ router.route('/api/jobs')
   });
 
 router.route('/api/jobs/:jobId')
+  .delete(async (req, res, next) => {
+    try {
+      const { status, message } = await controller.deleteJob(req.params.jobId);
+      res.status(status).json({ message });
+    } catch (err) {
+      next(err);
+    }
+  })
   .get(async (req, res, next) => {
     try {
       const job = await controller.fetchJob(req.params.jobId);
