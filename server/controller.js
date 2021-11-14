@@ -195,6 +195,9 @@ export default {
     try {
       const { timezone, ...rest } = await validateJobConfig(config, 'optional');
       const [job] = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
+      if (job.isRunning) {
+        return { status: 400, message: 'Job is currently running, try again later' };
+      }
       job.attrs.data = { ...job.attrs.data, ...rest };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
       await job.save();

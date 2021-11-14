@@ -98,8 +98,8 @@ router.route('/api/jobs/:jobId')
   })
   .put(async (req, res, next) => {
     try {
-      const job = await controller.updateJob(req.params.jobId, req.body);
-      res.json({ job });
+      const { status, ...rest } = await controller.updateJob(req.params.jobId, req.body);
+      res.status(status).json(rest);
     } catch (err) { next(err); }
   });
 
