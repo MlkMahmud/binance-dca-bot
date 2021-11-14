@@ -198,6 +198,9 @@ export default {
       if (!job) {
         return { status: 400, message: `Failed to find job with id: ${jobId}` };
       }
+      if (job.isRunning()) {
+        return { status: 400, message: 'Job is currently running. Try again in a few seconds' };
+      }
       job.attrs.data = { ...job.attrs.data, ...rest };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
       await job.save();
@@ -214,6 +217,9 @@ export default {
     const [job] = await agenda.jobs({ _id });
     if (!job) {
       return { status: 400, message: `Failed to find job with id: ${jobId}` };
+    }
+    if (job.isRunning()) {
+      return { status: 400, message: 'Job is currently running. Try again in a few seconds' };
     }
     await agenda.cancel({ _id });
     return { status: 200, message: 'Job successfully deleted' };
