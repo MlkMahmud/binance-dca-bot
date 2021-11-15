@@ -35,6 +35,7 @@ export function displayToast({ description, status = 'error', title }) {
     isClosable: true,
     status,
     title,
+    position: 'top-right',
   });
 }
 
