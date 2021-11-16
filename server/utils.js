@@ -54,6 +54,8 @@ export function formatDateString(date, options = {}) {
 export async function validateJobConfig(config, mode = 'required') {
   const schema = Joi.object({
     amount: Joi.number().presence(mode),
+    enable: Joi.bool(),
+    disable: Joi.bool(),
     name: Joi.string().presence(mode),
     schedule: Joi.string().presence(mode).custom(validateCronSyntax),
     symbol: Joi.string().presence(mode).external(async (value) => {
@@ -73,7 +75,11 @@ export async function validateJobConfig(config, mode = 'required') {
       return helpers.message(`${value} is an invalid asset.`);
     }),
     useDefaultTimezone: Joi.bool().presence(mode),
-  });
+  })
+    .oxor('enable', 'disable')
+    .messages({
+      'object.oxor': "You can specify either 'enable' or 'disable' not both.",
+    });
   const validatedConfig = await schema.validateAsync(config);
   return validatedConfig;
 }
