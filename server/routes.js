@@ -104,7 +104,7 @@ router.route('/api/jobs/:jobId')
       next(err);
     }
   })
-  .put(async (req, res, next) => {
+  .patch(async (req, res, next) => {
     try {
       const { status, ...rest } = await controller.updateJob(req.params.jobId, req.body);
       res.status(status).json(rest);
