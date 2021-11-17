@@ -17,7 +17,7 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
     try {
       setIsLoading(true);
       const response = await fetch('/api/settings/password', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(values),
       });

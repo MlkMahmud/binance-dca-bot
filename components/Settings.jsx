@@ -40,7 +40,7 @@ export default function Settings({
     try {
       setIsLoading(true);
       const response = await fetch('/api/settings/general', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ timezone, slack, telegram }),
       });

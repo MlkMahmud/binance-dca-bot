@@ -20,7 +20,7 @@ export default function EnablePasswordForm({
   const onSubmit = async (values) => {
     try {
       setIsLoading(true);
-      const method = hasSetPassword ? 'PUT' : 'POST';
+      const method = hasSetPassword ? 'PATCH' : 'POST';
       const response = await fetch('/api/settings/password', {
         headers: { 'content-type': 'application/json' },
         method,

@@ -36,7 +36,7 @@ router
       next(err);
     }
   })
-  .put(async (req, res, next) => {
+  .patch(async (req, res, next) => {
     try {
       const { status, message } = await controller.updatePassword(req.body);
       if (status < 400) {
@@ -48,7 +48,7 @@ router
     }
   });
 
-router.put('/api/settings/general', async (req, res, next) => {
+router.patch('/api/settings/general', async (req, res, next) => {
   try {
     const { status, user, message } = await controller.updateSettings(req.body);
     res.status(status).json({ user, message });
