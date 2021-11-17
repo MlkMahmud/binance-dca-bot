@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import {
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Stack,
   Text,
@@ -44,6 +45,17 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
     }
   };
 
+  const validate = ({ password }) => {
+    const errors = {};
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long.';
+    }
+
+    return errors;
+  };
+
   return (
     <>
       <Stack mb="20px">
@@ -60,18 +72,20 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
           password: '',
         }}
         onSubmit={onSubmit}
+        validate={validate}
       >
         {({ handleSubmit }) => (
           <form id="disable" onSubmit={handleSubmit}>
             <Field name="password">
-              {({ input }) => (
-                <FormControl id="password">
+              {({ input, meta }) => (
+                <FormControl id="password" isInvalid={meta.error && meta.touched}>
                   <FormLabel>Password: </FormLabel>
                   <PasswordInput
                     onBlur={input.onBlur}
                     onChange={input.onChange}
                     value={input.value}
                   />
+                  <FormErrorMessage>{meta.error}</FormErrorMessage>
                 </FormControl>
               )}
             </Field>

@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import {
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Stack,
   Text,
@@ -44,6 +45,25 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }) {
     }
   };
 
+  const validate = ({ newPassword, password }) => {
+    const errors = {};
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long.';
+    }
+
+    if (!newPassword) {
+      errors.newPassword = 'New password is required';
+    } else if (newPassword.length < 8) {
+      errors.newPassword = 'New password must be at least 8 characters long.';
+    } else if (newPassword === password) {
+      errors.newPassword = 'New password cannot be the same as the old password';
+    }
+
+    return errors;
+  };
+
   return (
     <>
       <Stack mb="20px">
@@ -61,31 +81,34 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }) {
           password: '',
         }}
         onSubmit={onSubmit}
+        validate={validate}
       >
         {({ handleSubmit }) => (
           <form id="update" onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <Field name="password">
-                {({ input }) => (
-                  <FormControl id="password">
+                {({ input, meta }) => (
+                  <FormControl id="password" isInvalid={meta.error && meta.touched}>
                     <FormLabel>Password: </FormLabel>
                     <PasswordInput
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
                     />
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
               <Field name="newPassword">
-                {({ input }) => (
-                  <FormControl id="newPassword">
+                {({ input, meta }) => (
+                  <FormControl id="newPassword" isInvalid={meta.error && meta.touched}>
                     <FormLabel>New Password: </FormLabel>
                     <PasswordInput
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
                     />
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>

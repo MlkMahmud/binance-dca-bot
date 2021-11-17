@@ -1,6 +1,10 @@
 /* eslint-env browser */
 import {
-  FormControl, FormLabel, Stack, Text,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -46,6 +50,21 @@ export default function EnablePasswordForm({
     }
   };
 
+  const validate = ({ confirmPassword, password }) => {
+    const errors = {};
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long.';
+    }
+
+    if (!hasSetPassword && confirmPassword !== password) {
+      errors.confirmPassword = 'Confirm password must match password field';
+    }
+
+    return errors;
+  };
+
   return (
     <>
       <Stack mb="20px">
@@ -65,45 +84,49 @@ export default function EnablePasswordForm({
           password: '',
         }}
         onSubmit={onSubmit}
+        validate={validate}
       >
         {({ handleSubmit }) => (
           <form id="enable" onSubmit={handleSubmit}>
             {hasSetPassword ? (
               <Field name="password">
-                {({ input }) => (
-                  <FormControl id="password">
+                {({ input, meta }) => (
+                  <FormControl id="password" isInvalid={meta.error && meta.touched}>
                     <FormLabel>Password: </FormLabel>
                     <PasswordInput
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
                     />
+                    <FormErrorMessage>{meta.error}</FormErrorMessage>
                   </FormControl>
                 )}
               </Field>
             ) : (
               <Stack spacing={3}>
                 <Field name="password">
-                  {({ input }) => (
-                    <FormControl id="password">
+                  {({ input, meta }) => (
+                    <FormControl id="password" isInvalid={meta.error && meta.touched}>
                       <FormLabel>New password: </FormLabel>
                       <PasswordInput
                         onBlur={input.onBlur}
                         onChange={input.onChange}
                         value={input.value}
                       />
+                      <FormErrorMessage>{meta.error}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>
                 <Field name="confirmPassword">
-                  {({ input }) => (
-                    <FormControl id="confirmPassword">
+                  {({ input, meta }) => (
+                    <FormControl id="confirmPassword" isInvalid={meta.error && meta.touched}>
                       <FormLabel>Confirm password: </FormLabel>
                       <PasswordInput
                         onBlur={input.onBlur}
                         onChange={input.onChange}
                         value={input.value}
                       />
+                      <FormErrorMessage>{meta.error}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>
