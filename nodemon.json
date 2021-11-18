@@ -1,0 +1,6 @@
+{
+  "watch": ["."],
+  "exec": "node -r esm -r dotenv/config server/index.js | bunyan",
+  "ext": "js, jsx",
+  "ignore": ["node_modules"]
+}
