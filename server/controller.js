@@ -147,6 +147,8 @@ export default {
         timezone: Joi.string().custom(validateTimezone),
       }).validateAsync(payload);
       const updateDoc = flattenObject(payload);
+      const session = await mongoose.startSession();
+      session.startTransaction();
       const userObject = await User.findOneAndUpdate(
         {}, { $set: updateDoc }, { new: true },
       );
@@ -157,6 +159,7 @@ export default {
           .collection('jobs')
           .updateMany({ 'data.useDefaultTimezone': true }, { $set: { repeatTimezone: payload.timezone } });
       }
+      await session.commitTransaction();
       return { status: 200, user: cleanUserObject(userObject) };
     } catch (e) {
       const response = handleJoiValidationError(e);
