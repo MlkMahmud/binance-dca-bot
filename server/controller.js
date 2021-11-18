@@ -9,6 +9,7 @@ import { User } from './models';
 
 import {
   cleanUserObject,
+  flattenObject,
   handleJoiValidationError,
   validateJobConfig,
   validateTimezone,
@@ -105,12 +106,14 @@ export default {
       }
 
       if (action === 'update') {
-        await Joi
-          .object({
-            newPassword: Joi.string().min(8).required(),
-          }).validateAsync({ newPassword });
+        await Joi.object({
+          newPassword: Joi.string().min(8).required(),
+        }).validateAsync({ newPassword });
         if (password === newPassword) {
-          return { status: 400, message: 'new password cannot be the same as the old.' };
+          return {
+            status: 400,
+            message: 'new password cannot be the same as the old.',
+          };
         }
         await User.findOneAndUpdate(
           {},
@@ -138,12 +141,22 @@ export default {
 
   async updateSettings(payload) {
     try {
-      const data = await Joi.object({
+      await Joi.object({
         slack: Joi.object({ enabled: Joi.bool(), url: Joi.string().uri() }),
         telegram: Joi.object({ enabled: Joi.bool(), botToken: Joi.string(), chatId: Joi.string() }),
         timezone: Joi.string().custom(validateTimezone),
       }).validateAsync(payload);
-      const userObject = await User.findOneAndUpdate({}, data, { new: true });
+      const updateDoc = flattenObject(payload);
+      const userObject = await User.findOneAndUpdate(
+        {}, { $set: updateDoc }, { new: true },
+      );
+      if ('timezone' in payload) {
+        await mongoose.connection
+          .getClient()
+          .db()
+          .collection('jobs')
+          .updateMany({ 'data.useDefaultTimezone': true }, { $set: { repeatTimezone: payload.timezone } });
+      }
       return { status: 200, user: cleanUserObject(userObject) };
     } catch (e) {
       const response = handleJoiValidationError(e);
@@ -202,7 +215,10 @@ export default {
       }
 
       if (job.isRunning()) {
-        return { status: 400, message: 'Job is currently running. Try again in a few seconds' };
+        return {
+          status: 400,
+          message: 'Job is currently running. Try again in a few seconds',
+        };
       }
 
       if (enable) {
@@ -229,7 +245,10 @@ export default {
       return { status: 400, message: `Failed to find job with id: ${jobId}` };
     }
     if (job.isRunning()) {
-      return { status: 400, message: 'Job is currently running. Try again in a few seconds' };
+      return {
+        status: 400,
+        message: 'Job is currently running. Try again in a few seconds',
+      };
     }
     await agenda.cancel({ _id });
     return { status: 200, message: 'Job successfully deleted' };

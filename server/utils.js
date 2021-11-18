@@ -91,3 +91,23 @@ export function handleJoiValidationError(err) {
   }
   throw err;
 }
+
+export function flattenObject(object = {}) {
+  const document = {};
+  const keys = Object.keys(object);
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    const value = object[key];
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const nested = flattenObject(value);
+      const nestedKeys = Object.keys(nested);
+      for (let n = 0; n < nestedKeys.length; n += 1) {
+        const nestedKey = nestedKeys[n];
+        document[`${key}.${nestedKey}`] = nested[nestedKey];
+      }
+    } else {
+      document[key] = value;
+    }
+  }
+  return document;
+}

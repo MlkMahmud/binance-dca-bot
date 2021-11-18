@@ -13,6 +13,7 @@ import {
   Switch,
   Text,
 } from '@chakra-ui/react';
+import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
@@ -36,13 +37,14 @@ export default function Settings({
     getTimezones(input).then((timezones) => cb(timezones));
   }, 700), []);
 
-  const onSubmit = async ({ timezone, slack, telegram }) => {
+  const onSubmit = async (values) => {
     try {
       setIsLoading(true);
+      const payload = diff(initialValues, values);
       const response = await fetch('/api/settings/general', {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ timezone, slack, telegram }),
+        body: JSON.stringify(payload),
       });
       const { user, message: description } = await response.json();
       if (response.ok) {
