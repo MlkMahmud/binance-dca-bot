@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Grid,
+  Box,
   Icon,
   IconButton,
-  Stack,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -12,6 +15,7 @@ import { FaPlus } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import Job from './Job';
 import Loading from '../Loading';
+import TableCell from '../TableCell';
 
 const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
 
@@ -26,36 +30,80 @@ export default function JobList({ defaultTimezone, jobs }) {
 
   return (
     <>
-      <Stack spacing={3}>
-        <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
-        <Grid
-          gap="20px"
-          templateColumns="repeat(auto-fill, minmax(min(100%, 400px), 450px))"
+      <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
+      <Box
+        border="1px solid #DADCE0"
+        borderBottom="none"
+        borderRadius="5px 5px 0 0"
+        overflow="auto"
+      >
+        <Table
+          css={{
+            borderCollapse: 'separate',
+            borderSpacing: 0,
+          }}
         >
-          {jobs.map((job) => (
-            <Job
-              job={job}
-              key={job.id}
-              onEdit={() => openJobForm(job)}
-            />
-          ))}
-        </Grid>
-        <IconButton
-          aria-label="add new job"
-          bgColor="black"
-          borderRadius="50%"
-          bottom="40px"
-          color="white"
-          colorScheme="black"
-          height="60px"
-          icon={<Icon as={FaPlus} boxSize="24px" />}
-          onClick={() => openJobForm()}
-          pos="fixed"
-          right="20px"
-          width="60px"
-          variant="unstyled"
-        />
-      </Stack>
+          <Thead>
+            <Tr>
+              <TableCell
+                isFixed
+                isHeading
+              >
+                Job Name
+              </TableCell>
+              <TableCell isHeading>Symbol</TableCell>
+              <TableCell isHeading>Amount</TableCell>
+              <TableCell isHeading>Schedule</TableCell>
+              <TableCell isHeading>Timezone</TableCell>
+              <TableCell isHeading>Last Run</TableCell>
+              <TableCell isHeading>Next Run</TableCell>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {jobs.map((job) => {
+              const {
+                amount,
+                disabled,
+                lastRun,
+                name,
+                nextRun,
+                schedule,
+                symbol,
+                timezone,
+
+              } = job;
+              return (
+                <Job
+                  key={name}
+                  amount={amount}
+                  disabled={disabled}
+                  lastRun={lastRun}
+                  name={name}
+                  nextRun={nextRun}
+                  schedule={schedule}
+                  symbol={symbol}
+                  timezone={timezone}
+                />
+              );
+            })}
+          </Tbody>
+        </Table>
+      </Box>
+      <IconButton
+        aria-label="add new job"
+        bgColor="black"
+        borderRadius="50%"
+        bottom="40px"
+        color="white"
+        colorScheme="black"
+        height="60px"
+        icon={<Icon as={FaPlus} boxSize="24px" />}
+        onClick={() => openJobForm()}
+        pos="fixed"
+        right="20px"
+        width="60px"
+        variant="unstyled"
+      />
       {isOpen && (
       <JobForm
         defaultTimezone={defaultTimezone}

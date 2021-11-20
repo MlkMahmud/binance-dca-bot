@@ -27,7 +27,7 @@ export default function Header({
       py={[2, 3]}
       shadow="rgb(0 0 0 / 25%) 0px 2px 2px 2px"
       top="0"
-      zIndex={1}
+      zIndex={4}
     >
       <Logo />
       <Box>
