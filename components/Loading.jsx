@@ -14,7 +14,7 @@ export default function Loading() {
       position="absolute"
       top="0"
       width="100%"
-      zIndex="5"
+      zIndex="7"
     >
       <Spinner size="xl" />
     </Flex>
