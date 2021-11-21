@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 
-export default function ErrorState({ handleClick }) {
+export default function ErrorState({ onRetry }) {
   return (
     <Flex
       align="center"
@@ -50,7 +50,7 @@ export default function ErrorState({ handleClick }) {
           colorScheme="black"
           isFullWidth
           maxW="200px"
-          onClick={handleClick}
+          onClick={onRetry}
         >
           Try Again
         </Button>
@@ -85,5 +85,5 @@ export default function ErrorState({ handleClick }) {
 }
 
 ErrorState.propTypes = {
-  handleClick: PropTypes.func.isRequired,
+  onRetry: PropTypes.func.isRequired,
 };

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -9,8 +8,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-export default function EmptyState({ handleClick }) {
+export default function EmptyState({ onClick }) {
   return (
     <Flex
       align="center"
@@ -48,7 +48,7 @@ export default function EmptyState({ handleClick }) {
           colorScheme="black"
           isFullWidth
           maxW="200px"
-          onClick={handleClick}
+          onClick={onClick}
         >
           Add Job
         </Button>
@@ -83,5 +83,5 @@ export default function EmptyState({ handleClick }) {
 }
 
 EmptyState.propTypes = {
-  handleClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };

@@ -1,93 +1,73 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-env browser */
+import { useDisclosure } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useState } from 'react';
+import Loading from '../Loading';
 import LoadingState from './LoadingState';
 
 const EmptyState = dynamic(() => import('./EmptyState'), { loading: () => <LoadingState /> });
+const ErrorState = dynamic(() => import('./ErrorState'), { loading: () => <LoadingState /> });
+const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
 const JobList = dynamic(() => import('./JobList'), { loading: () => <LoadingState /> });
 
 export default function Jobs({ defaultTimezone }) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const [isLoading, setIsloading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [jobs, updateJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState();
+
+  const openJobForm = useCallback((id = '') => {
+    const job = jobs.find(({ _id }) => _id === id);
+    setSelectedJob(job);
+    onOpen();
+  }, [jobs]);
+
+  const fetchJobs = async () => {
+    try {
+      setIsloading(true);
+      const response = await fetch('/api/jobs');
+      if (response.ok) {
+        const data = await response.json();
+        updateJobs(data);
+      } else { throw new Error(); }
+    } catch {
+      setHasError(true);
+    } finally { setIsloading(false); }
+  };
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      updateJobs([
-        {
-          name: 'BNB Daily',
-          symbol: 'BNBUSDT',
-          amount: '50 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Europe/London',
-          disabled: true,
-        },
-        {
-          name: 'BTC Weekly',
-          symbol: 'BTCUSDT',
-          amount: '100 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Africa/Lagos',
-          disabled: false,
-        },
-        {
-          name: 'BNB Daily',
-          symbol: 'BNBUSDT',
-          amount: '50 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Europe/London',
-          disabled: true,
-        },
-        {
-          name: 'BTC Weekly',
-          symbol: 'BTCUSDT',
-          amount: '100 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Africa/Lagos',
-          disabled: false,
-        },
-        {
-          name: 'BNB Daily',
-          symbol: 'BNBUSDT',
-          amount: '50 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Europe/London',
-          disabled: true,
-        },
-        {
-          name: 'BTC Weekly',
-          symbol: 'BTCUSDT',
-          amount: '100 USDT',
-          schedule: '0 0/5 * 1/1 * ?',
-          lastRun: '2021-11-16T21:11:42.744+00:00',
-          nextRun: '2021-11-16T21:15:00.000+00:00',
-          timezone: 'Africa/Lagos',
-          disabled: false,
-        },
-      ]);
-      setIsloading(false);
-    }, 2000);
-    return () => clearTimeout(timeoutId);
+    fetchJobs();
   }, []);
 
   if (isLoading) {
     return <LoadingState />;
   }
 
-  if (jobs.length < 1) {
-    return <EmptyState />;
+  if (hasError) {
+    return <ErrorState onRetry={fetchJobs} />;
   }
 
-  return <JobList defaultTimezone={defaultTimezone} jobs={jobs} />;
+  return (
+    <>
+      {jobs.length > 0 ? (
+        <JobList
+          jobs={jobs}
+          openJobForm={openJobForm}
+        />
+      ) : <EmptyState onClick={openJobForm} />}
+
+      {isOpen && (
+      <JobForm
+        defaultTimezone={defaultTimezone}
+        onFormClose={onClose}
+        isOpen={isOpen}
+        job={selectedJob}
+      />
+      )}
+    </>
+  );
 }
 
 Jobs.propTypes = {

@@ -36,7 +36,15 @@ export default function JobForm({
   defaultTimezone,
 }) {
   const isEditMode = !!job;
-  const initialValues = isEditMode ? job : {
+  const initialValues = isEditMode ? {
+    amount: job.data.amount,
+    name: job.data.jobName,
+    quoteAsset: job.data.quoteAsset,
+    schedule: job.repeatInterval,
+    symbol: job.data.symbol,
+    timezone: job.repeatTimezone,
+    useDefaultTimezone: job.data.useDefaultTimezone,
+  } : {
     useDefaultTimezone: false,
   };
   const subTitle = isEditMode ? 'Edit your job details' : 'Create a new recurring job';

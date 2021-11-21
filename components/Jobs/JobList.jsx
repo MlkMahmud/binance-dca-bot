@@ -1,41 +1,32 @@
-import React, { useState } from 'react';
 import {
   Box,
   Icon,
   IconButton,
   Table,
-  Thead,
   Tbody,
-  Tr,
   Text,
-  useDisclosure,
+  Thead,
+  Tr,
 } from '@chakra-ui/react';
-import dynamic from 'next/dynamic';
-import { FaPlus } from 'react-icons/fa';
 import PropTypes from 'prop-types';
-import Job from './Job';
-import Loading from '../Loading';
+import React from 'react';
+import { FaPlus } from 'react-icons/fa';
 import TableCell from '../TableCell';
+import Job from './Job';
 
-const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
-
-export default function JobList({ defaultTimezone, jobs }) {
-  const { isOpen, onClose: handleClose, onOpen } = useDisclosure();
-  const [selectedJob, setSelectedJob] = useState(null);
-
-  const openJobForm = (job = null) => {
-    setSelectedJob(job);
-    onOpen();
-  };
-
+export default function JobList({ jobs, openJobForm }) {
   return (
-    <>
+    <Box overflow="auto">
       <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
       <Box
         border="1px solid #DADCE0"
         borderBottom="none"
         borderRadius="5px 5px 0 0"
+        height="fit-content"
+        marginTop="20px"
+        maxHeight="500px"
         overflow="auto"
+        shadow="0 0 5px 5px rgb(23 24 24 / 5%), 0 1px 2px rgb(0 0 0 / 15%), 0 0 0 1px rgb(63 63 68 / 5%), 0 1px 3px 0 rgb(63 63 68 / 15%)"
       >
         <Table
           css={{
@@ -45,44 +36,41 @@ export default function JobList({ defaultTimezone, jobs }) {
         >
           <Thead>
             <Tr>
-              <TableCell
-                isFixed
-                isHeading
-              >
+              <TableCell isFixed isHeading>
                 Job Name
               </TableCell>
               <TableCell isHeading>Symbol</TableCell>
               <TableCell isHeading>Amount</TableCell>
-              <TableCell isHeading>Schedule</TableCell>
+              <TableCell isHeading>Interval</TableCell>
               <TableCell isHeading>Timezone</TableCell>
               <TableCell isHeading>Last Run</TableCell>
               <TableCell isHeading>Next Run</TableCell>
+              <TableCell isHeading>Action</TableCell>
             </Tr>
           </Thead>
           <Tbody>
             {jobs.map((job) => {
               const {
-                amount,
+                _id,
+                data,
                 disabled,
-                lastRun,
-                name,
-                nextRun,
-                schedule,
-                symbol,
-                timezone,
-
+                lastRunAt,
+                nextRunAt,
+                repeatTimezone,
               } = job;
               return (
                 <Job
-                  key={name}
-                  amount={amount}
+                  key={_id}
+                  amount={`${data.amount} ${data.quoteAsset}`}
                   disabled={disabled}
-                  lastRun={lastRun}
-                  name={name}
-                  nextRun={nextRun}
-                  schedule={schedule}
-                  symbol={symbol}
-                  timezone={timezone}
+                  id={_id}
+                  interval={data.humanInterval}
+                  lastRun={lastRunAt}
+                  name={data.jobName}
+                  nextRun={nextRunAt}
+                  onEdit={openJobForm}
+                  symbol={data.symbol}
+                  timezone={repeatTimezone}
                 />
               );
             })}
@@ -98,25 +86,17 @@ export default function JobList({ defaultTimezone, jobs }) {
         colorScheme="black"
         height="60px"
         icon={<Icon as={FaPlus} boxSize="24px" />}
-        onClick={() => openJobForm()}
+        onClick={openJobForm}
         pos="fixed"
         right="20px"
         width="60px"
         variant="unstyled"
       />
-      {isOpen && (
-      <JobForm
-        defaultTimezone={defaultTimezone}
-        onFormClose={handleClose}
-        isOpen={isOpen}
-        job={selectedJob}
-      />
-      )}
-    </>
+    </Box>
   );
 }
 
 JobList.propTypes = {
-  defaultTimezone: PropTypes.string.isRequired,
   jobs: PropTypes.arrayOf().isRequired,
+  openJobForm: PropTypes.func.isRequired,
 };
