@@ -168,7 +168,17 @@ export default {
   },
 
   async fetchAllJobs() {
-    const jobs = await agenda.jobs({});
+    const jobs = await mongoose.connection.getClient().db().collection('jobs')
+      .find()
+      .project({
+        data: 1,
+        disabled: 1,
+        lastRunAt: 1,
+        nextRunAt: 1,
+        repeateInterval: 1,
+        repeatTimezone: 1,
+      })
+      .toArray();
     return jobs;
   },
 
