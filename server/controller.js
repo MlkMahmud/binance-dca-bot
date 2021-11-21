@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
+import cronstrue from 'cronstrue';
 import mongoose from 'mongoose';
 import moment from 'moment-timezone';
 import jwt from 'jsonwebtoken';
@@ -175,7 +176,7 @@ export default {
         disabled: 1,
         lastRunAt: 1,
         nextRunAt: 1,
-        repeateInterval: 1,
+        repeatInterval: 1,
         repeatTimezone: 1,
       })
       .toArray();
@@ -200,6 +201,7 @@ export default {
       } = await validateJobConfig(config);
       const job = agenda.create('buy-crypto', {
         amount,
+        humanInterval: cronstrue.toString(schedule, { verbose: true }),
         jobName,
         quoteAsset,
         symbol,
