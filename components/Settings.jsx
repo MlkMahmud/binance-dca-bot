@@ -56,6 +56,7 @@ export default function Settings({
         onUpdate(user);
         onClose();
       } else {
+        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',

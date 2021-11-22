@@ -14,7 +14,11 @@ import { FaPlus } from 'react-icons/fa';
 import TableCell from '../TableCell';
 import Job from './Job';
 
-export default function JobList({ jobs, openJobForm }) {
+export default function JobList({
+  jobs,
+  onDelete,
+  openJobForm,
+}) {
   return (
     <Box overflow="auto">
       <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
@@ -68,6 +72,7 @@ export default function JobList({ jobs, openJobForm }) {
                   lastRun={lastRunAt}
                   name={data.jobName}
                   nextRun={nextRunAt}
+                  onDelete={onDelete}
                   onEdit={openJobForm}
                   symbol={data.symbol}
                   timezone={repeatTimezone}
@@ -98,5 +103,6 @@ export default function JobList({ jobs, openJobForm }) {
 
 JobList.propTypes = {
   jobs: PropTypes.arrayOf().isRequired,
+  onDelete: PropTypes.func.isRequired,
   openJobForm: PropTypes.func.isRequired,
 };

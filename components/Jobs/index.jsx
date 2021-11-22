@@ -15,14 +15,40 @@ export default function Jobs({ defaultTimezone }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [isLoading, setIsloading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [jobs, updateJobs] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState();
+
+  const deleteJob = useCallback((jobId) => {
+    const updatedJobs = jobs.filter(({ _id }) => _id !== jobId);
+    setJobs(updatedJobs);
+  }, [jobs.length]);
+
+  // const updateJobs = useCallback((newJob, op) => {
+  //   let updatedJobs;
+  //   switch (op) {
+  //     case 'append':
+  //       updatedJobs = [...jobs, newJob];
+  //       break;
+  //     case 'update':
+  //       updatedJobs = jobs.map((job) => {
+  //         // eslint-disable-next-line no-underscore-dangle
+  //         if (job._id === newJob._id) {
+  //           return newJob;
+  //         }
+  //         return job;
+  //       });
+  //       break;
+  //     default:
+  //       throw new Error(`Op: ${op} is invalid`);
+  //   }
+  //   setJobs(updatedJobs);
+  // }, [jobs.length]);
 
   const openJobForm = useCallback((id = '') => {
     const job = jobs.find(({ _id }) => _id === id);
     setSelectedJob(job);
     onOpen();
-  }, [jobs]);
+  }, [jobs.length]);
 
   const fetchJobs = async () => {
     try {
@@ -30,7 +56,7 @@ export default function Jobs({ defaultTimezone }) {
       const response = await fetch('/api/jobs');
       if (response.ok) {
         const data = await response.json();
-        updateJobs(data);
+        setJobs(data);
       } else { throw new Error(); }
     } catch {
       setHasError(true);
@@ -54,6 +80,7 @@ export default function Jobs({ defaultTimezone }) {
       {jobs.length > 0 ? (
         <JobList
           jobs={jobs}
+          onDelete={deleteJob}
           openJobForm={openJobForm}
         />
       ) : <EmptyState onClick={openJobForm} />}
