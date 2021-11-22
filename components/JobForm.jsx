@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
+import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
@@ -107,10 +108,14 @@ export default function JobForm({
           return { amount: `Amount must be greater than or eqaul to ${symbol.minNotional}` };
         }
       }
-      const response = await fetch('/api/jobs', {
-        method: 'POST',
+      // eslint-disable-next-line no-underscore-dangle
+      const url = isEditMode ? `/api/jobs/${job._id}` : '/api/jobs';
+      const method = isEditMode ? 'PATCH' : 'POST';
+      const payload = isEditMode ? diff(initialValues, values) : values;
+      const response = await fetch(url, {
+        method,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
       if (response.ok) {
         displayToast({
