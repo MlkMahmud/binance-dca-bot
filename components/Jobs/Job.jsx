@@ -46,11 +46,74 @@ export default function Job({
   name,
   nextRun,
   onDelete,
-  onEdit,
+  onEditFormOpen,
+  onUpdate,
   symbol,
   timezone,
 }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isDeleteBtnLoading, setIsDeleteBtnLoading] = useState(false);
+  const [isEditBtnLoading, setIsEditBtnLoading] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleteBtnLoading(true);
+      const response = await fetch(`/api/jobs/${id}`, { method: 'DELETE' });
+      const { message: description } = await response.json();
+      if (response.ok) {
+        onDelete(id);
+        displayToast({
+          description,
+          status: 'success',
+          title: 'Success',
+        });
+      } else {
+        setIsDeleteBtnLoading(false);
+        displayToast({
+          description,
+          title: 'Error',
+        });
+      }
+    } catch {
+      setIsDeleteBtnLoading(false);
+      displayToast({
+        description: 'Something went wrong, please try again',
+        title: 'Error',
+      });
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setIsEditBtnLoading(true);
+      const payload = {};
+      if (disabled) { payload.enable = true; } else { payload.disable = true; }
+      const response = await fetch(`/api/jobs/${id}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const { job, message: description } = await response.json();
+      if (response.ok) {
+        onUpdate(job, 'update');
+        displayToast({
+          description: 'Job updated successfully',
+          status: 'success',
+          title: 'Success',
+        });
+      } else {
+        displayToast({
+          description,
+          title: 'Error',
+        });
+      }
+    } catch {
+      displayToast({
+        description: 'Something went wrong, please try again',
+        title: 'Error',
+      });
+    } finally { setIsEditBtnLoading(false); }
+  };
+
   return (
     <Tr>
       <TableCell
@@ -68,46 +131,27 @@ export default function Job({
       <TableCell>
         <ButtonGroup variant="unstyled">
           <IconButton
+            aria-label={`${disabled ? 'resume' : 'pause'} ${name}`}
             icon={disabled ? <PlayIcon /> : <PauseIcon />}
+            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
+            isLoading={isEditBtnLoading}
             minWidth="auto"
+            onClick={handleUpdate}
           />
           <IconButton
-            aria-label={`delete ${name} job`}
+            aria-label={`edit ${name}`}
             icon={<EditIcon />}
+            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
             minWidth="auto"
-            onClick={() => onEdit(id)}
+            onClick={() => onEditFormOpen(id)}
           />
           <IconButton
+            aria-label={`delete ${name}`}
             icon={<DeleteIcon />}
-            isLoading={isLoading}
+            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
+            isLoading={isDeleteBtnLoading}
             minWidth="auto"
-            onClick={async () => {
-              try {
-                setIsLoading(true);
-                const response = await fetch(`/api/jobs/${id}`, { method: 'DELETE' });
-                const { message: description } = await response.json();
-                if (response.ok) {
-                  onDelete(id);
-                  displayToast({
-                    description,
-                    status: 'success',
-                    title: 'Success',
-                  });
-                } else {
-                  setIsLoading(false);
-                  displayToast({
-                    description,
-                    title: 'Error',
-                  });
-                }
-              } catch (e) {
-                setIsLoading(false);
-                displayToast({
-                  description: 'Something went wrong, please try again',
-                  title: 'Error',
-                });
-              }
-            }}
+            onClick={handleDelete}
           />
         </ButtonGroup>
       </TableCell>
@@ -124,7 +168,8 @@ Job.propTypes = {
   name: PropTypes.string.isRequired,
   nextRun: PropTypes.oneOf(PropTypes.instanceOf(Date), PropTypes.string).isRequired,
   onDelete: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
+  onEditFormOpen: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   symbol: PropTypes.string.isRequired,
   timezone: PropTypes.string.isRequired,
 };

@@ -30,11 +30,20 @@ import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
 
+function getCronDescription(cron) {
+  try {
+    return cronstrue.toString(cron, { verbose: true });
+  } catch {
+    return null;
+  }
+}
+
 export default function JobForm({
-  onFormClose,
+  defaultTimezone,
   isOpen,
   job,
-  defaultTimezone,
+  onFormClose,
+  onSubmitSuccess,
 }) {
   const isEditMode = !!job;
   const initialValues = isEditMode ? {
@@ -52,7 +61,6 @@ export default function JobForm({
   const title = isEditMode ? 'Edit Job' : 'Create Job';
   const [isLoading, setIsLoading] = useState(false);
   const [minNotional, setMinNotional] = useState(0);
-  const [cronTime, setCronTime] = useState('');
   const btnRef = useRef();
 
   const loadSymbols = useCallback(debounce((input, cb) => {
@@ -84,7 +92,7 @@ export default function JobForm({
     } else {
       try {
         parseExpression(values.schedule);
-        setCronTime(cronstrue.toString(values.schedule, { verbose: true }));
+        cronstrue.toString(values.schedule);
       } catch {
         errors.schedule = 'Invalid cron syntax';
       }
@@ -110,6 +118,7 @@ export default function JobForm({
       }
       // eslint-disable-next-line no-underscore-dangle
       const url = isEditMode ? `/api/jobs/${job._id}` : '/api/jobs';
+      const op = isEditMode ? 'update' : 'append';
       const method = isEditMode ? 'PATCH' : 'POST';
       const payload = isEditMode ? diff(initialValues, values) : values;
       const response = await fetch(url, {
@@ -117,13 +126,21 @@ export default function JobForm({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      const { job: newJob, message: description } = await response.json();
       if (response.ok) {
+        onSubmitSuccess(newJob, op);
         displayToast({
-          description: 'Job created successfully',
+          description: `Job ${isEditMode ? 'updated' : 'created'} successfully`,
           status: 'success',
           title: 'Success',
         });
-      } else { throw new Error(response.statusText); }
+      } else {
+        setIsLoading(false);
+        displayToast({
+          description,
+          title: 'Error',
+        });
+      }
     } catch {
       setIsLoading(false);
       displayToast({
@@ -313,7 +330,11 @@ export default function JobForm({
                         value={input.value}
                         isDisabled={isEditMode}
                       />
-                      {!meta.error && <FormHelperText>{cronTime}</FormHelperText>}
+                      {!meta.error && (
+                        <FormHelperText>
+                          {getCronDescription(input.value)}
+                        </FormHelperText>
+                      )}
                       <FormErrorMessage>{meta.error}</FormErrorMessage>
                     </FormControl>
                   )}
@@ -382,10 +403,11 @@ export default function JobForm({
 }
 
 JobForm.propTypes = {
-  onFormClose: PropTypes.func.isRequired,
+  defaultTimezone: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   job: PropTypes.shape(),
-  defaultTimezone: PropTypes.string,
+  onFormClose: PropTypes.func.isRequired,
+  onSubmitSuccess: PropTypes.func.isRequired,
 };
 
 JobForm.defaultProps = {

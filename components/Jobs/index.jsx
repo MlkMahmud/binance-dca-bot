@@ -23,26 +23,27 @@ export default function Jobs({ defaultTimezone }) {
     setJobs(updatedJobs);
   }, [jobs.length]);
 
-  // const updateJobs = useCallback((newJob, op) => {
-  //   let updatedJobs;
-  //   switch (op) {
-  //     case 'append':
-  //       updatedJobs = [...jobs, newJob];
-  //       break;
-  //     case 'update':
-  //       updatedJobs = jobs.map((job) => {
-  //         // eslint-disable-next-line no-underscore-dangle
-  //         if (job._id === newJob._id) {
-  //           return newJob;
-  //         }
-  //         return job;
-  //       });
-  //       break;
-  //     default:
-  //       throw new Error(`Op: ${op} is invalid`);
-  //   }
-  //   setJobs(updatedJobs);
-  // }, [jobs.length]);
+  const updateJobs = useCallback((newJob, op) => {
+    let updatedJobs;
+    switch (op) {
+      case 'append':
+        updatedJobs = [...jobs, newJob];
+        break;
+      case 'update':
+        updatedJobs = jobs.map((job) => {
+          // eslint-disable-next-line no-underscore-dangle
+          if (job._id === newJob._id) {
+            return newJob;
+          }
+          return job;
+        });
+        break;
+      default:
+        throw new Error(`Op: ${op} is invalid`);
+    }
+    setJobs(updatedJobs);
+    onClose();
+  }, [jobs.length]);
 
   const openJobForm = useCallback((id = '') => {
     const job = jobs.find(({ _id }) => _id === id);
@@ -82,15 +83,17 @@ export default function Jobs({ defaultTimezone }) {
           jobs={jobs}
           onDelete={deleteJob}
           openJobForm={openJobForm}
+          onUpdate={updateJobs}
         />
       ) : <EmptyState onClick={openJobForm} />}
 
       {isOpen && (
       <JobForm
         defaultTimezone={defaultTimezone}
-        onFormClose={onClose}
         isOpen={isOpen}
         job={selectedJob}
+        onFormClose={onClose}
+        onSubmitSuccess={updateJobs}
       />
       )}
     </>

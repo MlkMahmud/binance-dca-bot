@@ -18,6 +18,7 @@ export default function JobList({
   jobs,
   onDelete,
   openJobForm,
+  onUpdate,
 }) {
   return (
     <Box overflow="auto">
@@ -73,7 +74,8 @@ export default function JobList({
                   name={data.jobName}
                   nextRun={nextRunAt}
                   onDelete={onDelete}
-                  onEdit={openJobForm}
+                  onEditFormOpen={openJobForm}
+                  onUpdate={onUpdate}
                   symbol={data.symbol}
                   timezone={repeatTimezone}
                 />
@@ -105,4 +107,5 @@ JobList.propTypes = {
   jobs: PropTypes.arrayOf().isRequired,
   onDelete: PropTypes.func.isRequired,
   openJobForm: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
