@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 export default function TableCell({
+  borderLeftColor,
   children,
-  isDisabled,
   isFixed,
   isHeading,
 }) {
@@ -14,7 +14,7 @@ export default function TableCell({
   return (
     <Tag
       bgColor="#FFFFFF"
-      borderLeft={(!isHeading && isFixed) ? `5px solid ${isDisabled ? '#FF2400' : '#5EDC1F'}` : 'initial'}
+      borderLeft={(!isHeading && isFixed) ? `5px solid ${borderLeftColor}` : 'initial'}
       left={isFixed ? '0' : 'initial'}
       paddingY={isHeading ? '20px' : '1rem'}
       position={(isFixed || isHeading) ? 'sticky' : 'initial'}
@@ -28,14 +28,14 @@ export default function TableCell({
 }
 
 TableCell.propTypes = {
+  borderLeftColor: PropTypes.string,
   children: PropTypes.node.isRequired,
-  isDisabled: PropTypes.bool,
   isFixed: PropTypes.bool,
   isHeading: PropTypes.bool,
 };
 
 TableCell.defaultProps = {
-  isDisabled: false,
+  borderLeftColor: 'white',
   isFixed: false,
   isHeading: false,
 };

@@ -52,8 +52,8 @@ export default function Job({
   return (
     <Tr>
       <TableCell
+        borderLeftColor={disabled ? '#FF2400' : '#5EDC1F'}
         isFixed
-        isDisabled={disabled}
       >
         {name}
       </TableCell>
