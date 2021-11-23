@@ -7,8 +7,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { displayToast } from '../../utils';
+import React from 'react';
 import TableCell from '../TableCell';
 
 const PauseIcon = createIcon({
@@ -45,75 +44,11 @@ export default function Job({
   lastRun,
   name,
   nextRun,
-  onDelete,
+  onConfirm,
   onEditFormOpen,
-  onUpdate,
   symbol,
   timezone,
 }) {
-  const [isDeleteBtnLoading, setIsDeleteBtnLoading] = useState(false);
-  const [isEditBtnLoading, setIsEditBtnLoading] = useState(false);
-
-  const handleDelete = async () => {
-    try {
-      setIsDeleteBtnLoading(true);
-      const response = await fetch(`/api/jobs/${id}`, { method: 'DELETE' });
-      const { message: description } = await response.json();
-      if (response.ok) {
-        onDelete(id);
-        displayToast({
-          description,
-          status: 'success',
-          title: 'Success',
-        });
-      } else {
-        setIsDeleteBtnLoading(false);
-        displayToast({
-          description,
-          title: 'Error',
-        });
-      }
-    } catch {
-      setIsDeleteBtnLoading(false);
-      displayToast({
-        description: 'Something went wrong, please try again',
-        title: 'Error',
-      });
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      setIsEditBtnLoading(true);
-      const payload = {};
-      if (disabled) { payload.enable = true; } else { payload.disable = true; }
-      const response = await fetch(`/api/jobs/${id}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const { job, message: description } = await response.json();
-      if (response.ok) {
-        onUpdate(job, 'update');
-        displayToast({
-          description: 'Job updated successfully',
-          status: 'success',
-          title: 'Success',
-        });
-      } else {
-        displayToast({
-          description,
-          title: 'Error',
-        });
-      }
-    } catch {
-      displayToast({
-        description: 'Something went wrong, please try again',
-        title: 'Error',
-      });
-    } finally { setIsEditBtnLoading(false); }
-  };
-
   return (
     <Tr>
       <TableCell
@@ -133,25 +68,20 @@ export default function Job({
           <IconButton
             aria-label={`${disabled ? 'resume' : 'pause'} ${name}`}
             icon={disabled ? <PlayIcon /> : <PauseIcon />}
-            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
-            isLoading={isEditBtnLoading}
             minWidth="auto"
-            onClick={handleUpdate}
+            onClick={() => onConfirm(id, 'update')}
           />
           <IconButton
             aria-label={`edit ${name}`}
             icon={<EditIcon />}
-            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
             minWidth="auto"
             onClick={() => onEditFormOpen(id)}
           />
           <IconButton
             aria-label={`delete ${name}`}
             icon={<DeleteIcon />}
-            isDisabled={isDeleteBtnLoading || isEditBtnLoading}
-            isLoading={isDeleteBtnLoading}
             minWidth="auto"
-            onClick={handleDelete}
+            onClick={() => onConfirm(id, 'delete')}
           />
         </ButtonGroup>
       </TableCell>
@@ -167,9 +97,8 @@ Job.propTypes = {
   lastRun: PropTypes.oneOf(PropTypes.instanceOf(Date), PropTypes.string).isRequired,
   name: PropTypes.string.isRequired,
   nextRun: PropTypes.oneOf(PropTypes.instanceOf(Date), PropTypes.string).isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
   onEditFormOpen: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
   symbol: PropTypes.string.isRequired,
   timezone: PropTypes.string.isRequired,
 };

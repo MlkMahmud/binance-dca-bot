@@ -80,10 +80,10 @@ export default function Jobs({ defaultTimezone }) {
     <>
       {jobs.length > 0 ? (
         <JobList
+          handleDelete={deleteJob}
+          handleUpdate={updateJobs}
           jobs={jobs}
-          onDelete={deleteJob}
           openJobForm={openJobForm}
-          onUpdate={updateJobs}
         />
       ) : <EmptyState onClick={openJobForm} />}
 

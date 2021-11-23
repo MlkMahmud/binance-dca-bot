@@ -14,13 +14,16 @@ const Prompt = React.forwardRef(({
   children,
   destructive,
   heading,
+  isLoading,
   isOpen,
   onClose,
   onConfirm,
 }, ref) => (
   <AlertDialog
+    isCentered
     isOpen={isOpen}
     leastDestructiveRef={ref}
+    motionPreset="slideInBottom"
     onClose={onClose}
   >
     <AlertDialogOverlay />
@@ -32,10 +35,12 @@ const Prompt = React.forwardRef(({
           Cancel
         </Button>
         <Button
+          isDisabled={isLoading}
+          isLoading={isLoading}
           colorScheme={destructive ? 'red' : 'green'}
           ml={3}
-          onClick={() => {
-            onConfirm();
+          onClick={async () => {
+            await onConfirm();
             onClose();
           }}
         >
@@ -54,7 +59,10 @@ Prompt.propTypes = {
   children: PropTypes.node.isRequired,
   destructive: PropTypes.bool,
   heading: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
 };
+
+export default Prompt;
