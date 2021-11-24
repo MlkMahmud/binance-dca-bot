@@ -41,7 +41,6 @@ const Prompt = React.forwardRef(({
           ml={3}
           onClick={async () => {
             await onConfirm();
-            onClose();
           }}
         >
           Confirm
