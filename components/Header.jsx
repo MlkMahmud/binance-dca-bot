@@ -1,5 +1,5 @@
 import {
-  Box,
+  ButtonGroup,
   Flex,
   Icon,
   IconButton,
@@ -30,11 +30,12 @@ export default function Header({
       zIndex={6}
     >
       <Logo />
-      <Box>
+      <ButtonGroup>
         <IconButton
           aria-label="settings"
           variant="unstyled"
           icon={<Icon as={AiFillSetting} boxSize="25px" />}
+          minW="auto"
           onClick={onGlobalSettingsClick}
         />
         <IconButton
@@ -43,9 +44,10 @@ export default function Header({
           icon={
             <Icon as={isPasswordEnabled ? FaLock : FaUnlock} boxSize="25px" />
           }
+          minW="auto"
           onClick={onPasswordSettingsClick}
         />
-      </Box>
+      </ButtonGroup>
     </Flex>
   );
 }
