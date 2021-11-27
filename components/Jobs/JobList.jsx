@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-env browser */
 import {
   Box,
@@ -13,7 +14,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
-import { displayToast } from '../../utils';
+import { displayToast, useMediaQuery } from '../../utils';
 import TableCell from '../TableCell';
 import Job from './Job';
 import Prompt from '../Prompt';
@@ -25,21 +26,41 @@ export default function JobList({
   openJobForm,
 }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const isMobile = useMediaQuery('(max-width: 500px)');
   const btnRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [jobId, setJobId] = useState();
   const [op, setOp] = useState();
 
   const isDeleteMode = op === 'delete';
-  const showConfirmationPrompt = useCallback((id, action) => {
-    if (action === 'delete' || action === 'update') {
+  const handleButtonClick = useCallback((id, action) => {
+    if (action === 'edit') {
+      openJobForm(id);
+    } else if (action === 'delete' || action === 'status') {
       setJobId(id);
       setOp(action);
       onOpen();
     } else {
-      throw new Error("Action must be either 'update' or 'delete'");
+      throw new Error('Action must be one of edit | delete | status');
     }
   }, []);
+
+  const jobsArray = jobs.map((job) => (
+    <Job
+      key={job._id}
+      amount={`${job.data.amount} ${job.data.quoteAsset}`}
+      disabled={job.disabled}
+      id={job._id}
+      interval={job.data.humanInterval}
+      isMobile={isMobile}
+      lastRun={job.lastRunAt}
+      name={job.data.jobName}
+      nextRun={job.nextRunAt}
+      onButtonClick={handleButtonClick}
+      symbol={job.data.symbol}
+      timezone={job.repeatTimezone}
+    />
+  ));
 
   const onDelete = async () => {
     try {
@@ -113,67 +134,43 @@ export default function JobList({
   return (
     <>
       <Box overflow="auto">
-        <Text fontSize="xl" fontWeight="bold">{`Jobs(${jobs.length})`}</Text>
-        <Box
-          border="1px solid #DADCE0"
-          borderBottom="none"
-          borderRadius="5px 5px 0 0"
-          height="fit-content"
-          marginTop="20px"
-          maxHeight="500px"
-          overflow="auto"
-          shadow="0 0 5px 5px rgb(23 24 24 / 5%), 0 1px 2px rgb(0 0 0 / 15%), 0 0 0 1px rgb(63 63 68 / 5%), 0 1px 3px 0 rgb(63 63 68 / 15%)"
-        >
-          <Table
-            css={{
-              borderCollapse: 'separate',
-              borderSpacing: 0,
-            }}
+        <Text fontSize="xl" fontWeight="bold" mb="20px">{`Jobs(${jobs.length})`}</Text>
+        {isMobile ? (<>{jobsArray}</>) : (
+          <Box
+            border="1px solid #DADCE0"
+            borderBottom="none"
+            borderRadius="5px 5px 0 0"
+            height="fit-content"
+            maxHeight="500px"
+            overflow="auto"
+            shadow="0 0 5px 5px rgb(23 24 24 / 5%), 0 1px 2px rgb(0 0 0 / 15%), 0 0 0 1px rgb(63 63 68 / 5%), 0 1px 3px 0 rgb(63 63 68 / 15%)"
           >
-            <Thead>
-              <Tr>
-                <TableCell isFixed isHeading>
-                  Job Name
-                </TableCell>
-                <TableCell isHeading>Symbol</TableCell>
-                <TableCell isHeading>Amount</TableCell>
-                <TableCell isHeading>Interval</TableCell>
-                <TableCell isHeading>Timezone</TableCell>
-                <TableCell isHeading>Last Run</TableCell>
-                <TableCell isHeading>Next Run</TableCell>
-                <TableCell isHeading>Action</TableCell>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {jobs.map((job) => {
-                const {
-                  _id,
-                  data,
-                  disabled,
-                  lastRunAt,
-                  nextRunAt,
-                  repeatTimezone,
-                } = job;
-                return (
-                  <Job
-                    key={_id}
-                    amount={`${data.amount} ${data.quoteAsset}`}
-                    disabled={disabled}
-                    id={_id}
-                    interval={data.humanInterval}
-                    lastRun={lastRunAt}
-                    name={data.jobName}
-                    nextRun={nextRunAt}
-                    onConfirm={showConfirmationPrompt}
-                    onEditFormOpen={openJobForm}
-                    symbol={data.symbol}
-                    timezone={repeatTimezone}
-                  />
-                );
-              })}
-            </Tbody>
-          </Table>
-        </Box>
+            <Table
+              css={{
+                borderCollapse: 'separate',
+                borderSpacing: 0,
+              }}
+            >
+              <Thead>
+                <Tr>
+                  <TableCell isFixed isHeading>
+                    Job Name
+                  </TableCell>
+                  <TableCell isHeading>Symbol</TableCell>
+                  <TableCell isHeading>Amount</TableCell>
+                  <TableCell isHeading>Interval</TableCell>
+                  <TableCell isHeading>Timezone</TableCell>
+                  <TableCell isHeading>Last Run</TableCell>
+                  <TableCell isHeading>Next Run</TableCell>
+                  <TableCell isHeading>Action</TableCell>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {jobsArray}
+              </Tbody>
+            </Table>
+          </Box>
+        )}
         <IconButton
           aria-label="add new job"
           bgColor="black"

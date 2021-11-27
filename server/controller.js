@@ -192,7 +192,7 @@ export default {
     try {
       const {
         amount,
-        name: jobName,
+        jobName,
         schedule,
         quoteAsset,
         symbol,

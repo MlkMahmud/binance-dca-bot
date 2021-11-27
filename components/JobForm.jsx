@@ -48,7 +48,7 @@ export default function JobForm({
   const isEditMode = !!job;
   const initialValues = isEditMode ? {
     amount: job.data.amount,
-    name: job.data.jobName,
+    jobName: job.data.jobName,
     quoteAsset: job.data.quoteAsset,
     schedule: job.repeatInterval,
     symbol: job.data.symbol,
@@ -73,8 +73,8 @@ export default function JobForm({
 
   function validate(values) {
     const errors = {};
-    if (!values.name) {
-      errors.name = 'Job name is required';
+    if (!values.jobName) {
+      errors.jobName = 'Job name is required';
     }
 
     if (!values.symbol) {
@@ -200,9 +200,9 @@ export default function JobForm({
           return (
             <form id="job" onSubmit={handleSubmit}>
               <Stack spacing={4}>
-                <Field name="name">
+                <Field name="jobName">
                   {({ input, meta }) => (
-                    <FormControl id="name" isInvalid={meta.error && meta.touched}>
+                    <FormControl id="jobName" isInvalid={meta.error && meta.touched}>
                       <FormLabel mb="1px">
                         <Stack align="center" isInline spacing={1}>
                           <Text fontSize="17px" fontWeight="bold">

@@ -56,7 +56,7 @@ export async function validateJobConfig(config, mode = 'required') {
     amount: Joi.number().presence(mode),
     enable: Joi.bool(),
     disable: Joi.bool(),
-    name: Joi.string().presence(mode),
+    jobName: Joi.string().presence(mode),
     schedule: Joi.string().presence(mode).custom(validateCronSyntax),
     symbol: Joi.string().presence(mode).external(async (value) => {
       if (mode === 'required') {
