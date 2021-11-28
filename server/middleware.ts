@@ -1,12 +1,15 @@
+import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from './models';
 import { cleanUserObject } from './utils';
 
-function isApiRoute(path) {
+const JWT_SECRET = process.env.JWT_SECRET || '';
+
+function isApiRoute(path: string) {
   return path.startsWith('/api/');
 }
 
-export default async function authenticateRequest(req, res, next) {
+export default async function authenticateRequest(req: Request, res: Response, next: NextFunction) {
   const {
     password, slack, telegram, timezone,
   } = await User.findOne().lean();
@@ -15,6 +18,7 @@ export default async function authenticateRequest(req, res, next) {
   });
 
   if (!password.enabled) {
+    //@ts-ignore
     req.user = user;
     next();
   } else {
@@ -28,7 +32,7 @@ export default async function authenticateRequest(req, res, next) {
         next();
       }
     } else {
-      jwt.verify(accessToken, process.env.JWT_SECRET, (err) => {
+      jwt.verify(accessToken, JWT_SECRET, (err: any) => {
         if (err) {
           if (isApiRoute(req.path)) {
             res
@@ -40,6 +44,7 @@ export default async function authenticateRequest(req, res, next) {
             next();
           }
         } else {
+          //@ts-ignore
           req.user = user;
           next();
         }

@@ -43,7 +43,7 @@ export default function JobList({
     } else {
       throw new Error('Action must be one of edit | delete | status');
     }
-  }, []);
+  }, [jobs.length]);
 
   const jobsArray = jobs.map((job) => (
     <Job

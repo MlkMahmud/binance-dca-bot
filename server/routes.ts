@@ -4,20 +4,20 @@ import controller from './controller';
 const router = Router();
 
 router.get('/api/timezones', (req, res) => {
-  const timezones = controller.fetchTimezones(req.query.q);
+  const timezones = controller.fetchTimezones(req.query.q as string);
   res.json(timezones);
 });
 
 router.get('/api/symbols', async (req, res, next) => {
   try {
-    const symbols = await controller.fetchSymbols(req.query.q);
+    const symbols = await controller.fetchSymbols(req.query.q as string);
     res.json(symbols);
   } catch (err) {
     next(err);
   }
 });
 
-router.get('/api/balance', async (req, res, next) => {
+router.get('/api/balance', async (_, res, next) => {
   try {
     const balances = await controller.fetchAccountBalance();
     res.json(balances);
@@ -50,8 +50,8 @@ router
 
 router.patch('/api/settings/general', async (req, res, next) => {
   try {
-    const { status, user, message } = await controller.updateSettings(req.body);
-    res.status(status).json({ user, message });
+    const { status, ...rest } = await controller.updateSettings(req.body);
+    res.status(status).json(rest);
   } catch (err) {
     next(err);
   }
@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.route('/api/jobs')
-  .get(async (req, res, next) => {
+  .get(async (_, res, next) => {
     try {
       const jobs = await controller.fetchAllJobs();
       res.json(jobs);

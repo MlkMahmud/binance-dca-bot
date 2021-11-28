@@ -1,3 +1,4 @@
+import { Agenda, Job } from 'agenda';
 import mongoose from 'mongoose';
 import binance from '../../binance';
 import notifications from '../../notifications';
@@ -8,8 +9,8 @@ import { formatDateString } from '../../../utils';
 
 const logger = rootLogger.child({ module: 'agenda' });
 
-module.exports = (agenda) => {
-  agenda.define('buy-crypto', async (job) => {
+module.exports = (agenda: Agenda) => {
+  agenda.define('buy-crypto', async (job: Job) => {
     const {
       _id,
       data,
@@ -17,30 +18,31 @@ module.exports = (agenda) => {
       repeatTimezone,
     } = job.attrs;
     try {
-      logger.info({ data }, `> Running Job: ${data.jobName}`);
+      logger.info({ data }, `> Running Job: ${data?.jobName}`);
       const order = await binance.order({
-        symbol: data.symbol,
+        symbol: data?.symbol,
         side: 'BUY',
+        // @ts-ignore
         type: 'MARKET',
         newOrderRespType: 'FULL',
-        quoteOrderQty: data.amount,
+        quoteOrderQty: data?.amount,
       });
-      logger.info({ data }, `> Job: ${data.jobName} ran successfully`);
+      logger.info({ data }, `> Job: ${data?.jobName} ran successfully`);
       Order.create({ jobId: _id, ...order });
       notifications.sendMessage('success', {
         cummulativeQuoteQty: order.cummulativeQuoteQty,
         executedQty: order.executedQty,
-        name: data.jobName,
+        name: data?.jobName,
         nextRunAt: formatDateString(
-          new Date(nextRunAt), { timeZone: repeatTimezone },
+          new Date(nextRunAt || ''), { timeZone: repeatTimezone },
         ),
         origQty: order.origQty,
         status: order.status,
         transactTime: formatDateString(
-          new Date(order.transactTime), { timeZone: repeatTimezone },
+          new Date(order.transactTime || ''), { timeZone: repeatTimezone },
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       logger.error({ err });
       sentry.captureException(err);
       if (!(err instanceof mongoose.Error)) {
@@ -48,7 +50,7 @@ module.exports = (agenda) => {
           date: formatDateString(
             new Date(), { timeZone: repeatTimezone },
           ),
-          name: data.jobName,
+          name: data?.jobName,
           reason: err.message,
         });
       }

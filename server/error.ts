@@ -1,5 +1,5 @@
 export default class BaseError extends Error {
-  constructor(name, message) {
+  constructor(name: string, message: string) {
     super(message);
     this.name = name;
   }

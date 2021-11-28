@@ -1,6 +1,6 @@
 {
   "watch": ["."],
-  "exec": "node -r esm -r dotenv/config server/index.js | bunyan",
-  "ext": "js, jsx",
-  "ignore": ["node_modules"]
+  "exec": "ts-node --project tsconfig.server.json -r dotenv/config server/index.ts | bunyan",
+  "ext": "ts, tsx",
+  "ignore": ["next-env.d.ts", "node_modules"]
 }

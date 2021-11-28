@@ -7,7 +7,7 @@ export default bunyan.createLogger({
   ],
   serializers: {
     err: bunyan.stdSerializers.err,
-    req: ({ method, url }) => ({
+    req: ({ method, url }: { method: string; url: string }) => ({
       method,
       url,
     }),

@@ -1,5 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
 import { readdirSync } from 'fs';
 import { resolve } from 'path';
 import Agenda from 'agenda';

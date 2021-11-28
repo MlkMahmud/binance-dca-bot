@@ -3,9 +3,11 @@ import BaseError from '../../error';
 import { User } from '../../models';
 import rootLogger from '../logger';
 import sentry from '../sentry';
+import { Event, JobEventPayload } from '../../../types';
 
-function generateMessage(event, job) {
-  const message = { blocks: [] };
+
+function generateMessage(event: Event, job: JobEventPayload) {
+  const message: { blocks: Array<any> } = { blocks: [] };
   switch (event) {
     case 'success':
       message.blocks.push(
@@ -74,7 +76,7 @@ function generateMessage(event, job) {
 }
 
 export default {
-  async sendMessage(event, job) {
+  async sendMessage(event: Event, job: JobEventPayload) {
     const logger = rootLogger.child({ module: 'slack' });
     try {
       const { slack } = await User.findOne();

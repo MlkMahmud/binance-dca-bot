@@ -1,11 +1,17 @@
 import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import moment from 'moment-timezone';
-import Joi, { ValidationError } from 'joi';
+import Joi, { PresenceMode, ValidationError } from 'joi';
 import binance from './lib/binance';
+import { JobConfig } from '../types';
 
 export function cleanUserObject({
   password, slack, telegram, timezone,
+}: {
+  password: { enabled: boolean; hash: string };
+  slack: { enabled: boolean; url: string };
+  telegram: { botToken: string; chatId: string; enabled: boolean };
+  timezone: string;
 }) {
   return {
     password: {
@@ -20,15 +26,15 @@ export function cleanUserObject({
 
 // Joi validation functions
 
-export function validateTimezone(tz, helper) {
+export function validateTimezone(tz: string, helper: Joi.CustomHelpers) {
   const timezone = moment.tz.zone(tz);
   if (!timezone) {
-    return helper.message(`Timezone ${tz} is invalid`);
+    return helper.message({ custom: `Timezone ${tz} is invalid` });
   }
   return timezone.name;
 }
 
-function validateCronSyntax(schedule, helper) {
+function validateCronSyntax(schedule: string, helper: any) {
   try {
     parseExpression(schedule);
     cronstrue.toString(schedule);
@@ -38,7 +44,7 @@ function validateCronSyntax(schedule, helper) {
   }
 }
 
-export function formatDateString(date, options = {}) {
+export function formatDateString(date: Date, options = {}) {
   return date.toLocaleString('en-US', {
     day: '2-digit',
     hour: '2-digit',
@@ -51,7 +57,7 @@ export function formatDateString(date, options = {}) {
   });
 }
 
-export async function validateJobConfig(config, mode = 'required') {
+export async function validateJobConfig(config: Partial<JobConfig>, mode: PresenceMode = 'required') {
   const schema = Joi.object({
     amount: Joi.number().presence(mode),
     enable: Joi.bool(),
@@ -61,18 +67,19 @@ export async function validateJobConfig(config, mode = 'required') {
     symbol: Joi.string().presence(mode).external(async (value) => {
       if (mode === 'required') {
         try {
+          // @ts-ignore
           await binance.exchangeInfo({ symbol: value });
         } catch {
-          throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }]);
+          throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }], null);
         }
       }
     }),
     timezone: Joi.string().presence(mode).custom(validateTimezone),
     quoteAsset: Joi.string().presence(mode).custom((value, helpers) => {
-      if (config.symbol.endsWith(value)) {
+      if (config.symbol?.endsWith(value)) {
         return value;
       }
-      return helpers.message(`${value} is an invalid asset.`);
+      return helpers.message({ custom: `${value} is an invalid asset.` });
     }),
     useDefaultTimezone: Joi.bool().presence(mode),
   })
@@ -84,7 +91,7 @@ export async function validateJobConfig(config, mode = 'required') {
   return validatedConfig;
 }
 
-export function handleJoiValidationError(err) {
+export function handleJoiValidationError(err: Error) {
   if (err instanceof ValidationError) {
     const [{ message }] = err.details;
     return { status: 400, message };
@@ -92,8 +99,8 @@ export function handleJoiValidationError(err) {
   throw err;
 }
 
-export function flattenObject(object = {}) {
-  const document = {};
+export function flattenObject(object: {[key:string]: any} = {}) {
+  const document: {[key:string]: any} = {};
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];

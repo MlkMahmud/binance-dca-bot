@@ -1,24 +1,34 @@
-import Joi from 'joi';
 import { compareSync, hashSync } from 'bcrypt';
+import { SymbolMinNotionalFilter } from 'binance-api-node';
 import cronstrue from 'cronstrue';
-import mongoose from 'mongoose';
-import moment from 'moment-timezone';
+import Joi from 'joi';
 import jwt from 'jsonwebtoken';
+import moment from 'moment-timezone';
+import mongoose from 'mongoose';
 import agenda from './lib/agenda';
 import binance from './lib/binance';
 import { User } from './models';
-
 import {
   cleanUserObject,
   flattenObject,
   handleJoiValidationError,
   validateJobConfig,
-  validateTimezone,
+  validateTimezone
 } from './utils';
+import { JobConfig } from '../types';
+
+const JWT_SECRET = process.env.JWT_SECRET || '';
+
+
+type Settings = {
+  slack: { enabled: boolean; url: string };
+  telegram: { botToken: string; chatId: string; enabled: boolean };
+  timezone: string;
+}
 
 export default {
   fetchTimezones(query = '') {
-    const tzs = [];
+    const tzs: Array<{ label: string; value: string }> = [];
     moment.tz.names().forEach((timezone) => {
       if (timezone.toLowerCase().includes(query.toLowerCase())) {
         tzs.push({ label: timezone, value: timezone });
@@ -28,17 +38,24 @@ export default {
   },
   async fetchSymbols(query = '') {
     const { symbols } = await binance.exchangeInfo();
-    const options = [];
+    const options: Array<{
+      minNotional: number;
+      symbol: string;
+      quoteAsset: string;
+    }> = [];
     symbols.forEach(({
       filters, isSpotTradingAllowed, quoteAsset, symbol,
     }) => {
       if (isSpotTradingAllowed && symbol.includes(query.toUpperCase())) {
-        const { minNotional } = filters.find(({ filterType }) => filterType === 'MIN_NOTIONAL');
-        options.push({
-          symbol,
-          minNotional: Number(minNotional),
-          quoteAsset,
-        });
+        const filter = filters.find(({ filterType }) => filterType === 'MIN_NOTIONAL');
+        if (filter) {
+          const { minNotional } = filter as SymbolMinNotionalFilter;
+          options.push({
+            symbol,
+            minNotional: Number(minNotional),
+            quoteAsset,
+          });
+        }
       }
     });
     return options;
@@ -52,7 +69,10 @@ export default {
     }));
   },
 
-  async setPassword(data) {
+  async setPassword(data: {
+    password: string;
+    confirmPassword: string;
+  }) {
     try {
       const user = await User.findOne();
       if (user.password.hash) {
@@ -76,13 +96,17 @@ export default {
         status: 201,
         message: 'Password successfully enabled',
       };
-    } catch (e) {
+    } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
   },
 
-  async updatePassword({ action, password = '', newPassword }) {
+  async updatePassword({ action, password = '', newPassword }: {
+    action: 'disable' | 'enable' | 'update',
+    password?: string;
+    newPassword?: string;  
+  }) {
     try {
       const {
         password: { hash },
@@ -118,29 +142,29 @@ export default {
         }
         await User.findOneAndUpdate(
           {},
-          { $set: { 'password.hash': hashSync(newPassword, 10) } },
+          { $set: { 'password.hash': hashSync(newPassword as string, 10) } },
         );
         return { status: 200, message: 'Password sucessfully updated' };
       }
       return { status: 400, message: 'Invalid action' };
-    } catch (e) {
+    } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
   },
 
-  async loginUser(password) {
+  async loginUser(password: string) {
     const user = await User.findOne();
     if (compareSync(password, user.password.hash)) {
       // This is a single user system.
       // so it seems pointless to encode any unique attribute in the jwt payload
-      const accessToken = jwt.sign({}, process.env.JWT_SECRET);
+      const accessToken = jwt.sign({}, JWT_SECRET);
       return { status: 200, accessToken, message: 'success' };
     }
     return { status: 403, message: 'password is incorrect' };
   },
 
-  async updateSettings(payload) {
+  async updateSettings(payload: Partial<Settings>) {
     try {
       await Joi.object({
         slack: Joi.object({ enabled: Joi.bool(), url: Joi.string().uri() }),
@@ -162,7 +186,7 @@ export default {
       }
       await session.commitTransaction();
       return { status: 200, user: cleanUserObject(userObject) };
-    } catch (e) {
+    } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
@@ -183,12 +207,13 @@ export default {
     return jobs;
   },
 
-  async fetchJob(jobId) {
-    const job = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
+  async fetchJob(jobId: string) {
+    const _id = new mongoose.Types.ObjectId(jobId);
+    const job = await agenda.jobs({ _id });
     return job;
   },
 
-  async createJob(config) {
+  async createJob(config: JobConfig) {
     try {
       const {
         amount,
@@ -213,18 +238,19 @@ export default {
       });
       await job.save();
       return { status: 200, job };
-    } catch (e) {
+    } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
   },
 
-  async updateJob(jobId, config) {
+  async updateJob(jobId: string, config: Partial<JobConfig>) {
     try {
       const {
         enable, disable, timezone, ...rest
       } = await validateJobConfig(config, 'optional');
-      const [job] = await agenda.jobs({ _id: mongoose.Types.ObjectId(jobId) });
+      const _id = new mongoose.Types.ObjectId(jobId);
+      const [job] = await agenda.jobs({ _id });
       if (!job) {
         return { status: 400, message: `Failed to find job with id: ${jobId}` };
       }
@@ -246,15 +272,14 @@ export default {
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
       await job.save();
       return { status: 200, job };
-    } catch (e) {
+    } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
   },
 
-  async deleteJob(jobId) {
-    // eslint-disable-next-line no-underscore-dangle
-    const _id = mongoose.Types.ObjectId(jobId);
+  async deleteJob(jobId: string) {
+    const _id = new mongoose.Types.ObjectId(jobId);
     const [job] = await agenda.jobs({ _id });
     if (!job) {
       return { status: 400, message: `Failed to find job with id: ${jobId}` };

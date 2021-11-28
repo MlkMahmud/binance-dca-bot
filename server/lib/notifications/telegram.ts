@@ -4,15 +4,16 @@ import BaseError from '../../error';
 import { User } from '../../models';
 import rootLogger from '../logger';
 import sentry from '../sentry';
+import { Event, JobEventPayload } from '../../../types';
 
-function generateMessageText(event, job) {
+function generateMessageText(event: Event, job: JobEventPayload) {
   let text;
   switch (event) {
     case 'success':
       text = `*Job Success*\n_${job.transactTime}_\n\n\n*Job Name:* ${job.name}\n\n*Status:* ${job.status}\n\n*Original Quantity:* ${job.origQty}\n\n*Executed Quantity:* ${job.executedQty}\n\n*Cummulative Quote Quantity:* ${job.cummulativeQuoteQty}\n\n*NextRunAt:* ${job.nextRunAt}`;
       break;
     case 'error':
-      text = `*Job Error*\n_${job.date}_\n\n\n*Job Name:* ${job.name}\n\n*Reason:* ${markdownEscape(job.reason)}`;
+      text = `*Job Error*\n_${job.date}_\n\n\n*Job Name:* ${job.name}\n\n*Reason:* ${markdownEscape(job.reason as string)}`;
       break;
     default:
       throw new BaseError('TelegramError', `Invalid event ${event}`);
@@ -21,7 +22,7 @@ function generateMessageText(event, job) {
 }
 
 export default {
-  async sendMessage(event, job) {
+  async sendMessage(event: Event, job: JobEventPayload) {
     const logger = rootLogger.child({ module: 'telegram' });
     try {
       const { telegram } = await User.findOne();
