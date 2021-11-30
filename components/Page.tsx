@@ -1,14 +1,25 @@
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import Header from './Header';
+import React, { useState } from 'react';
 import Footer from './Footer';
+import Header from './Header';
 import Loading from './Loading';
+
+type User = {
+  password: { enabled: boolean; isSet: boolean };
+  slack: { enabled: boolean; url: string },
+  telegram: { enabled: boolean; chatId: string; botToken: string; };
+  timezone: string;
+};
+
+type Props = {
+  children: (user: User) => React.ReactNode;
+  user: User;
+}
 
 const Settings = dynamic(() => import('./Settings'), { loading: () => <Loading /> });
 const PasswordSettings = dynamic(() => import('./PasswordSettings'), { loading: () => <Loading /> });
 
-export default function Page({ children, user }) {
+export default function Page({ children, user }: Props) {
   const [isGeneralSettingsOpen, setIsGeneralSettingsOpen] = useState(false);
   const [isPasswordSettingsOpen, setIsPasswordSettingsOpen] = useState(false);
   const [userConfig, updateUserConfig] = useState(user);
@@ -41,13 +52,3 @@ export default function Page({ children, user }) {
     </>
   );
 }
-
-Page.propTypes = {
-  children: PropTypes.node.isRequired,
-  user: PropTypes.shape({
-    slack: PropTypes.shape(),
-    password: PropTypes.shape(),
-    telegram: PropTypes.shape(),
-    timezone: PropTypes.string,
-  }).isRequired,
-};

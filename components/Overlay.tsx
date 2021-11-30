@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -17,12 +16,23 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { useMediaQuery } from '../utils';
 
-const Overlay = React.forwardRef(
+type Props = {
+  children: React.ReactNode;
+  formId: string;
+  footer: React.ReactNode;
+  isLoading: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  subTitle?: string;
+  title: string;
+}
+
+const Overlay = React.forwardRef<HTMLButtonElement, Props>(
   ({
     children,
     formId,
@@ -112,20 +122,6 @@ const Overlay = React.forwardRef(
   },
 );
 
-Overlay.propTypes = {
-  children: PropTypes.node.isRequired,
-  onClose: PropTypes.func.isRequired,
-  formId: PropTypes.string.isRequired,
-  footer: PropTypes.node,
-  isLoading: PropTypes.bool.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  subTitle: PropTypes.string,
-  title: PropTypes.string.isRequired,
-};
-
-Overlay.defaultProps = {
-  footer: null,
-  subTitle: '',
-};
+Overlay.displayName = 'Overlay';
 
 export default Overlay;

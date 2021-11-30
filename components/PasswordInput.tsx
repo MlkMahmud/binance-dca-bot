@@ -1,14 +1,20 @@
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import {
-  IconButton, Input, InputGroup, InputRightElement,
-} from '@chakra-ui/react';
-import PropTypes from 'prop-types';
+import { IconButton, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 import React, { useState } from 'react';
+
+
+type Props = {
+  id?: string;
+  name: string;
+  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onChange: (e: React.FormEvent<HTMLInputElement>) => void;
+  value: string;
+}
 
 export default function PasswordInput({
   id, name, onBlur, onChange, value,
-}) {
-  const [showPassword, setShowPassword] = useState();
+}: Props) {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <InputGroup>
       <Input
@@ -30,19 +36,3 @@ export default function PasswordInput({
     </InputGroup>
   );
 }
-
-PasswordInput.propTypes = {
-  id: PropTypes.string,
-  name: PropTypes.string,
-  onBlur: PropTypes.func,
-  onChange: PropTypes.func,
-  value: PropTypes.string,
-};
-
-PasswordInput.defaultProps = {
-  id: '',
-  name: '',
-  onBlur: () => {},
-  onChange: () => {},
-  value: '',
-};

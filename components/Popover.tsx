@@ -12,13 +12,18 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { VscQuestion } from 'react-icons/vsc';
-import PropTypes from 'prop-types';
 
-export default function Popover({ children, title }) {
+type Props = {
+  children: React.ReactNode;
+  title: string; 
+}
+
+export default function Popover({ children, title }: Props) {
   return (
     <ChakraPopover isLazy>
       <PopoverTrigger>
         <IconButton
+          aria-label={`${title} popover`}
           icon={<Icon as={VscQuestion} />}
           minW="fit-content"
           variant="unstyled"
@@ -35,8 +40,3 @@ export default function Popover({ children, title }) {
     </ChakraPopover>
   );
 }
-
-Popover.propTypes = {
-  children: PropTypes.node.isRequired,
-  title: PropTypes.string.isRequired,
-};

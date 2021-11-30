@@ -2,19 +2,24 @@ import {
   ButtonGroup,
   Flex,
   Icon,
-  IconButton,
+  IconButton
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { AiFillSetting } from 'react-icons/ai';
 import { FaLock, FaUnlock } from 'react-icons/fa';
 import Logo from './Logo';
 
+type Props = {
+  isPasswordEnabled: boolean;
+  onGlobalSettingsClick: () => void;
+  onPasswordSettingsClick: () => void;
+};
+
 export default function Header({
   isPasswordEnabled,
   onGlobalSettingsClick,
   onPasswordSettingsClick,
-}) {
+}: Props) {
   return (
     <Flex
       align="center"
@@ -51,9 +56,3 @@ export default function Header({
     </Flex>
   );
 }
-
-Header.propTypes = {
-  isPasswordEnabled: PropTypes.bool.isRequired,
-  onGlobalSettingsClick: PropTypes.func.isRequired,
-  onPasswordSettingsClick: PropTypes.func.isRequired,
-};

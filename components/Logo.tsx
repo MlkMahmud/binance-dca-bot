@@ -1,7 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-export default function Logo({ width, height }) {
+type Props = {
+  height?: string;
+  width?: string;
+}
+
+export default function Logo({ width = '50', height = '50' }: Props) {
   return (
     <a href="/" aria-label="homepage">
       <svg
@@ -25,13 +29,3 @@ export default function Logo({ width, height }) {
     </a>
   );
 }
-
-Logo.propTypes = {
-  height: PropTypes.string,
-  width: PropTypes.string,
-};
-
-Logo.defaultProps = {
-  height: '50',
-  width: '50',
-};

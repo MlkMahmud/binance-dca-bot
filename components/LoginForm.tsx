@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import {
   Box,
   Button,
@@ -18,7 +17,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: { password: string }) => {
     try {
       setIsLoading(true);
       const response = await fetch('/login', {

@@ -1,13 +1,20 @@
 import { Td, Th } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+
+type Props = {
+  borderLeftColor?: string;
+  children: React.ReactNode,
+  isFixed?: boolean;
+  isHeading?: boolean;
+};
+
 export default function TableCell({
-  borderLeftColor,
+  borderLeftColor = '#FFF',
   children,
   isFixed,
   isHeading,
-}) {
+}: Props) {
   const Tag = isHeading ? Th : Td;
   // eslint-disable-next-line no-nested-ternary
   const zIndex = (isFixed && isHeading) ? 5 : isHeading ? 4 : isFixed ? 3 : 'auto';
@@ -26,16 +33,3 @@ export default function TableCell({
     </Tag>
   );
 }
-
-TableCell.propTypes = {
-  borderLeftColor: PropTypes.string,
-  children: PropTypes.node.isRequired,
-  isFixed: PropTypes.bool,
-  isHeading: PropTypes.bool,
-};
-
-TableCell.defaultProps = {
-  borderLeftColor: 'white',
-  isFixed: false,
-  isHeading: false,
-};

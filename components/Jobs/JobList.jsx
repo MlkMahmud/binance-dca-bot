@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { displayToast, useMediaQuery } from '../../utils';
 import TableCell from '../TableCell';
@@ -27,7 +27,6 @@ export default function JobList({
 }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const isMobile = useMediaQuery('(max-width: 500px)');
-  const btnRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [jobId, setJobId] = useState();
   const [op, setOp] = useState();
@@ -199,7 +198,6 @@ export default function JobList({
             }
           }}
           onConfirm={isDeleteMode ? onDelete : onUpdate}
-          ref={btnRef}
         >
           {isDeleteMode
             ? 'Deleting this job will also delete all of its related data, are you sure you want to continue?'
