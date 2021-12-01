@@ -21,3 +21,16 @@ export type JobEventPayload = Partial<{
   date: string;
   reason: string;
 }>;
+
+export type Job = {
+  _id: string;
+  data: {
+    amount: string;
+    jobName: string;
+    quoteAsset: string;
+    symbol: string;
+    useDefaultTimezone: boolean;
+  };
+  repeatInterval: string;
+  repeatTimezone: string;
+}

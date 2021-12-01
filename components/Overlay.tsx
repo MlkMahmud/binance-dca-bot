@@ -24,7 +24,7 @@ import { useMediaQuery } from '../utils';
 type Props = {
   children: React.ReactNode;
   formId: string;
-  footer: React.ReactNode;
+  footer?: React.ReactNode;
   isLoading: boolean;
   isOpen: boolean;
   onClose: () => void;

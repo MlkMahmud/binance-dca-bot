@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import {
   Box,
   FormControl,
@@ -17,7 +16,6 @@ import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import {
@@ -29,8 +27,27 @@ import {
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
+import { Job } from '../types';
 
-function getCronDescription(cron) {
+type Props = {
+  defaultTimezone?: string;
+  isOpen: boolean;
+  job: Job | null;
+  onFormClose: () => void;
+  onSubmitSuccess: (job: Job, op: 'update' | 'append') => void;
+}
+
+type Values = {
+  amount: string;
+  jobName: string;
+  quoteAsset: string;
+  schedule: string;
+  symbol: string;
+  timezone: string;
+  useDefaultTimezone: boolean;
+}
+
+function getCronDescription(cron: string) {
   try {
     return cronstrue.toString(cron, { verbose: true });
   } catch {
@@ -44,9 +61,9 @@ export default function JobForm({
   job,
   onFormClose,
   onSubmitSuccess,
-}) {
+}: Props) {
   const isEditMode = !!job;
-  const initialValues = isEditMode ? {
+  const initialValues: Values = isEditMode ? {
     amount: job.data.amount,
     jobName: job.data.jobName,
     quoteAsset: job.data.quoteAsset,
@@ -55,13 +72,20 @@ export default function JobForm({
     timezone: job.repeatTimezone,
     useDefaultTimezone: job.data.useDefaultTimezone,
   } : {
+    amount: '',
+    jobName: '',
+    quoteAsset: '',
+    schedule: '',
+    symbol: '',
+    timezone: '',
     useDefaultTimezone: false,
   };
+
   const subTitle = isEditMode ? 'Edit your job details' : 'Create a new recurring job';
   const title = isEditMode ? 'Edit Job' : 'Create Job';
   const [isLoading, setIsLoading] = useState(false);
   const [minNotional, setMinNotional] = useState(0);
-  const btnRef = useRef();
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const loadSymbols = useCallback(debounce((input, cb) => {
     getSymbols(input).then((symbols) => cb(symbols));
@@ -71,8 +95,8 @@ export default function JobForm({
     getTimezones(input).then((timezones) => cb(timezones));
   }, 700), []);
 
-  function validate(values) {
-    const errors = {};
+  function validate(values: Values) {
+    const errors: Partial<Values> = {};
     if (!values.jobName) {
       errors.jobName = 'Job name is required';
     }
@@ -104,8 +128,7 @@ export default function JobForm({
     return errors;
   }
 
-  // eslint-disable-next-line consistent-return
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: Values) => {
     try {
       setIsLoading(true);
       if (isEditMode) {
@@ -116,7 +139,7 @@ export default function JobForm({
           return { amount: `Amount must be greater than or eqaul to ${symbol.minNotional}` };
         }
       }
-      // eslint-disable-next-line no-underscore-dangle
+
       const url = isEditMode ? `/api/jobs/${job._id}` : '/api/jobs';
       const op = isEditMode ? 'update' : 'append';
       const method = isEditMode ? 'PATCH' : 'POST';
@@ -401,16 +424,3 @@ export default function JobForm({
     </Overlay>
   );
 }
-
-JobForm.propTypes = {
-  defaultTimezone: PropTypes.string,
-  isOpen: PropTypes.bool.isRequired,
-  job: PropTypes.shape(),
-  onFormClose: PropTypes.func.isRequired,
-  onSubmitSuccess: PropTypes.func.isRequired,
-};
-
-JobForm.defaultProps = {
-  job: null,
-  defaultTimezone: '',
-};
