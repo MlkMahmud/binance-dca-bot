@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-env browser */
 import {
   Box,
   FormControl,
@@ -15,29 +13,36 @@ import {
 } from '@chakra-ui/react';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
+import { User } from '../types';
 import { displayToast, generateSelectOption, getTimezones } from '../utils';
+
+type Props = {
+  onClose: () => void;
+  onUpdate: (user: User) => void;
+  initialValues: User;
+  isOpen: boolean;
+};
 
 export default function Settings({
   onClose,
   onUpdate,
   initialValues,
   isOpen,
-}) {
+}: Props) {
   const [isLoading, setIsLoading] = useState(false);
-  const btnRef = useRef();
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const loadTimezones = useCallback(debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
   }, 700), []);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: User) => {
     try {
       setIsLoading(true);
       const payload = diff(initialValues, values);
@@ -151,7 +156,7 @@ export default function Settings({
                               Your Slack webhook is used to send you updates about
                               your jobs.
                               {' '}
-                              To learn more about Slack's incoming webhooks, click
+                              To learn more about Slack&apos;s incoming webhooks, click
                               {' '}
                               <Link
                                 color="blue.500"
@@ -304,14 +309,3 @@ export default function Settings({
   );
 }
 
-Settings.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
-  initialValues: PropTypes.shape({
-    slack: PropTypes.string,
-    telegramBotToken: PropTypes.string,
-    telegramChatId: PropTypes.string,
-    timezone: PropTypes.string,
-  }).isRequired,
-  isOpen: PropTypes.bool.isRequired,
-};

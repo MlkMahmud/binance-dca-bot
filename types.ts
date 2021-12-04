@@ -34,3 +34,10 @@ export type Job = {
   repeatInterval: string;
   repeatTimezone: string;
 }
+
+export type User = {
+  password: { enabled: boolean; isSet: boolean };
+  slack: { enabled: boolean; url: string },
+  telegram: { enabled: boolean; chatId: string; botToken: string; };
+  timezone: string;
+};

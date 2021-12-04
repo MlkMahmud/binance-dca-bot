@@ -3,13 +3,8 @@ import React, { useState } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import Loading from './Loading';
+import { User } from '../types';
 
-type User = {
-  password: { enabled: boolean; isSet: boolean };
-  slack: { enabled: boolean; url: string },
-  telegram: { enabled: boolean; chatId: string; botToken: string; };
-  timezone: string;
-};
 
 type Props = {
   children: (user: User) => React.ReactNode;
