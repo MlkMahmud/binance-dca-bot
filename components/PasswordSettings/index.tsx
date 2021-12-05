@@ -51,7 +51,7 @@ function Action(props: RadioProps & { description: string; title: string; }) {
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (user: User) => Promise<void>;
+  onUpdate: (user: User) => void;
   user: User;
 }
 

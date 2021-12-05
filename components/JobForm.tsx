@@ -32,7 +32,7 @@ import { Job } from '../types';
 type Props = {
   defaultTimezone?: string;
   isOpen: boolean;
-  job: Job | null;
+  job?: Job | null;
   onFormClose: () => void;
   onSubmitSuccess: (job: Job, op: 'update' | 'append') => void;
 }

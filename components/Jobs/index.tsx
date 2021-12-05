@@ -4,26 +4,31 @@ import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import Loading from '../Loading';
-import LoadingState from './LoadingState';
+import JobListLoadingState from './JobListLoadingState';
+import { Job } from '../../types';
 
-const EmptyState = dynamic(() => import('./EmptyState'), { loading: () => <LoadingState /> });
-const ErrorState = dynamic(() => import('./ErrorState'), { loading: () => <LoadingState /> });
+const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), { loading: () => <JobListLoadingState /> });
+const JobListErrorState = dynamic(() => import('./JobListErrorState'), { loading: () => <JobListLoadingState /> });
 const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
-const JobList = dynamic(() => import('./JobList'), { loading: () => <LoadingState /> });
+const JobList = dynamic(() => import('./JobList'), { loading: () => <JobListLoadingState /> });
 
-export default function Jobs({ defaultTimezone }) {
+type Props = {
+  defaultTimezone?: string;
+}
+
+export default function Jobs({ defaultTimezone }: Props) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [isLoading, setIsloading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [jobs, setJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job>();
 
   const deleteJob = useCallback((jobId) => {
     const updatedJobs = jobs.filter(({ _id }) => _id !== jobId);
     setJobs(updatedJobs);
   }, [jobs.length]);
 
-  const updateJobs = useCallback((newJob, op) => {
+  const updateJobs = useCallback((newJob: Job, op: string) => {
     let updatedJobs;
     switch (op) {
       case 'append':
@@ -31,7 +36,6 @@ export default function Jobs({ defaultTimezone }) {
         break;
       case 'update':
         updatedJobs = jobs.map((job) => {
-          // eslint-disable-next-line no-underscore-dangle
           if (job._id === newJob._id) {
             return newJob;
           }
@@ -69,11 +73,11 @@ export default function Jobs({ defaultTimezone }) {
   }, []);
 
   if (isLoading) {
-    return <LoadingState />;
+    return <JobListLoadingState />;
   }
 
   if (hasError) {
-    return <ErrorState onRetry={fetchJobs} />;
+    return <JobListErrorState onRetry={fetchJobs} />;
   }
 
   return (
@@ -85,7 +89,7 @@ export default function Jobs({ defaultTimezone }) {
           jobs={jobs}
           openJobForm={openJobForm}
         />
-      ) : <EmptyState onClick={openJobForm} />}
+      ) : <JobListEmptyState onClick={openJobForm} />}
 
       {isOpen && (
       <JobForm

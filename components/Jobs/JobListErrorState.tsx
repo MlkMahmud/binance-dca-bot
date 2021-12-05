@@ -5,12 +5,15 @@ import {
   Img,
   Link,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-export default function EmptyState({ onClick }) {
+type Props = {
+  onRetry: () => Promise<void>;
+}
+
+export default function JobListErrorState({ onRetry }: Props) {
   return (
     <Flex
       align="center"
@@ -25,7 +28,7 @@ export default function EmptyState({ onClick }) {
           alt=""
           height="auto"
           maxW="100%"
-          src="/empty.png"
+          src="/error.png"
         />
       </Box>
       <Stack align="center" spacing={5}>
@@ -34,23 +37,25 @@ export default function EmptyState({ onClick }) {
           fontWeight="bold"
           textTransform="uppercase"
         >
-          no jobs found
+          Uh oh!
         </Text>
         <Text
           color="#36454F"
           maxW="300px"
           textAlign="center"
         >
-          You have not created any jobs yet. Would you like to add a new one now?
+          We seem to have run into some trouble fetching your jobs.
+          {' '}
+          Would you like to give it another try?
         </Text>
         <Button
           borderRadius="20px"
           colorScheme="black"
           isFullWidth
           maxW="200px"
-          onClick={onClick}
+          onClick={onRetry}
         >
-          Add Job
+          Try Again
         </Button>
       </Stack>
       <Text
@@ -62,10 +67,10 @@ export default function EmptyState({ onClick }) {
         {' '}
         <Link
           color="blue.500"
-          href="https://icons8.com/illustrations/author/5dca95ef01d036001426e2bc"
+          href="https://icons8.com/illustrations/author/5dbbfa9e01d0360016457560"
           textDecor="underline"
         >
-          Ivan Haidutsk
+          Sara Maese
           {' '}
         </Link>
         from
@@ -81,7 +86,3 @@ export default function EmptyState({ onClick }) {
     </Flex>
   );
 }
-
-EmptyState.propTypes = {
-  onClick: PropTypes.func.isRequired,
-};

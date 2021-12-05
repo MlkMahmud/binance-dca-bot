@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Button,
@@ -6,11 +5,15 @@ import {
   Img,
   Link,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
+import React from 'react';
 
-export default function ErrorState({ onRetry }) {
+type Props = {
+  onClick: () => void;
+}
+
+export default function JobListEmptyState({ onClick }: Props) {
   return (
     <Flex
       align="center"
@@ -25,7 +28,7 @@ export default function ErrorState({ onRetry }) {
           alt=""
           height="auto"
           maxW="100%"
-          src="/error.png"
+          src="/empty.png"
         />
       </Box>
       <Stack align="center" spacing={5}>
@@ -34,25 +37,23 @@ export default function ErrorState({ onRetry }) {
           fontWeight="bold"
           textTransform="uppercase"
         >
-          Uh oh!
+          no jobs found
         </Text>
         <Text
           color="#36454F"
           maxW="300px"
           textAlign="center"
         >
-          We seem to have run into some trouble fetching your jobs.
-          {' '}
-          Would you like to give it another try?
+          You have not created any jobs yet. Would you like to add a new one now?
         </Text>
         <Button
           borderRadius="20px"
           colorScheme="black"
           isFullWidth
           maxW="200px"
-          onClick={onRetry}
+          onClick={onClick}
         >
-          Try Again
+          Add Job
         </Button>
       </Stack>
       <Text
@@ -64,10 +65,10 @@ export default function ErrorState({ onRetry }) {
         {' '}
         <Link
           color="blue.500"
-          href="https://icons8.com/illustrations/author/5dbbfa9e01d0360016457560"
+          href="https://icons8.com/illustrations/author/5dca95ef01d036001426e2bc"
           textDecor="underline"
         >
-          Sara Maese
+          Ivan Haidutsk
           {' '}
         </Link>
         from
@@ -83,7 +84,3 @@ export default function ErrorState({ onRetry }) {
     </Flex>
   );
 }
-
-ErrorState.propTypes = {
-  onRetry: PropTypes.func.isRequired,
-};

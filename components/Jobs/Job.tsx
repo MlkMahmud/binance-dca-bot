@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   ButtonGroup,
@@ -11,9 +10,8 @@ import {
   MenuList,
   Stack,
   Text,
-  Tr,
+  Tr
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import TableCell from '../TableCell';
@@ -44,7 +42,13 @@ const PlayIcon = createIcon({
   ),
 });
 
-function JobCard({ children, isVertical, title }) {
+type JobCardProps = {
+  children: React.ReactNode;
+  isVertical?: boolean;
+  title: string;
+}
+
+function JobCard({ children, isVertical = false, title }: JobCardProps) {
   return (
     <Stack
       align={isVertical ? 'initial' : 'center'}
@@ -65,15 +69,20 @@ function JobCard({ children, isVertical, title }) {
   );
 }
 
-JobCard.defaultProps = {
-  isVertical: false,
-};
 
-JobCard.propTypes = {
-  children: PropTypes.node.isRequired,
-  isVertical: PropTypes.bool,
-  title: PropTypes.string.isRequired,
-};
+type Props = {
+  amount: string;
+  disabled: boolean;
+  id: string;
+  interval: string;
+  isMobile: boolean;
+  lastRun: Date | null;
+  name: string;
+  nextRun: Date; 
+  onButtonClick: (jobId: string, op: 'delete' | 'edit' | 'status') => void;
+  symbol: string;
+  timezone: string;
+}
 
 export default function Job({
   amount,
@@ -87,7 +96,7 @@ export default function Job({
   onButtonClick,
   symbol,
   timezone,
-}) {
+}: Props) {
   const borderColor = disabled ? '#FF2400' : '#5EDC1F';
   if (isMobile) {
     return (
@@ -185,17 +194,3 @@ export default function Job({
     </Tr>
   );
 }
-
-Job.propTypes = {
-  amount: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
-  id: PropTypes.string.isRequired,
-  interval: PropTypes.string.isRequired,
-  isMobile: PropTypes.bool.isRequired,
-  lastRun: PropTypes.oneOf(PropTypes.instanceOf(Date), PropTypes.string).isRequired,
-  name: PropTypes.string.isRequired,
-  nextRun: PropTypes.oneOf(PropTypes.instanceOf(Date), PropTypes.string).isRequired,
-  onButtonClick: PropTypes.func.isRequired,
-  symbol: PropTypes.string.isRequired,
-  timezone: PropTypes.string.isRequired,
-};

@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-env browser */
 import {
   Box,
   Icon,
@@ -9,26 +7,33 @@ import {
   Text,
   Thead,
   Tr,
-  useDisclosure,
+  useDisclosure
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
-import { displayToast, useMediaQuery } from '../../utils';
+import { displayToast, useMediaQuery } from '../../client-utils';
+import { Job as JobType } from '../../types';
+import Prompt from '../Prompt';
 import TableCell from '../TableCell';
 import Job from './Job';
-import Prompt from '../Prompt';
+
+type Props = {
+  jobs: JobType[];
+  handleDelete: (jobId: string) => void;
+  handleUpdate: (job: JobType, op: string) => void;
+  openJobForm: (jobId?: string) => void;
+}
 
 export default function JobList({
   jobs,
   handleDelete,
   handleUpdate,
   openJobForm,
-}) {
+}: Props) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const isMobile = useMediaQuery('(max-width: 500px)');
   const [isLoading, setIsLoading] = useState(false);
-  const [jobId, setJobId] = useState();
+  const [jobId, setJobId] = useState<string>('');
   const [op, setOp] = useState();
 
   const isDeleteMode = op === 'delete';
@@ -94,8 +99,8 @@ export default function JobList({
     try {
       setIsLoading(true);
       const job = jobs.find(({ _id }) => _id === jobId);
-      const payload = {};
-      if (job.disabled) {
+      const payload: { enable?: boolean; disable?: boolean; } = {};
+      if (job?.disabled) {
         payload.enable = true;
       } else {
         payload.disable = true;
@@ -179,7 +184,7 @@ export default function JobList({
           colorScheme="black"
           height="60px"
           icon={<Icon as={FaPlus} boxSize="24px" />}
-          onClick={openJobForm}
+          onClick={() => openJobForm()}
           pos="fixed"
           right="20px"
           width="60px"
@@ -207,10 +212,3 @@ export default function JobList({
     </>
   );
 }
-
-JobList.propTypes = {
-  handleDelete: PropTypes.func.isRequired,
-  handleUpdate: PropTypes.func.isRequired,
-  jobs: PropTypes.arrayOf().isRequired,
-  openJobForm: PropTypes.func.isRequired,
-};
