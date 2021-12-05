@@ -1,14 +1,17 @@
-import React from 'react';
 import {
   Box,
   Button,
   Text,
-  VStack,
+  VStack
 } from '@chakra-ui/react';
+import React from 'react';
 import { SpeechBubble } from 'react-kawaii';
-import PropTypes from 'prop-types';
 
-export default function ErrorState({ handleClick }) {
+type Props = {
+  onClick: () => Promise<void>;
+}
+
+export default function ErrorState({ onClick }: Props) {
   return (
     <Box
       bgColor="#FFF"
@@ -28,7 +31,7 @@ export default function ErrorState({ handleClick }) {
         </Box>
         <Button
           colorScheme="black"
-          onClick={handleClick}
+          onClick={onClick}
           type="button"
         >
           Try again
@@ -37,7 +40,3 @@ export default function ErrorState({ handleClick }) {
     </Box>
   );
 }
-
-ErrorState.propTypes = {
-  handleClick: PropTypes.func.isRequired,
-};

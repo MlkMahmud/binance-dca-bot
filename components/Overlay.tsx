@@ -19,7 +19,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import React from 'react';
-import { useMediaQuery } from '../utils';
+import { useMediaQuery } from '../client-utils';
 
 type Props = {
   children: React.ReactNode;

@@ -1,10 +1,10 @@
 /* eslint-env browser */
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import LoadingState from './LoadingState';
+import PortfolioLoadingState from './PortfolioLoadingState';
 
-const DefaultState = dynamic(() => import('./DefaultState'), { loading: () => <LoadingState /> });
-const ErrorState = dynamic(() => import('./ErrorState'), { loading: () => <LoadingState /> });
+const PortfolioDefaultState = dynamic(() => import('./PortfolioDefaultState'), { loading: () => <PortfolioLoadingState /> });
+const PortfolioErrorState = dynamic(() => import('./PortfolioErrorState'), { loading: () => <PortfolioLoadingState /> });
 
 export default function Portfolio() {
   const [assets, updateAssets] = useState([]);
@@ -35,15 +35,15 @@ export default function Portfolio() {
   }, []);
 
   if (isLoading) {
-    return <LoadingState />;
+    return <PortfolioLoadingState />;
   }
 
   if (error) {
-    return <ErrorState handleClick={() => fetchAssets()} />;
+    return <PortfolioErrorState onClick={() => fetchAssets()} />;
   }
 
   return (
-    <DefaultState
+    <PortfolioDefaultState
       assets={assets}
       onChange={setSelectedSymbol}
       onRefresh={fetchAssets}

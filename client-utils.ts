@@ -1,8 +1,7 @@
-/* eslint-disable no-undef */
 import { createStandaloneToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 
-export function useMediaQuery(query) {
+export function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
@@ -20,14 +19,18 @@ export function useMediaQuery(query) {
   return matches;
 }
 
-export function generateSelectOption(value) {
+export function generateSelectOption(value: string) {
   return {
     label: value,
     value,
   };
 }
 
-export function displayToast({ description, status = 'error', title }) {
+export function displayToast({ description, status = 'error', title }: {
+  description: string;
+  status?: 'error' | 'success';
+  title: string;
+}) {
   const toast = createStandaloneToast();
   toast({
     description,
@@ -39,7 +42,7 @@ export function displayToast({ description, status = 'error', title }) {
   });
 }
 
-export async function getSymbols(query) {
+export async function getSymbols(query: string) {
   const response = await fetch(
     `/api/symbols?q=${query}`,
   );
@@ -50,7 +53,7 @@ export async function getSymbols(query) {
   return [];
 }
 
-export async function getTimezones(query) {
+export async function getTimezones(query: string) {
   const response = await fetch(
     `/api/timezones?q=${query}`,
   );

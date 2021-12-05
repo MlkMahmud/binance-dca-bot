@@ -23,7 +23,7 @@ import {
   generateSelectOption,
   getSymbols,
   getTimezones,
-} from '../utils';
+} from '../client-utils';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';

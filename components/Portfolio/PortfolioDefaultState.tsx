@@ -9,15 +9,24 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { HiEye, HiEyeOff, HiRefresh } from 'react-icons/hi';
-import PropTypes from 'prop-types';
 
-export default function DefaultState({
+type Props = {
+  assets: Array<{
+    asset: string;
+    free: string;
+    locked: string;
+    total: number;
+  }>;
+  onChange: (value: string) => void;
+  onRefresh: () => Promise<void>;
+  selectedSymbol: string;
+}
+
+export default function PortfolioDefaultState({
   assets, onChange, onRefresh, selectedSymbol,
-}) {
+}: Props) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
-  const { free, locked, total } = assets.find(
-    ({ asset }) => asset === selectedSymbol,
-  );
+  const { free, locked, total } = assets.find(({ asset }) => asset === selectedSymbol) || {};
   return (
     <Box
       bgColor="#FFF"
@@ -100,23 +109,9 @@ export default function DefaultState({
         <Text fontWeight="medium">
           {isBalanceHidden
             ? '***'
-            : `${(total).toFixed(2)} ${selectedSymbol}`}
+            : `${(total)?.toFixed(2)} ${selectedSymbol}`}
         </Text>
       </Flex>
     </Box>
   );
 }
-
-DefaultState.propTypes = {
-  assets: PropTypes.arrayOf(
-    PropTypes.shape({
-      asset: PropTypes.string,
-      free: PropTypes.string,
-      locked: PropTypes.string,
-      total: PropTypes.number,
-    }),
-  ).isRequired,
-  onChange: PropTypes.func.isRequired,
-  onRefresh: PropTypes.func.isRequired,
-  selectedSymbol: PropTypes.string.isRequired,
-};

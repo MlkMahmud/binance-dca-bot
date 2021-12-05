@@ -20,7 +20,7 @@ import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
 import { User } from '../types';
-import { displayToast, generateSelectOption, getTimezones } from '../utils';
+import { displayToast, generateSelectOption, getTimezones } from '../client-utils';
 
 type Props = {
   onClose: () => void;

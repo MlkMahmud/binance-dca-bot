@@ -24,8 +24,8 @@ export default function LoadingState() {
       >
         <SkeletonText noOfLines={1} w="96px" />
         <HStack spacing={2}>
-          <SkeletonCircle size={['35px', '40px']} />
-          <SkeletonCircle size={['35px', '40px']} />
+          <SkeletonCircle size="35px" />
+          <SkeletonCircle size="35px" />
         </HStack>
       </Flex>
       <Box p="15px 10px">

@@ -11,7 +11,7 @@ import { Field, Form } from 'react-final-form';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
 import PasswordInput from './PasswordInput';
-import { displayToast } from '../utils';
+import { displayToast } from '../client-utils';
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);

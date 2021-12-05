@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
 import PasswordInput from '../PasswordInput';
-import { displayToast } from '../../utils';
+import { displayToast } from '../../client-utils';
 
 export default function UpdatePasswordForm({ setIsLoading, onUpdate }) {
   const onSubmit = async (values) => {
