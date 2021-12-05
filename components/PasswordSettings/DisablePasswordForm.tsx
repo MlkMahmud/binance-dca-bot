@@ -1,19 +1,26 @@
-/* eslint-env browser */
 import {
   FormControl,
   FormErrorMessage,
   FormLabel,
   Stack,
-  Text,
+  Text
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
-import PasswordInput from '../PasswordInput';
 import { displayToast } from '../../client-utils';
+import PasswordInput from '../PasswordInput';
 
-export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
-  const onSubmit = async (values) => {
+type Props = {
+  onUpdate: () => void;
+  setIsLoading: (isLoading: boolean) => void;
+}
+
+type Values = {
+  password: string;
+}
+
+export default function DisablePasswordForm({ onUpdate, setIsLoading }: Props) {
+  const onSubmit = async (values: Values) => {
     try {
       setIsLoading(true);
       const response = await fetch('/api/settings/password', {
@@ -45,8 +52,8 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
     }
   };
 
-  const validate = ({ password }) => {
-    const errors = {};
+  const validate = ({ password }: Values) => {
+    const errors: Partial<Values> = {};
     if (!password) {
       errors.password = 'Password is required';
     } else if (password.length < 8) {
@@ -95,8 +102,3 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }) {
     </>
   );
 }
-
-DisablePasswordForm.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  setIsLoading: PropTypes.func.isRequired,
-};

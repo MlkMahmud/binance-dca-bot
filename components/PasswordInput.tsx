@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 
 type Props = {
   id?: string;
-  name: string;
+  name?: string;
   onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   onChange: (e: React.FormEvent<HTMLInputElement>) => void;
   value: string;

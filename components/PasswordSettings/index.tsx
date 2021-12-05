@@ -1,20 +1,18 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/jsx-props-no-spreading */
 import { ArrowBackIcon, CheckCircleIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Icon,
+  RadioProps,
   Stack,
   Text,
   useRadio,
-  useRadioGroup,
+  useRadioGroup
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { User } from '../../types';
 import Loading from '../Loading';
 import Overlay from '../Overlay';
 
@@ -22,7 +20,8 @@ const DisablePasswordForm = dynamic(() => import('./DisablePasswordForm'), { loa
 const EnablePasswordForm = dynamic(() => import('./EnablePasswordForm'), { loading: () => <Loading /> });
 const UpdatePasswordForm = dynamic(() => import('./UpdatePasswordForm'), { loading: () => <Loading /> });
 
-function Action(props) {
+
+function Action(props: RadioProps & { description: string; title: string; }) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
@@ -49,9 +48,16 @@ function Action(props) {
   );
 }
 
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdate: (user: User) => Promise<void>;
+  user: User;
+}
+
 export default function PasswordSettings({
   isOpen, onClose, onUpdate, user,
-}) {
+}: Props) {
   const router = useRouter();
   const [showActionScreen, setShowActionScreen] = useState(true);
   const [action, setAction] = useState('');
@@ -154,9 +160,3 @@ export default function PasswordSettings({
     </Overlay>
   );
 }
-
-PasswordSettings.propTypes = {
-  user: PropTypes.shape().isRequired,
-  onClose: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
-};
