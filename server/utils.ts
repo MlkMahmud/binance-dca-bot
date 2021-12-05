@@ -3,7 +3,16 @@ import cronstrue from 'cronstrue';
 import moment from 'moment-timezone';
 import Joi, { PresenceMode, ValidationError } from 'joi';
 import binance from './lib/binance';
-import { JobConfig } from '../types';
+
+export type JobConfig = {
+  amount: string;
+  jobName: string;
+  schedule: string;
+  quoteAsset: string;
+  symbol: string;
+  timezone: string;
+  useDefaultTimezone: boolean;
+};
 
 export function cleanUserObject({
   password, slack, telegram, timezone,

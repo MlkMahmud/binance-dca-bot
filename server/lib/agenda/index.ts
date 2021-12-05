@@ -6,7 +6,9 @@ const agenda = new Agenda();
 const jobs = readdirSync(resolve(__dirname, 'jobs'));
 
 jobs.forEach((job) => {
-  require(`./jobs/${job}`)(agenda);
+  if (!job.includes('.map')) {
+    require(`./jobs/${job}`)(agenda);
+  }
 });
 
 export default agenda;

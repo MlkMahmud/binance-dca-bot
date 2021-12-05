@@ -15,7 +15,7 @@ import {
   validateJobConfig,
   validateTimezone
 } from './utils';
-import { JobConfig } from '../types';
+import { JobConfig } from './utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
 

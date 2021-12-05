@@ -4,7 +4,7 @@ import BaseError from '../../error';
 import { User } from '../../models';
 import rootLogger from '../logger';
 import sentry from '../sentry';
-import { Event, JobEventPayload } from '../../../types';
+import { Event, JobEventPayload } from '.';
 
 function generateMessageText(event: Event, job: JobEventPayload) {
   let text;

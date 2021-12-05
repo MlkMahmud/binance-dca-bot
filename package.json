@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:next": "next build",
-    "build:server": "babel server --out-dir dist",
+    "build:server": "tsc --project tsconfig.server.json",
     "dev": "cross-env NODE_ENV=development nodemon",
     "prepare": "husky install",
     "prestart": "npm run build",
