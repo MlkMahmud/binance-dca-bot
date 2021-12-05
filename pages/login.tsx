@@ -10,7 +10,7 @@ export default function Login() {
   );
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req }: any) {
   const { user } = req;
   if (user) {
     return {

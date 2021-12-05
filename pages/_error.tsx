@@ -1,9 +1,14 @@
-/* eslint-disable react/prop-types */
+// @ts-nocheck
 import React from 'react';
 import NextErrorComponent from 'next/error';
 import sentry from '../server/lib/sentry';
 
-const Error = ({ hasGetInitialPropsRun, err }) => {
+type Props = {
+  hasGetInitialPropsRun: boolean;
+  err: any;
+}
+
+const Error = ({ hasGetInitialPropsRun, err }: Props) => {
   if (!hasGetInitialPropsRun && err) {
     sentry.captureException(err);
   }

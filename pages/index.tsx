@@ -1,11 +1,11 @@
-import React from 'react';
 import { Box } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
+import React from 'react';
+import Jobs from '../components/Jobs';
 import Page from '../components/Page';
 import Portfolio from '../components/Portfolio';
-import Jobs from '../components/Jobs';
+import { User } from '../types';
 
-export default function Index({ user }) {
+export default function Index({ user }: { user: User }) {
   return (
     <Page user={user}>
       {({ timezone }) => (
@@ -26,13 +26,8 @@ export default function Index({ user }) {
   );
 }
 
-Index.propTypes = {
-  user: PropTypes.shape({
-    timezone: PropTypes.string,
-  }).isRequired,
-};
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req }: any) {
   const { user } = await req;
   if (!user) {
     return {
