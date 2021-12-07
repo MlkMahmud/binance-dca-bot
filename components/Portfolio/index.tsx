@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import PortfolioLoadingState from './PortfolioLoadingState';

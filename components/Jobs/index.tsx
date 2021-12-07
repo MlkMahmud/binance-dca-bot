@@ -1,4 +1,3 @@
-/* eslint-env browser */
 import { useDisclosure } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
