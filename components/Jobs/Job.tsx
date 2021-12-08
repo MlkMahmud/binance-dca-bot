@@ -10,11 +10,24 @@ import {
   MenuList,
   Stack,
   Text,
-  Tr
+  Tr,
 } from '@chakra-ui/react';
 import React from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import TableCell from '../TableCell';
+
+const HistoryIcon = createIcon({
+  displayName: 'HistoryIcon',
+  viewBox: '0 0 24 24',
+  path: (
+    <path
+      clipRule="evenodd"
+      d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6Zm2 10H8v2h8v-2Zm0 4H8v2h8v-2ZM6 20h12V9h-5V4H6v16Z"
+      fill="currentColor"
+      fillRule="evenodd"
+    />
+  ),
+});
 
 const PauseIcon = createIcon({
   displayName: 'PauseIcon',
@@ -46,7 +59,7 @@ type JobCardProps = {
   children: React.ReactNode;
   isVertical?: boolean;
   title: string;
-}
+};
 
 function JobCard({ children, isVertical = false, title }: JobCardProps) {
   return (
@@ -69,7 +82,6 @@ function JobCard({ children, isVertical = false, title }: JobCardProps) {
   );
 }
 
-
 type Props = {
   amount: string;
   disabled: boolean;
@@ -78,11 +90,14 @@ type Props = {
   isMobile: boolean;
   lastRun: Date | null;
   name: string;
-  nextRun: Date; 
-  onButtonClick: (jobId: string, op: 'delete' | 'edit' | 'status') => void;
+  nextRun: Date;
+  onButtonClick: (
+    jobId: string,
+    op: 'delete' | 'edit' | 'status' | 'history'
+  ) => void;
   symbol: string;
   timezone: string;
-}
+};
 
 export default function Job({
   amount,
@@ -126,13 +141,25 @@ export default function Job({
                 icon={disabled ? <PlayIcon /> : <PauseIcon />}
                 onClick={() => onButtonClick(id, 'status')}
               >
-                {`${disabled ? 'Resume' : 'Pause'} Job`}
+                {`${disabled ? 'Resume' : 'Pause'} job`}
               </MenuItem>
-              <MenuItem icon={<EditIcon />} onClick={() => onButtonClick(id, 'edit')}>
-                Edit Job
+              <MenuItem
+                icon={<EditIcon />}
+                onClick={() => onButtonClick(id, 'edit')}
+              >
+                Edit job
               </MenuItem>
-              <MenuItem icon={<DeleteIcon />} onClick={() => onButtonClick(id, 'delete')}>
-                Delete Job
+              <MenuItem
+                icon={<DeleteIcon />}
+                onClick={() => onButtonClick(id, 'delete')}
+              >
+                Delete job
+              </MenuItem>
+              <MenuItem
+                icon={<HistoryIcon />}
+                onClick={() => onButtonClick(id, 'history')}
+              >
+                View order history
               </MenuItem>
             </MenuList>
           </Menu>
@@ -148,19 +175,22 @@ export default function Job({
           <JobCard title="symbol">{symbol}</JobCard>
           <JobCard title="amount">{amount}</JobCard>
           <JobCard title="timezone">{timezone}</JobCard>
-          <JobCard isVertical title="interval">{interval}</JobCard>
-          <JobCard isVertical title="last run">{lastRun || '---'}</JobCard>
-          <JobCard isVertical title="next run">{nextRun}</JobCard>
+          <JobCard isVertical title="interval">
+            {interval}
+          </JobCard>
+          <JobCard isVertical title="last run">
+            {lastRun || '---'}
+          </JobCard>
+          <JobCard isVertical title="next run">
+            {nextRun}
+          </JobCard>
         </Stack>
       </Stack>
     );
   }
   return (
     <Tr>
-      <TableCell
-        borderLeftColor={borderColor}
-        isFixed
-      >
+      <TableCell borderLeftColor={borderColor} isFixed>
         {name}
       </TableCell>
       <TableCell>{symbol}</TableCell>
@@ -188,6 +218,12 @@ export default function Job({
             icon={<DeleteIcon />}
             minWidth="auto"
             onClick={() => onButtonClick(id, 'delete')}
+          />
+          <IconButton
+            aria-label={`view ${name} history`}
+            icon={<HistoryIcon />}
+            minWidth="auto"
+            onClick={() => onButtonClick(id, 'history')}
           />
         </ButtonGroup>
       </TableCell>

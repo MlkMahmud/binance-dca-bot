@@ -13,6 +13,7 @@ import React, { useCallback, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { displayToast, useMediaQuery } from '../../client-utils';
 import { Job as JobType } from '../../types';
+import OrderHistory from '../OrderHistory';
 import Prompt from '../Prompt';
 import TableCell from '../TableCell';
 import Job from './Job';
@@ -22,7 +23,7 @@ type Props = {
   handleDelete: (jobId: string) => void;
   handleUpdate: (job: JobType, op: string) => void;
   openJobForm: (jobId?: string) => void;
-}
+};
 
 export default function JobList({
   jobs,
@@ -35,19 +36,33 @@ export default function JobList({
   const [isLoading, setIsLoading] = useState(false);
   const [jobId, setJobId] = useState<string>('');
   const [op, setOp] = useState();
+  const [showOrderHistory, setShowOrderHistory] = useState(false);
 
+  const selectedJob = jobs.find(({ _id }) => _id === jobId);
   const isDeleteMode = op === 'delete';
-  const handleButtonClick = useCallback((id, action) => {
-    if (action === 'edit') {
-      openJobForm(id);
-    } else if (action === 'delete' || action === 'status') {
-      setJobId(id);
-      setOp(action);
-      onOpen();
-    } else {
-      throw new Error('Action must be one of edit | delete | status');
-    }
-  }, [jobs.length]);
+
+  const handleButtonClick = useCallback(
+    (id, action) => {
+      switch (action) {
+        case 'edit':
+          openJobForm(id);
+          break;
+        case 'delete':
+        case 'status':
+          setJobId(id);
+          setOp(action);
+          onOpen();
+          break;
+        case 'history':
+          setJobId(id);
+          setShowOrderHistory(true);
+          break;
+        default:
+          throw new Error('Action must be one of edit | delete | status');
+      }
+    },
+    [jobs.length]
+  );
 
   const jobsArray = jobs.map((job) => (
     <Job
@@ -99,7 +114,7 @@ export default function JobList({
     try {
       setIsLoading(true);
       const job = jobs.find(({ _id }) => _id === jobId);
-      const payload: { enable?: boolean; disable?: boolean; } = {};
+      const payload: { enable?: boolean; disable?: boolean } = {};
       if (job?.disabled) {
         payload.enable = true;
       } else {
@@ -138,8 +153,14 @@ export default function JobList({
   return (
     <>
       <Box overflow="auto">
-        <Text fontSize="xl" fontWeight="bold" mb="20px">{`Jobs(${jobs.length})`}</Text>
-        {isMobile ? (<>{jobsArray}</>) : (
+        <Text
+          fontSize="xl"
+          fontWeight="bold"
+          mb="20px"
+        >{`Jobs(${jobs.length})`}</Text>
+        {isMobile ? (
+          <>{jobsArray}</>
+        ) : (
           <Box
             border="1px solid #DADCE0"
             borderBottom="none"
@@ -169,9 +190,7 @@ export default function JobList({
                   <TableCell isHeading>Action</TableCell>
                 </Tr>
               </Thead>
-              <Tbody>
-                {jobsArray}
-              </Tbody>
+              <Tbody>{jobsArray}</Tbody>
             </Table>
           </Box>
         )}
@@ -208,6 +227,14 @@ export default function JobList({
             ? 'Deleting this job will also delete all of its related data, are you sure you want to continue?'
             : 'Please click the confirm button to proceed.'}
         </Prompt>
+      )}
+      {showOrderHistory && (
+        <OrderHistory
+          isOpen={showOrderHistory}
+          jobId={jobId}
+          jobName={selectedJob?.data.jobName || ''}
+          onClose={() => setShowOrderHistory(false)}
+        />
       )}
     </>
   );
