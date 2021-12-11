@@ -111,4 +111,14 @@ router.route('/api/jobs/:jobId')
     } catch (err) { next(err); }
   });
 
+
+router.get('/api/jobs/:jobId/orders', async (req, res, next) => {
+  try {
+    const { data } = await controller.getOrders(req.params.jobId);
+    res.json({ data }); 
+  } catch(err) {
+    next(err);
+  }
+});
+
 export default router;

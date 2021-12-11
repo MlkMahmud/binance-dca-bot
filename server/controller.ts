@@ -7,7 +7,7 @@ import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import agenda from './lib/agenda';
 import binance from './lib/binance';
-import { User } from './models';
+import { Order, User } from './models';
 import {
   cleanUserObject,
   flattenObject,
@@ -293,4 +293,9 @@ export default {
     await agenda.cancel({ _id });
     return { status: 200, message: 'Job successfully deleted' };
   },
+
+  async getOrders(jobId: string) {
+    const orders = await Order.find({ jobId });
+    return { data: orders };
+  }
 };
