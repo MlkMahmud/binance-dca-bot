@@ -69,7 +69,7 @@ export default function Order({
       <Row isCustom title="Status:">
         <Badge colorScheme={isFilled ? 'green' : 'orange'}>{status}</Badge>
       </Row>
-      <Row title="Updated At:"  value={transactTime} />
+      <Row title="Updated At:"  value={new Date(transactTime).toLocaleString('en-GB')} />
       <Row title="Original Qty" value={origQty} />
       <Row title="Executed Qty" value={executedQty} />
       <Row title="Amount:" value={cummulativeQuoteQty} />

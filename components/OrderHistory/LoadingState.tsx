@@ -11,7 +11,6 @@ export default function OrderHistoryLoadingState() {
       align="center"
       justify="center"
       minH="full"
-      minW="full"
     >
       <Stack align="center" spacing={1.5}>
         <Spinner

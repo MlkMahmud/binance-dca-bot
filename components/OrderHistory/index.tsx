@@ -10,6 +10,8 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import Order from './Order';
+import OrderHistoryEmptyState from './EmptyState';
+import OrderHistoryErrorState from './ErrorState';
 import OrderHistoryLoadingState from './LoadingState';
 
 type Props = {
@@ -27,54 +29,45 @@ export default function OrderHistory({
 }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
+  const [showErrorState, setShowErrorState] = useState(false);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      setShowErrorState(false);
+      const response = await fetch(`/api/jobs/${jobId}/orders`);
+      if (response.ok) {
+        const { data } = await response.json();
+        setOrders(data);
+      } else {
+        throw new Error(response.statusText);
+      }
+    } catch {
+      setShowErrorState(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const Component = () => {
+    if (isLoading) {
+      return <OrderHistoryLoadingState />;
+    } else if (showErrorState) {
+      return <OrderHistoryErrorState onRetry={fetchOrders} />;
+    } else  if (orders.length < 1) {
+      return <OrderHistoryEmptyState />
+    }
+    return (
+      <>
+        {orders.map((order) => (
+          <Order key={order.orderId} {...order} />
+        ))}
+      </>
+    );
+  };
 
   useEffect(() => {
-    setIsLoading(true);
-    const timeoutId = setTimeout(() => {
-      setOrders([
-        {
-          orderId: 3119984,
-          origQty: '0.05000000',
-          status: 'FILLED',
-          symbol: 'BNBUSDT',
-          transactTime: '13/07/2021, 16:41:53',
-          cummulativeQuoteQty: '37.00000000',
-          executedQty: '0.05000000',
-        },
-        {
-          orderId: 3119985,
-          origQty: '0.05000000',
-          status: 'FILLED',
-          symbol: 'BNBUSDT',
-          transactTime: '13/07/2021, 16:41:53',
-          cummulativeQuoteQty: '37.00000000',
-          executedQty: '0.05000000',
-        },
-        {
-          orderId: 3119976,
-          origQty: '0.05000000',
-          status: 'FILLED',
-          symbol: 'BNBUSDT',
-          transactTime: '13/07/2021, 16:41:53',
-          cummulativeQuoteQty: '37.00000000',
-          executedQty: '0.05000000',
-        },
-        {
-          orderId: 3119987,
-          origQty: '0.05000000',
-          status: 'FILLED',
-          symbol: 'BNBUSDT',
-          transactTime: '13/07/2021, 16:41:53',
-          cummulativeQuoteQty: '37.00000000',
-          executedQty: '0.05000000',
-        },
-      ]);
-      setIsLoading(false);
-    }, 1500);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    fetchOrders();
   }, []);
 
   return (
@@ -98,17 +91,7 @@ export default function OrderHistory({
             </Text>
           </DrawerHeader>
         </Box>
-        <DrawerBody p="0">
-          {isLoading ? (
-            <OrderHistoryLoadingState />
-          ) : (
-            <>
-              {orders.map((order) => (
-                <Order key={order.orderId} {...order} />
-              ))}
-            </>
-          )}
-        </DrawerBody>
+        <DrawerBody p="0">{<Component />}</DrawerBody>
       </DrawerContent>
     </Drawer>
   );
