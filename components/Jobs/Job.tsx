@@ -179,10 +179,10 @@ export default function Job({
             {interval}
           </JobCard>
           <JobCard isVertical title="last run">
-            {lastRun || '---'}
+            {lastRun && new Date(`${lastRun}`).toLocaleString('en-GB') || '---'}
           </JobCard>
           <JobCard isVertical title="next run">
-            {nextRun}
+            {new Date(`${nextRun}`).toLocaleString('en-GB')}
           </JobCard>
         </Stack>
       </Stack>
@@ -197,8 +197,8 @@ export default function Job({
       <TableCell>{amount}</TableCell>
       <TableCell>{interval}</TableCell>
       <TableCell>{timezone}</TableCell>
-      <TableCell>{lastRun}</TableCell>
-      <TableCell>{nextRun}</TableCell>
+      <TableCell>{lastRun && new Date(`${lastRun}`).toLocaleString('en-GB') || '---'}</TableCell>
+      <TableCell>{new Date(`${nextRun}`).toLocaleString('en-GB')}</TableCell>
       <TableCell>
         <ButtonGroup variant="unstyled">
           <IconButton

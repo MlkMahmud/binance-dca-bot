@@ -121,4 +121,15 @@ router.get('/api/jobs/:jobId/orders', async (req, res, next) => {
   }
 });
 
+
+router.patch('/api/orders/:orderId', async (req, res, next) => {
+  try {
+    const { orderId, symbol } = req.body;
+    const order = await controller.updateOrderStatus({ orderId, symbol });
+    res.json({ data: order });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

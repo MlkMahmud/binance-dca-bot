@@ -14,7 +14,10 @@ import {
 import React from 'react';
 import { Fill, Order as OrderType } from '../../types';
 
-type Props = OrderType;
+
+type Props = OrderType & {
+  onClick: (orderId: number, symbol: string) => Promise<void>; 
+};
 
 type RowProps = {
   children?: React.ReactNode;
@@ -59,6 +62,7 @@ export default function Order({
   cummulativeQuoteQty,
   executedQty,
   fills,
+  onClick,
   orderId,
   origQty,
   status,
@@ -80,6 +84,7 @@ export default function Order({
                 height="auto"
                 icon={<RepeatIcon />}
                 minW="auto"
+                onClick={() => onClick(orderId, symbol)}
                 variant="unstyled"
               />
             )}

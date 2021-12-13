@@ -13,6 +13,7 @@ import Order from './Order';
 import OrderHistoryEmptyState from './EmptyState';
 import OrderHistoryErrorState from './ErrorState';
 import OrderHistoryLoadingState from './LoadingState';
+import { Order as OrderType } from '../../types';
 
 type Props = {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export default function OrderHistory({
   onClose,
 }: Props) {
   const [isLoading, setIsLoading] = useState(true);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderType[]>([]);
   const [showErrorState, setShowErrorState] = useState(false);
 
   const fetchOrders = async () => {
@@ -49,6 +50,31 @@ export default function OrderHistory({
     }
   };
 
+  const updateOrder = async (orderId: number, symbol: string) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/orders/${orderId}`, {
+        body: JSON.stringify({ orderId, symbol }),
+        headers: { 'content-type': 'application/json' },
+        method: 'PATCH'
+      })
+      if (response.ok) {
+        const { data } = await response.json();
+        const updatedOrders = orders.map((order) => {
+          if (order.orderId === orderId) {
+            return data;
+          }
+          return order;
+        });
+        setOrders(updatedOrders);
+      } else { throw new Error(response.statusText); }
+    } catch {
+      setShowErrorState(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const Component = () => {
     if (isLoading) {
       return <OrderHistoryLoadingState />;
@@ -60,7 +86,18 @@ export default function OrderHistory({
     return (
       <>
         {orders.map((order) => (
-          <Order key={order.orderId} {...order} />
+          <Order 
+            key={order.orderId} 
+            cummulativeQuoteQty={order.cummulativeQuoteQty}
+            executedQty={order.executedQty}
+            fills={order.fills}
+            onClick={updateOrder}
+            orderId={order.orderId}
+            origQty={order.origQty}
+            status={order.status}
+            symbol={order.symbol}
+            transactTime={order.transactTime}
+           />
         ))}
       </>
     );
