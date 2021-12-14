@@ -69,7 +69,7 @@ export default function JobForm({
     quoteAsset: job.data.quoteAsset,
     schedule: job.repeatInterval,
     symbol: job.data.symbol,
-    timezone: job.repeatTimezone,
+    timezone: (job.data.useDefaultTimezone && defaultTimezone) ? defaultTimezone : job.repeatTimezone,
     useDefaultTimezone: job.data.useDefaultTimezone,
   } : {
     amount: '',

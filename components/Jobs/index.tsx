@@ -1,10 +1,10 @@
 import { useDisclosure } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Job } from '../../types';
 import Loading from '../Loading';
 import JobListLoadingState from './JobListLoadingState';
-import { Job } from '../../types';
 
 const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), { loading: () => <JobListLoadingState /> });
 const JobListErrorState = dynamic(() => import('./JobListErrorState'), { loading: () => <JobListLoadingState /> });
@@ -22,13 +22,13 @@ export default function Jobs({ defaultTimezone }: Props) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job>();
 
-  const deleteJob = useCallback((jobId) => {
+  const deleteJob = (jobId: string) => {
     const updatedJobs = jobs.filter(({ _id }) => _id !== jobId);
     setJobs(updatedJobs);
-  }, [jobs.length]);
+  }
 
-  const updateJobs = useCallback((newJob: Job, op: string) => {
-    let updatedJobs;
+  const updateJobs = (newJob: Job, op: string) => {
+    let updatedJobs: Job[];
     switch (op) {
       case 'append':
         updatedJobs = [...jobs, newJob];
@@ -46,13 +46,13 @@ export default function Jobs({ defaultTimezone }: Props) {
     }
     setJobs(updatedJobs);
     onClose();
-  }, [jobs.length]);
+  };
 
-  const openJobForm = useCallback((id = '') => {
+  const openJobForm = (id = '') => {
     const job = jobs.find(({ _id }) => _id === id);
     setSelectedJob(job);
     onOpen();
-  }, [jobs.length]);
+  };
 
   const fetchJobs = async () => {
     try {
@@ -83,6 +83,7 @@ export default function Jobs({ defaultTimezone }: Props) {
     <>
       {jobs.length > 0 ? (
         <JobList
+          defaultTimezone={defaultTimezone}
           handleDelete={deleteJob}
           handleUpdate={updateJobs}
           jobs={jobs}

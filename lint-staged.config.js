@@ -13,6 +13,7 @@ const tscFlags = [
   '--noImplicitAny',
   '--jsx preserve',
   '--allowSyntheticDefaultImports',
+  '--typeRoots ./node_modules/@types/,.@/types/'
 ];
 
 module.exports = {
