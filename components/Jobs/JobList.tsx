@@ -58,7 +58,7 @@ export default function JobList({
           setShowOrderHistory(true);
           break;
         default:
-          throw new Error('Action must be one of edit | delete | status');
+          throw new Error('Action must be one of edit | delete | history | status');
       }
     },
     [jobs.length]

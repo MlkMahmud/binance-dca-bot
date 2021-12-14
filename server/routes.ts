@@ -111,4 +111,25 @@ router.route('/api/jobs/:jobId')
     } catch (err) { next(err); }
   });
 
+
+router.get('/api/jobs/:jobId/orders', async (req, res, next) => {
+  try {
+    const { data } = await controller.getOrders(req.params.jobId);
+    res.json({ data }); 
+  } catch(err) {
+    next(err);
+  }
+});
+
+
+router.patch('/api/orders/:orderId', async (req, res, next) => {
+  try {
+    const { orderId, symbol } = req.body;
+    const order = await controller.updateOrderStatus({ orderId, symbol });
+    res.json({ data: order });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

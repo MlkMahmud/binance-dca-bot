@@ -7,7 +7,7 @@ import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import agenda from './lib/agenda';
 import binance from './lib/binance';
-import { User } from './models';
+import { Order, User } from './models';
 import {
   cleanUserObject,
   flattenObject,
@@ -105,7 +105,7 @@ export default {
   async updatePassword({ action, password = '', newPassword }: {
     action: 'disable' | 'enable' | 'update',
     password?: string;
-    newPassword?: string;  
+    newPassword?: string;
   }) {
     try {
       const {
@@ -293,4 +293,46 @@ export default {
     await agenda.cancel({ _id });
     return { status: 200, message: 'Job successfully deleted' };
   },
+
+  async getOrders(jobId: string) {
+    const orders = await Order.find({ jobId }, null, { sort: { transactTime: -1 } });
+    return { data: orders };
+  },
+
+  async updateOrderStatus(payload: { orderId: number; symbol: string; }) {
+    try {
+      const { orderId, symbol } = await Joi.object({
+        orderId: Joi.number().required(),
+        symbol: Joi.string().required(),
+      }).validateAsync(payload);
+
+      const order = await Order.findOne({ orderId, symbol });
+      if (order.status === 'FILLED') {
+        return order;
+      }
+      const orderToUpdate = await binance.getOrder({ orderId, symbol });
+      if (orderToUpdate.status === 'FILLED') {
+        // @ts-ignore
+        const trades = await binance.myTrades({ orderId, symbol });
+        const fills = trades.map((trade) => ({
+          commission: trade.commission,
+          commissionAsset: trade.commissionAsset,
+          price: trade.price,
+          qty: trade.qty,
+          tradeId: trade.id,
+        }));
+        const transactTime = new Date(orderToUpdate.updateTime).toISOString();
+        const updatedOrder = await Order.findOneAndUpdate(
+          { orderId, symbol },
+          { fills, status: orderToUpdate.status, transactTime },
+          { new: true }
+         );
+        return updatedOrder;
+      }
+      return order;
+    } catch (e: any) {
+      const response = handleJoiValidationError(e);
+      return response;
+    }
+  }
 };

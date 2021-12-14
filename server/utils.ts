@@ -54,7 +54,7 @@ function validateCronSyntax(schedule: string, helper: any) {
 }
 
 export function formatDateString(date: Date, options = {}) {
-  return date.toLocaleString('en-US', {
+  return date.toLocaleString('en-GB', {
     day: '2-digit',
     hour: '2-digit',
     year: 'numeric',
