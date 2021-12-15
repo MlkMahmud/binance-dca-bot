@@ -9,18 +9,18 @@ import {
   Link,
   Stack,
   Switch,
-  Text,
+  Text
 } from '@chakra-ui/react';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
+import { displayToast, generateSelectOption, getTimezones } from '../client-utils';
+import { User } from '../types';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
-import { User } from '../types';
-import { displayToast, generateSelectOption, getTimezones } from '../client-utils';
 
 type Props = {
   onClose: () => void;
@@ -38,9 +38,9 @@ export default function Settings({
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const loadTimezones = useCallback(debounce((input, cb) => {
+  const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
-  }, 700), []);
+  }, 700);
 
   const onSubmit = async (values: User) => {
     try {

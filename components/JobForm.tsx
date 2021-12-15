@@ -10,24 +10,24 @@ import {
   Link,
   Stack,
   Switch,
-  Text,
+  Text
 } from '@chakra-ui/react';
 import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import {
   displayToast,
   generateSelectOption,
   getSymbols,
-  getTimezones,
+  getTimezones
 } from '../client-utils';
+import { Job } from '../types';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
-import { Job } from '../types';
 
 type Props = {
   defaultTimezone?: string;
@@ -87,13 +87,13 @@ export default function JobForm({
   const [minNotional, setMinNotional] = useState(0);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const loadSymbols = useCallback(debounce((input, cb) => {
+  const loadSymbols = debounce((input, cb) => {
     getSymbols(input).then((symbols) => cb(symbols));
-  }, 700), []);
+  }, 700);
 
-  const loadTimezones = useCallback(debounce((input, cb) => {
+  const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
-  }, 700), []);
+  }, 700);
 
   function validate(values: Values) {
     const errors: Partial<Values> = {};
