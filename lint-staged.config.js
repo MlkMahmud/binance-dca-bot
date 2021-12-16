@@ -13,13 +13,13 @@ const tscFlags = [
   '--noImplicitAny',
   '--jsx preserve',
   '--allowSyntheticDefaultImports',
-  '--typeRoots ./node_modules/@types/,./types/'
 ];
 
 module.exports = {
-  '**/*.{ts,tsx,js,jsx}': [
+  "**/*.js": [ 'eslint --fix' ],
+  '**/*.{ts,tsx}': [
     (files) =>
-      `tsc ${tscFlags.join(' ')} ${files.map((file) => `'${file}'`).join(' ')}`,
+    `tsc ${tscFlags.join(' ')} ${files.map((file) => `'${file}'`).join(' ')}`,
     'eslint --fix',
   ],
   '**/*.{md,yml,json,prettierrc}': ['prettier --write'],

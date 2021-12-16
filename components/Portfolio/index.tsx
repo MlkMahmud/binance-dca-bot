@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import PortfolioLoadingState from './PortfolioLoadingState';
+import Loading from 'components/Loading';
 
-const PortfolioDefaultState = dynamic(() => import('./PortfolioDefaultState'), { loading: () => <PortfolioLoadingState /> });
-const PortfolioErrorState = dynamic(() => import('./PortfolioErrorState'), { loading: () => <PortfolioLoadingState /> });
+const PortfolioDefaultState = dynamic(() => import('./PortfolioDefaultState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <PortfolioLoadingState />;
+  },
+});
+const PortfolioErrorState = dynamic(() => import('./PortfolioErrorState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <PortfolioLoadingState />;
+  },
+});
 
 export default function Portfolio() {
   const [assets, updateAssets] = useState([]);

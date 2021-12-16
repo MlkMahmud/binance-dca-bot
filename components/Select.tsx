@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react';
 import AsyncSelect from 'react-select/async';
 import ReactSelect, { createFilter } from 'react-select';

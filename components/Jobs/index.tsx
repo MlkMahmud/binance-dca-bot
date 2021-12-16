@@ -6,14 +6,37 @@ import { Job } from '../../types';
 import Loading from '../Loading';
 import JobListLoadingState from './JobListLoadingState';
 
-const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), { loading: () => <JobListLoadingState /> });
-const JobListErrorState = dynamic(() => import('./JobListErrorState'), { loading: () => <JobListLoadingState /> });
-const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
-const JobList = dynamic(() => import('./JobList'), { loading: () => <JobListLoadingState /> });
+const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
+const JobListErrorState = dynamic(() => import('./JobListErrorState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
+const JobForm = dynamic(() => import('../JobForm'), {
+  loading: ({ error }) => <Loading error={error} />,
+});
+const JobList = dynamic(() => import('./JobList'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
 
 type Props = {
   defaultTimezone?: string;
-}
+};
 
 export default function Jobs({ defaultTimezone }: Props) {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -25,7 +48,7 @@ export default function Jobs({ defaultTimezone }: Props) {
   const deleteJob = (jobId: string) => {
     const updatedJobs = jobs.filter(({ _id }) => _id !== jobId);
     setJobs(updatedJobs);
-  }
+  };
 
   const updateJobs = (newJob: Job, op: string) => {
     let updatedJobs: Job[];
@@ -61,10 +84,14 @@ export default function Jobs({ defaultTimezone }: Props) {
       if (response.ok) {
         const data = await response.json();
         setJobs(data);
-      } else { throw new Error(); }
+      } else {
+        throw new Error();
+      }
     } catch {
       setHasError(true);
-    } finally { setIsloading(false); }
+    } finally {
+      setIsloading(false);
+    }
   };
 
   useEffect(() => {
@@ -89,16 +116,18 @@ export default function Jobs({ defaultTimezone }: Props) {
           jobs={jobs}
           openJobForm={openJobForm}
         />
-      ) : <JobListEmptyState onClick={openJobForm} />}
+      ) : (
+        <JobListEmptyState onClick={openJobForm} />
+      )}
 
       {isOpen && (
-      <JobForm
-        defaultTimezone={defaultTimezone}
-        isOpen={isOpen}
-        job={selectedJob}
-        onFormClose={onClose}
-        onSubmitSuccess={updateJobs}
-      />
+        <JobForm
+          defaultTimezone={defaultTimezone}
+          isOpen={isOpen}
+          job={selectedJob}
+          onFormClose={onClose}
+          onSubmitSuccess={updateJobs}
+        />
       )}
     </>
   );

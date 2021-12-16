@@ -1,9 +1,10 @@
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
+import { User } from '../types';
+import ErrorBoundary from './ErrorBoundary';
 import Footer from './Footer';
 import Header from './Header';
 import Loading from './Loading';
-import { User } from '../types';
 
 
 type Props = {
@@ -11,8 +12,8 @@ type Props = {
   user: User;
 }
 
-const Settings = dynamic(() => import('./Settings'), { loading: () => <Loading /> });
-const PasswordSettings = dynamic(() => import('./PasswordSettings'), { loading: () => <Loading /> });
+const Settings = dynamic(() => import('./Settings'), { loading: ({ error }) => <Loading error={error} /> });
+const PasswordSettings = dynamic(() => import('./PasswordSettings'), { loading: ({ error }) => <Loading error={error} /> });
 
 export default function Page({ children, user }: Props) {
   const [isGeneralSettingsOpen, setIsGeneralSettingsOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function Page({ children, user }: Props) {
   const [userConfig, updateUserConfig] = useState(user);
 
   return (
-    <>
+    <ErrorBoundary>
       <Header
         isPasswordEnabled={userConfig.password.enabled}
         onGlobalSettingsClick={() => setIsGeneralSettingsOpen(true)}
@@ -44,6 +45,6 @@ export default function Page({ children, user }: Props) {
           user={userConfig}
         />
       )}
-    </>
+    </ErrorBoundary>
   );
 }
