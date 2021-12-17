@@ -1,13 +1,8 @@
-import {
-  ButtonGroup,
-  Flex,
-  Icon,
-  IconButton
-} from '@chakra-ui/react';
-import React from 'react';
-import { AiFillSetting } from 'react-icons/ai';
-import { FaLock, FaUnlock } from 'react-icons/fa';
-import Logo from './Logo';
+import { ButtonGroup, Flex, Icon, IconButton } from "@chakra-ui/react";
+import React from "react";
+import { AiFillSetting } from "react-icons/ai";
+import { FaLock, FaUnlock } from "react-icons/fa";
+import Logo from "./Logo";
 
 type Props = {
   isPasswordEnabled: boolean;
