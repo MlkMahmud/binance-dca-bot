@@ -21,6 +21,12 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "exclude": ["dist", ".next", "next.config.js"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "dist",
+    ".next",
+    "next.config.js",
+    "**/*.spec.ts",
+    "jest.setup.ts"
+  ]
 }
