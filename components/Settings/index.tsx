@@ -10,21 +10,21 @@ import {
   Stack,
   Switch,
   Text,
-} from "@chakra-ui/react";
-import { diff } from "deep-object-diff";
-import debounce from "lodash.debounce";
-import React, { useRef, useState } from "react";
-import { Field, Form } from "react-final-form";
-import { FaSlack, FaTelegramPlane } from "react-icons/fa";
+} from '@chakra-ui/react';
+import { diff } from 'deep-object-diff';
+import debounce from 'lodash.debounce';
+import React, { useRef, useState } from 'react';
+import { Field, Form } from 'react-final-form';
+import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import {
   displayToast,
   generateSelectOption,
   getTimezones,
-} from "../../client-utils";
-import { User } from "../../types";
-import Overlay from "../Overlay";
-import Popover from "../Popover";
-import Select from "../Select";
+} from '../../client-utils';
+import { User } from '../../types';
+import Overlay from '../Overlay';
+import Popover from '../Popover';
+import Select from '../Select';
 
 type Props = {
   onClose: () => void;
@@ -50,33 +50,32 @@ export default function Settings({
     try {
       setIsLoading(true);
       const payload = diff(initialValues, values);
-      const response = await fetch("/api/settings/general", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
+      const response = await fetch('/api/settings/general', {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
       const { user, message: description } = await response.json();
       if (response.ok) {
         displayToast({
-          description: "Settings updated",
-          status: "success",
-          title: "Success",
+          description: 'Settings updated',
+          status: 'success',
+          title: 'Success',
         });
         onUpdate(user);
-        onClose();
       } else {
-        setIsLoading(false);
         displayToast({
           description,
-          title: "Error",
+          title: 'Error',
         });
       }
     } catch (e) {
-      setIsLoading(false);
       displayToast({
-        description: "Something went wrong, please try again.",
-        title: "Error",
+        description: 'Something went wrong, please try again.',
+        title: 'Error',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,13 +97,13 @@ export default function Settings({
         initialValues={initialValues}
         mutators={{
           enableSlack([value], state, { changeValue }) {
-            changeValue(state, "slack.enabled", () => value);
+            changeValue(state, 'slack.enabled', () => value);
           },
           enableTelegram([value], state, { changeValue }) {
-            changeValue(state, "telegram.enabled", () => value);
+            changeValue(state, 'telegram.enabled', () => value);
           },
           updateTimezone([value], state, { changeValue }) {
-            changeValue(state, "timezone", () => value);
+            changeValue(state, 'timezone', () => value);
           },
         }}
         onSubmit={onSubmit}
@@ -118,11 +117,11 @@ export default function Settings({
             }
           }
           return (
-            <form id="settings" onSubmit={handleSubmit}>
+            <form role="form" id="settings" onSubmit={handleSubmit}>
               <Stack spacing={4}>
                 <Box>
                   <Field name="timezone">
-                    {() => (
+                    {({ input }) => (
                       <FormControl id="timezone">
                         <FormLabel mb="0">
                           <Stack align="center" isInline spacing={1}>
@@ -138,6 +137,7 @@ export default function Settings({
                         <Select
                           isAsync
                           loadOptions={loadTimezones}
+                          name={input.name}
                           onChange={({ value }) =>
                             form.mutators.updateTimezone(value)
                           }
@@ -151,7 +151,7 @@ export default function Settings({
                   <Field name="slack.url">
                     {({ input }) => (
                       <FormControl id="slackUrl">
-                        <FormLabel mb="0">
+                        <FormLabel aria-label="slack url" mb="0">
                           <Stack align="center" isInline spacing={1}>
                             <Text fontSize="17px" fontWeight="bold">
                               Slack
@@ -159,7 +159,7 @@ export default function Settings({
                             <Popover title="Slack notifications">
                               Your Slack webhook is used to send you updates
                               about your jobs. To learn more about Slack&apos;s
-                              incoming webhooks, click{" "}
+                              incoming webhooks, click{' '}
                               <Link
                                 color="blue.500"
                                 href="https://api.slack.com/messaging/webhooks"
@@ -186,11 +186,12 @@ export default function Settings({
                     )}
                   </Field>
                   <Field name="slack.enabled">
-                    {() => (
+                    {({ input }) => (
                       <Text color="gray.500" fontSize="sm" mt="0.5rem">
-                        Enable Slack Notifications ?{"  "}
+                        Enable Slack Notifications ?{'  '}
                         <Switch
                           isChecked={values.slack.enabled}
+                          name={input.name}
                           onChange={({ target }) =>
                             form.mutators.enableSlack(target.checked)
                           }
@@ -200,11 +201,11 @@ export default function Settings({
                   </Field>
                 </Box>
                 <Box>
-                  <Stack direction={["column", "row"]} spacing={3}>
+                  <Stack direction={['column', 'row']} spacing={3}>
                     <Field name="telegram.botToken">
                       {({ input }) => (
                         <FormControl id="botToken">
-                          <FormLabel mb="0">
+                          <FormLabel aria-label="telegram bot token" mb="0">
                             <Stack align="center" isInline spacing={1}>
                               <Text fontSize="17px" fontWeight="bold">
                                 Telegram bot token
@@ -213,7 +214,7 @@ export default function Settings({
                                 Your Telegam bot token is used in tandem with
                                 your Telegam chatId to send you updates about
                                 your jobs. To learn more about Telegram bots,
-                                click{" "}
+                                click{' '}
                                 <Link
                                   color="blue.500"
                                   href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
@@ -242,7 +243,7 @@ export default function Settings({
                     <Field name="telegram.chatId">
                       {({ input }) => (
                         <FormControl id="chatId">
-                          <FormLabel mb="0">
+                          <FormLabel aria-label="telegram chat id" mb="0">
                             <Stack align="center" isInline spacing={1}>
                               <Text fontSize="17px" fontWeight="bold">
                                 Telegram chatId
@@ -250,7 +251,7 @@ export default function Settings({
                               <Popover title="Telegram Notifications">
                                 Your Telegam chatId is used in tandem with your
                                 Telegam bot token to send you updates about your
-                                jobs. To learn more about Telegram bots, click{" "}
+                                jobs. To learn more about Telegram bots, click{' '}
                                 <Link
                                   color="blue.500"
                                   href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
@@ -278,11 +279,12 @@ export default function Settings({
                     </Field>
                   </Stack>
                   <Field name="telegram.enabled">
-                    {() => (
+                    {({ input }) => (
                       <Text color="gray.500" fontSize="sm" mt="0.5rem">
-                        Enable Telegram Notifications ?{"  "}
+                        Enable Telegram Notifications ?{'  '}
                         <Switch
                           isChecked={values.telegram.enabled}
+                          name={input.name}
                           onChange={({ target }) =>
                             form.mutators.enableTelegram(target.checked)
                           }

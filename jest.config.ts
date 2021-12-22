@@ -1,11 +1,11 @@
 export default {
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
   globals: {
-    "ts-jest": {
+    'ts-jest': {
       isolatedModules: true,
-      tsconfig: "tsconfig.test.json",
+      tsconfig: 'tsconfig.test.json',
     },
   },
-  preset: "ts-jest",
-  setupFiles: ["./jest.setup.ts"],
+  preset: 'ts-jest',
+  setupFilesAfterEnv: ['./jest.setup.ts'],
 };
