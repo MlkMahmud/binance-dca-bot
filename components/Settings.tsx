@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import {
@@ -41,6 +41,13 @@ export default function Settings({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  });
 
   const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
@@ -75,7 +82,9 @@ export default function Settings({
         title: 'Error',
       });
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
 

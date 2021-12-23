@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
 import Settings from '../components/Settings';
-import { fireEvent, render, screen } from '../test-utils';
+import { fireEvent, render, screen, waitFor } from '../test-utils';
 import { User } from '../types';
 import { rest, server } from '../__mocks__/server';
 
@@ -27,7 +27,7 @@ const props = {
 };
 
 describe('Settings', () => {
-  test('should render initial data correctly', async () => {
+  it('should render initial data correctly', async () => {
     render(<Settings {...props} />);
     expect(screen.getByRole('form')).toHaveFormValues({
       timezone: user.timezone,
@@ -40,7 +40,7 @@ describe('Settings', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
-  test('should submit successfully', async () => {
+  it('should submit successfully', async () => {
     const onUpdate = jest.fn();
     render(<Settings {...props} onUpdate={onUpdate} />);
     const values = {
@@ -57,24 +57,24 @@ describe('Settings', () => {
       }
     );
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    // chakra-ui renders multiple toasts for reason beyond me
-    // see https://github.com/chakra-ui/chakra-ui/issues/2969
-    const [alert] = await screen.findAllByRole(
-      'alert',
-      { name: 'Success' },
-      { timeout: 4000 }
-    );
-    expect(alert).toHaveTextContent('Settings updated');
-    // for test purposes the endpoint returns the req body
-    expect(onUpdate).toHaveBeenCalledWith(values);
+    await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(values), {
+      timeout: 4000,
+    });
+    expect(screen.getByRole('form')).toHaveFormValues({
+      timezone: user.timezone,
+      'slack.url': values.slack.url,
+      'slack.enabled': user.slack.enabled,
+      'telegram.botToken': values.telegram.botToken,
+      'telegram.chatId': user.telegram.chatId,
+      'telegram.enabled': user.slack.enabled,
+    });
   });
 
-  test('should handle submission errors', async () => {
+  it('should handle submission errors', async () => {
     const onUpdate = jest.fn();
-    const errorMessage = 'Failed to updated settings';
     server.use(
       rest.patch('http://localhost/api/settings/general', (_req, res, ctx) => {
-        return res(ctx.status(400), ctx.json({ message: errorMessage }));
+        return res(ctx.status(400), ctx.json({ message: 'Error' }));
       })
     );
     render(<Settings {...props} onUpdate={onUpdate} />);
@@ -92,12 +92,8 @@ describe('Settings', () => {
       }
     );
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    const [alert] = await screen.findAllByRole(
-      'alert',
-      { name: 'Error' },
-      { timeout: 4000 }
-    );
-    expect(alert).toHaveTextContent(errorMessage);
-    expect(onUpdate).not.toHaveBeenCalled();
+    await waitFor(() => expect(onUpdate).toHaveBeenCalledTimes(0), {
+      timeout: 4000,
+    });
   });
 });

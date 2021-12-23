@@ -8,14 +8,16 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Field, Form } from 'react-final-form';
-import { useRouter } from 'next/router';
+import { displayToast } from '../client-utils';
 import Logo from './Logo';
 import PasswordInput from './PasswordInput';
-import { displayToast } from '../client-utils';
 
-export default function LoginForm() {
+type Props = {
+  onLoginSuccess: () => void;
+};
+
+export default function LoginForm({ onLoginSuccess }: Props) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const onSubmit = async (values: { password: string }) => {
     try {
@@ -27,7 +29,7 @@ export default function LoginForm() {
       });
       const { message: description } = await response.json();
       if (response.ok) {
-        router.replace('/');
+        onLoginSuccess();
       } else {
         setIsLoading(false);
         displayToast({
@@ -51,11 +53,13 @@ export default function LoginForm() {
       </Box>
       <Form initialValues={{ password: '' }} onSubmit={onSubmit}>
         {({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
+          <form aria-label="login" onSubmit={handleSubmit}>
             <Box mb="15px">
               <Field
                 name="password"
-                validate={(value) => (value ? undefined : 'password is required')}
+                validate={(value) =>
+                  value ? undefined : 'password is required'
+                }
               >
                 {({ input, meta }) => (
                   <FormControl

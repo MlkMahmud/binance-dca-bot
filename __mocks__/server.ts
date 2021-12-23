@@ -13,6 +13,10 @@ const server = setupServer(
 
   rest.patch('http://localhost/api/settings/general', (req, res, ctx) => {
     return res(ctx.json({ user: req.body }));
+  }),
+
+  rest.post('http://localhost/login', (_req, res, ctx) => {
+    return res(ctx.json({}));
   })
 );
 
