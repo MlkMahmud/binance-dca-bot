@@ -20,11 +20,11 @@ import {
   displayToast,
   generateSelectOption,
   getTimezones,
-} from '../../client-utils';
-import { User } from '../../types';
-import Overlay from '../Overlay';
-import Popover from '../Popover';
-import Select from '../Select';
+} from '../client-utils';
+import { User } from '../types';
+import Overlay from './Overlay';
+import Popover from './Popover';
+import Select from './Select';
 
 type Props = {
   onClose: () => void;
@@ -135,6 +135,7 @@ export default function Settings({
                           </Stack>
                         </FormLabel>
                         <Select
+                          inputId="timezone"
                           isAsync
                           loadOptions={loadTimezones}
                           name={input.name}

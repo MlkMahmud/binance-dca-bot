@@ -1,5 +1,4 @@
 export default {
-  testEnvironment: 'jsdom',
   globals: {
     'ts-jest': {
       isolatedModules: true,
@@ -8,4 +7,5 @@ export default {
   },
   preset: 'ts-jest',
   setupFilesAfterEnv: ['./jest.setup.ts'],
+  testEnvironment: 'jsdom',
 };
