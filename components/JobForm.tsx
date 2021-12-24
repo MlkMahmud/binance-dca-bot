@@ -10,7 +10,7 @@ import {
   Link,
   Stack,
   Switch,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
@@ -22,7 +22,7 @@ import {
   displayToast,
   generateSelectOption,
   getSymbols,
-  getTimezones
+  getTimezones,
 } from '../client-utils';
 import { Job } from '../types';
 import Overlay from './Overlay';
@@ -35,7 +35,7 @@ type Props = {
   job?: Job | null;
   onFormClose: () => void;
   onSubmitSuccess: (job: Job, op: 'update' | 'append') => void;
-}
+};
 
 type Values = {
   amount: string;
@@ -45,7 +45,7 @@ type Values = {
   symbol: string;
   timezone: string;
   useDefaultTimezone: boolean;
-}
+};
 
 function getCronDescription(cron: string) {
   try {
@@ -63,25 +63,32 @@ export default function JobForm({
   onSubmitSuccess,
 }: Props) {
   const isEditMode = !!job;
-  const initialValues: Values = isEditMode ? {
-    amount: job.data.amount,
-    jobName: job.data.jobName,
-    quoteAsset: job.data.quoteAsset,
-    schedule: job.repeatInterval,
-    symbol: job.data.symbol,
-    timezone: (job.data.useDefaultTimezone && defaultTimezone) ? defaultTimezone : job.repeatTimezone,
-    useDefaultTimezone: job.data.useDefaultTimezone,
-  } : {
-    amount: '',
-    jobName: '',
-    quoteAsset: '',
-    schedule: '',
-    symbol: '',
-    timezone: '',
-    useDefaultTimezone: false,
-  };
+  const initialValues: Values = isEditMode
+    ? {
+        amount: job.data.amount,
+        jobName: job.data.jobName,
+        quoteAsset: job.data.quoteAsset,
+        schedule: job.repeatInterval,
+        symbol: job.data.symbol,
+        timezone:
+          job.data.useDefaultTimezone && defaultTimezone
+            ? defaultTimezone
+            : job.repeatTimezone,
+        useDefaultTimezone: job.data.useDefaultTimezone,
+      }
+    : {
+        amount: '',
+        jobName: '',
+        quoteAsset: '',
+        schedule: '',
+        symbol: '',
+        timezone: '',
+        useDefaultTimezone: false,
+      };
 
-  const subTitle = isEditMode ? 'Edit your job details' : 'Create a new recurring job';
+  const subTitle = isEditMode
+    ? 'Edit your job details'
+    : 'Create a new recurring job';
   const title = isEditMode ? 'Edit Job' : 'Create Job';
   const [isLoading, setIsLoading] = useState(false);
   const [minNotional, setMinNotional] = useState(0);
@@ -136,7 +143,9 @@ export default function JobForm({
         const [symbol] = await response.json();
         if (symbol.minNotional > +values.amount) {
           setIsLoading(false);
-          return { amount: `Amount must be greater than or eqaul to ${symbol.minNotional}` };
+          return {
+            amount: `Amount must be greater than or eqaul to ${symbol.minNotional}`,
+          };
         }
       }
 
@@ -207,12 +216,7 @@ export default function JobForm({
         // eslint-disable-next-line react/jsx-no-bind
         validate={validate}
       >
-        {({
-          form,
-          handleSubmit,
-          pristine,
-          values,
-        }) => {
+        {({ form, handleSubmit, pristine, values }) => {
           if (btnRef.current) {
             if (pristine) {
               btnRef.current.disabled = true;
@@ -221,11 +225,18 @@ export default function JobForm({
             }
           }
           return (
-            <form id="job" onSubmit={handleSubmit}>
+            <form
+              aria-label={isEditMode ? 'edit job' : 'create job'}
+              id="job"
+              onSubmit={handleSubmit}
+            >
               <Stack spacing={4}>
                 <Field name="jobName">
                   {({ input, meta }) => (
-                    <FormControl id="jobName" isInvalid={meta.error && meta.touched}>
+                    <FormControl
+                      id="jobName"
+                      isInvalid={meta.error && meta.touched}
+                    >
                       <FormLabel mb="1px">
                         <Stack align="center" isInline spacing={1}>
                           <Text fontSize="17px" fontWeight="bold">
@@ -248,23 +259,26 @@ export default function JobForm({
                   )}
                 </Field>
                 <Field name="symbol">
-                  {({ meta }) => (
-                    <FormControl id="symbol" isInvalid={meta.error && meta.touched}>
+                  {({ input, meta }) => (
+                    <FormControl
+                      id="symbol"
+                      isInvalid={meta.error && meta.touched}
+                    >
                       <FormLabel mb="1px">
                         <Stack align="center" isInline spacing={1}>
                           <Text fontSize="17px" fontWeight="bold">
                             Symbol
                           </Text>
                           <Popover title="Symbol">
-                            This is the base asset and quote asset pair you want to trade
-                            {' '}
-                            e.g BTCUSDT
+                            This is the base asset and quote asset pair you want
+                            to trade e.g BTCUSDT
                           </Popover>
                         </Stack>
                       </FormLabel>
                       <Select
                         isAsync
                         loadOptions={loadSymbols}
+                        name={input.name}
                         getOptionLabel={(option) => option.symbol}
                         getOptionValue={(option) => option.symbol}
                         onChange={(option) => {
@@ -279,25 +293,22 @@ export default function JobForm({
                     </FormControl>
                   )}
                 </Field>
-                <Field
-                  name="amount"
-                >
+                <Field name="amount">
                   {({ input, meta }) => {
-                    const isInvalid = (meta.touched && meta.error) || meta.submitError;
+                    const isInvalid =
+                      (meta.touched && meta.error) || meta.submitError;
                     return (
-                      <FormControl
-                        id="amount"
-                        isInvalid={isInvalid}
-                      >
+                      <FormControl id="amount" isInvalid={isInvalid}>
                         <FormLabel mb="1px">
                           <Stack align="center" isInline spacing={1}>
                             <Text fontSize="17px" fontWeight="bold">
                               Amount
                             </Text>
                             <Popover title="Amount">
-                              This is the total amount of the quote asset you are
-                              willing to spend—, e.g, a value of 10 for BNBUSDT
-                              would equate to buying 10 USDT worth of BNB.
+                              This is the total amount of the quote asset you
+                              are willing to spend—, e.g, a value of 10 for
+                              BNBUSDT would equate to buying 10 USDT worth of
+                              BNB.
                             </Popover>
                           </Stack>
                         </FormLabel>
@@ -312,7 +323,9 @@ export default function JobForm({
                           />
                           <InputRightAddon>{values.quoteAsset}</InputRightAddon>
                         </InputGroup>
-                        <FormErrorMessage>{meta.error || meta.submitError}</FormErrorMessage>
+                        <FormErrorMessage>
+                          {meta.error || meta.submitError}
+                        </FormErrorMessage>
                       </FormControl>
                     );
                   }}
@@ -329,12 +342,9 @@ export default function JobForm({
                             Schedule
                           </Text>
                           <Popover title="Schedule">
-                            Your schedule determines when your job runs.
-                            {' '}
-                            If you need help generating the cron syntax for your job,
-                            {' '}
-                            try a cron-generator like
-                            {' '}
+                            Your schedule determines when your job runs. If you
+                            need help generating the cron syntax for your job,{' '}
+                            try a cron-generator like{' '}
                             <Link
                               color="blue.500"
                               href="https://crontab.cronhub.io/"
@@ -364,16 +374,18 @@ export default function JobForm({
                 </Field>
                 <Box>
                   <Field name="timezone">
-                    {({ meta }) => (
-                      <FormControl id="timezone" isInvalid={meta.error && meta.touched}>
+                    {({ input, meta }) => (
+                      <FormControl
+                        id="timezone"
+                        isInvalid={meta.error && meta.touched}
+                      >
                         <FormLabel mb="1px">
                           <Stack align="center" isInline spacing={1}>
                             <Text fontSize="17px" fontWeight="bold">
                               Timezone
                             </Text>
                             <Popover title="Timezone">
-                              Set a specific timezone for your job schedule or
-                              {' '}
+                              Set a specific timezone for your job schedule or{' '}
                               use your global default.
                             </Popover>
                           </Stack>
@@ -382,6 +394,7 @@ export default function JobForm({
                           isAsync
                           isDisabled={values.useDefaultTimezone}
                           loadOptions={loadTimezones}
+                          name={input.name}
                           onChange={({ value }) => {
                             form.mutators.updateTimezone(value);
                           }}
@@ -393,27 +406,25 @@ export default function JobForm({
                     )}
                   </Field>
                   {defaultTimezone && (
-                  <Field name="useDefaultTimezone">
-                    {() => (
-                      <Text
-                        color="gray.500"
-                        fontSize="sm"
-                        mt="0.5rem"
-                      >
-                        Use default timezone ?
-                        {'  '}
-                        <Switch
-                          isChecked={values.useDefaultTimezone}
-                          onChange={({ target }) => {
-                            if (target.checked) {
-                              form.mutators.updateTimezone(defaultTimezone);
-                            }
-                            form.mutators.updateUseDefaultTimezone(target.checked);
-                          }}
-                        />
-                      </Text>
-                    )}
-                  </Field>
+                    <Field name="useDefaultTimezone">
+                      {({ input }) => (
+                        <Text color="gray.500" fontSize="sm" mt="0.5rem">
+                          Use default timezone ?{'  '}
+                          <Switch
+                            isChecked={values.useDefaultTimezone}
+                            name={input.name}
+                            onChange={({ target }) => {
+                              if (target.checked) {
+                                form.mutators.updateTimezone(defaultTimezone);
+                              }
+                              form.mutators.updateUseDefaultTimezone(
+                                target.checked
+                              );
+                            }}
+                          />
+                        </Text>
+                      )}
+                    </Field>
                   )}
                 </Box>
               </Stack>

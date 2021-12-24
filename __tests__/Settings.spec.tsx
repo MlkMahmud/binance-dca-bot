@@ -18,6 +18,11 @@ const user = {
   timezone: 'Africa/Lagos',
 };
 
+const values = {
+  slack: { url: 'https://webhook-url.com' },
+  telegram: { botToken: 'abdcdef' },
+};
+
 const props = {
   isOpen: true,
   onClose: () => {},
@@ -37,36 +42,20 @@ describe('Settings', () => {
       'telegram.chatId': user.telegram.chatId,
       'telegram.enabled': user.slack.enabled,
     });
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
   it('should submit successfully', async () => {
     const onUpdate = jest.fn();
     render(<Settings {...props} onUpdate={onUpdate} />);
-    const values = {
-      slack: { url: 'https://webhook-url.com' },
-      telegram: { botToken: 'abdcdef' },
-    };
-    fireEvent.change(screen.getByRole('textbox', { name: 'slack url' }), {
+    fireEvent.change(screen.getByDisplayValue(user.slack.url), {
       target: { value: values.slack.url },
     });
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'telegram bot token' }),
-      {
-        target: { value: values.telegram.botToken },
-      }
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.change(screen.getByDisplayValue(user.telegram.botToken), {
+      target: { value: values.telegram.botToken },
+    });
+    fireEvent.click(screen.getByText(/Save/));
     await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(values), {
       timeout: 4000,
-    });
-    expect(screen.getByRole('form')).toHaveFormValues({
-      timezone: user.timezone,
-      'slack.url': values.slack.url,
-      'slack.enabled': user.slack.enabled,
-      'telegram.botToken': values.telegram.botToken,
-      'telegram.chatId': user.telegram.chatId,
-      'telegram.enabled': user.slack.enabled,
     });
   });
 
@@ -78,20 +67,13 @@ describe('Settings', () => {
       })
     );
     render(<Settings {...props} onUpdate={onUpdate} />);
-    const values = {
-      slack: { url: 'https://webhook-url.com' },
-      telegram: { botToken: 'abdcdef' },
-    };
-    fireEvent.change(screen.getByRole('textbox', { name: 'slack url' }), {
+    fireEvent.change(screen.getByDisplayValue(user.slack.url), {
       target: { value: values.slack.url },
     });
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'telegram bot token' }),
-      {
-        target: { value: values.telegram.botToken },
-      }
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.change(screen.getByDisplayValue(user.telegram.botToken), {
+      target: { value: values.telegram.botToken },
+    });
+    fireEvent.click(screen.getByText(/Save/));
     await waitFor(() => expect(onUpdate).toHaveBeenCalledTimes(0), {
       timeout: 4000,
     });

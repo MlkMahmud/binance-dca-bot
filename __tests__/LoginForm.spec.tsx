@@ -10,7 +10,7 @@ describe('LoginForm', () => {
     const form = screen.getByRole('form', { name: 'login' });
     expect(form).toBeInTheDocument();
     expect(form).toHaveFormValues({ password: '' });
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByText(/Login/)).toBeInTheDocument();
   });
 
   it('should log a user in successfully', async () => {
@@ -19,7 +19,7 @@ describe('LoginForm', () => {
     fireEvent.change(screen.getByLabelText(/Password/), {
       target: { value: 'supersecretpassword' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    fireEvent.click(screen.getByText(/Login/));
     await waitFor(() => expect(onLoginSuccess).toHaveBeenCalledTimes(1), {
       timeout: 1500,
     });
@@ -36,7 +36,7 @@ describe('LoginForm', () => {
     fireEvent.change(screen.getByLabelText(/Password/), {
       target: { value: 'supersecretpassword' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    fireEvent.click(screen.getByText(/Login/));
     await waitFor(() => expect(onLoginSuccess).toHaveBeenCalledTimes(0), {
       timeout: 1500,
     });
