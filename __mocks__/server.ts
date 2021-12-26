@@ -33,6 +33,10 @@ const server = setupServer(
 
   rest.patch('http://localhost/api/jobs/:jobId', (req, res, ctx) => {
     return res(ctx.json({ job: req.body }));
+  }),
+
+  rest.get('http://localhost/api/jobs/:jobId/orders', (_req, res, ctx) => {
+    return res(ctx.json({ data: [] }));
   })
 );
 
