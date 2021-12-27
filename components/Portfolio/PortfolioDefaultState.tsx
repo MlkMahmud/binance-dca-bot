@@ -20,13 +20,17 @@ type Props = {
   onChange: (value: string) => void;
   onRefresh: () => Promise<void>;
   selectedSymbol: string;
-}
+};
 
 export default function PortfolioDefaultState({
-  assets, onChange, onRefresh, selectedSymbol,
+  assets,
+  onChange,
+  onRefresh,
+  selectedSymbol,
 }: Props) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
-  const { free, locked, total } = assets.find(({ asset }) => asset === selectedSymbol) || {};
+  const { free, locked, total } =
+    assets.find(({ asset }) => asset === selectedSymbol) || {};
   return (
     <Box
       bgColor="#FFF"
@@ -47,12 +51,12 @@ export default function PortfolioDefaultState({
           <IconButton
             aria-label={`${isBalanceHidden ? 'show' : 'hide'} balance`}
             h={['35px', '40px']}
-            icon={(
+            icon={
               <Icon
                 as={isBalanceHidden ? HiEyeOff : HiEye}
                 boxSize={['25px', '30px']}
               />
-            )}
+            }
             onClick={() => setIsBalanceHidden(!isBalanceHidden)}
             minW={['35px', '40px']}
             variant="unstyled"
@@ -76,6 +80,7 @@ export default function PortfolioDefaultState({
         >
           <Text fontWeight="bold">Asset:</Text>
           <Select
+            aria-label="assets"
             onChange={(e) => onChange(e.target.value)}
             value={selectedSymbol}
           >
@@ -89,13 +94,17 @@ export default function PortfolioDefaultState({
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Free:</Text>
           <Text fontWeight="medium">
-            {isBalanceHidden ? '***' : `${Number(free).toFixed(2)} ${selectedSymbol}`}
+            {isBalanceHidden
+              ? '***'
+              : `${Number(free).toFixed(2)} ${selectedSymbol}`}
           </Text>
         </Flex>
         <Flex align="center" justify="space-between" mb="5px">
           <Text fontWeight="semibold">Locked:</Text>
           <Text fontWeight="medium">
-            {isBalanceHidden ? '***' : `${Number(locked).toFixed(2)} ${selectedSymbol}`}
+            {isBalanceHidden
+              ? '***'
+              : `${Number(locked).toFixed(2)} ${selectedSymbol}`}
           </Text>
         </Flex>
       </Box>
@@ -107,9 +116,7 @@ export default function PortfolioDefaultState({
       >
         <Text fontWeight="semibold">Total:</Text>
         <Text fontWeight="medium">
-          {isBalanceHidden
-            ? '***'
-            : `${(total)?.toFixed(2)} ${selectedSymbol}`}
+          {isBalanceHidden ? '***' : `${total?.toFixed(2)} ${selectedSymbol}`}
         </Text>
       </Flex>
     </Box>
