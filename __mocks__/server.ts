@@ -64,6 +64,17 @@ const server = setupServer(
 
   rest.get('http://localhost/api/jobs/:jobId/orders', (_req, res, ctx) => {
     return res(ctx.json({ data: [] }));
+  }),
+
+  rest.get('http://localhost/api/balance', (_req, res, ctx) => {
+    return res(
+      ctx.json([
+        { asset: 'USDT', free: '5000.00', locked: '250.00', total: 5250.0 },
+        { asset: 'BNB', free: '1000.00', locked: '250.00', total: 1250.0 },
+        { asset: 'ETH', free: '100.00', locked: '0.00', total: 100.0 },
+        { asset: 'BTC', free: '1.00', locked: '0.00', total: 1.0 },
+      ])
+    );
   })
 );
 
