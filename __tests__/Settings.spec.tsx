@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from '../test-utils';
 import { User } from '../types';
 import { rest, server } from '../__mocks__/server';
 
-jest.setTimeout(10000);
+jest.setTimeout(12000);
 
 const user = {
   password: { enabled: false, isSet: false },
@@ -55,7 +55,7 @@ describe('Settings', () => {
     });
     fireEvent.click(screen.getByText(/Save/));
     await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(values), {
-      timeout: 4000,
+      timeout: 8000,
     });
   });
 
@@ -75,7 +75,7 @@ describe('Settings', () => {
     });
     fireEvent.click(screen.getByText(/Save/));
     await waitFor(() => expect(onUpdate).toHaveBeenCalledTimes(0), {
-      timeout: 4000,
+      timeout: 8000,
     });
   });
 });

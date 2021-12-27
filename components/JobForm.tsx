@@ -167,18 +167,18 @@ export default function JobForm({
           title: 'Success',
         });
       } else {
-        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',
         });
       }
     } catch {
-      setIsLoading(false);
       displayToast({
         description: 'Failed to create job',
         title: 'Error',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -7,9 +7,9 @@ import {
   Text,
   Thead,
   Tr,
-  useDisclosure
+  useDisclosure,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { displayToast, useMediaQuery } from '../../client-utils';
 import { Job as JobType } from '../../types';
@@ -41,29 +41,39 @@ export default function JobList({
   const [jobId, setJobId] = useState<string>('');
   const [op, setOp] = useState<Action>();
   const [showOrderHistory, setShowOrderHistory] = useState(false);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const selectedJob = jobs.find(({ _id }) => _id === jobId);
   const isDeleteMode = op === 'delete';
 
   const handleButtonClick = (id: string, action: Action) => {
-      switch (action) {
-        case 'edit':
-          openJobForm(id);
-          break;
-        case 'delete':
-        case 'status':
-          setJobId(id);
-          setOp(action);
-          onOpen();
-          break;
-        case 'history':
-          setJobId(id);
-          setShowOrderHistory(true);
-          break;
-        default:
-          throw new Error('Action must be one of edit | delete | history | status');
-      }
-    };
+    switch (action) {
+      case 'edit':
+        openJobForm(id);
+        break;
+      case 'delete':
+      case 'status':
+        setJobId(id);
+        setOp(action);
+        onOpen();
+        break;
+      case 'history':
+        setJobId(id);
+        setShowOrderHistory(true);
+        break;
+      default:
+        throw new Error(
+          'Action must be one of edit | delete | history | status'
+        );
+    }
+  };
 
   const jobsArray = jobs.map((job) => (
     <Job
@@ -78,7 +88,11 @@ export default function JobList({
       nextRun={job.nextRunAt}
       onButtonClick={handleButtonClick}
       symbol={job.data.symbol}
-      timezone={(job.data.useDefaultTimezone && defaultTimezone) ? defaultTimezone : job.repeatTimezone}
+      timezone={
+        job.data.useDefaultTimezone && defaultTimezone
+          ? defaultTimezone
+          : job.repeatTimezone
+      }
     />
   ));
 
@@ -88,8 +102,8 @@ export default function JobList({
       const response = await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
       const { message: description } = await response.json();
       if (response.ok) {
-        handleDelete(jobId);
         onClose();
+        handleDelete(jobId);
         displayToast({
           description,
           status: 'success',
@@ -107,7 +121,9 @@ export default function JobList({
         title: 'Error',
       });
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
 

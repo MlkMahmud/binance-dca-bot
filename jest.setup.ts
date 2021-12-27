@@ -1,8 +1,13 @@
-import 'whatwg-fetch';
 import '@testing-library/jest-dom';
+// @ts-ignore
+import preloadAll from 'jest-next-dynamic';
+import 'whatwg-fetch';
 import { server } from './__mocks__/server';
 
-beforeAll(() => server.listen());
+beforeAll(async () => {
+  await preloadAll();
+  server.listen();
+});
 beforeEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

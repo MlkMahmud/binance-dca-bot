@@ -41,13 +41,14 @@ export default function Settings({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const isMounted = useRef(true);
+  const isMounted = useRef(false);
 
   useEffect(() => {
+    isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
-  });
+  }, []);
 
   const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));

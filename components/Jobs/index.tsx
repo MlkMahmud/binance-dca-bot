@@ -68,7 +68,6 @@ export default function Jobs({ defaultTimezone }: Props) {
         throw new Error(`Op: ${op} is invalid`);
     }
     setJobs(updatedJobs);
-    onClose();
   };
 
   const openJobForm = (id = '') => {
