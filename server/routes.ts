@@ -69,7 +69,13 @@ router.post('/login', async (req, res) => {
   res.status(status).json({ message });
 });
 
-router.route('/api/jobs')
+router.post('/logout', (_req, res) => {
+  res.clearCookie('accessToken');
+  res.status(200).end();
+});
+
+router
+  .route('/api/jobs')
   .get(async (_, res, next) => {
     try {
       const jobs = await controller.fetchAllJobs();
@@ -87,7 +93,8 @@ router.route('/api/jobs')
     }
   });
 
-router.route('/api/jobs/:jobId')
+router
+  .route('/api/jobs/:jobId')
   .delete(async (req, res, next) => {
     try {
       const { status, message } = await controller.deleteJob(req.params.jobId);
@@ -106,21 +113,24 @@ router.route('/api/jobs/:jobId')
   })
   .patch(async (req, res, next) => {
     try {
-      const { status, ...rest } = await controller.updateJob(req.params.jobId, req.body);
+      const { status, ...rest } = await controller.updateJob(
+        req.params.jobId,
+        req.body
+      );
       res.status(status).json(rest);
-    } catch (err) { next(err); }
+    } catch (err) {
+      next(err);
+    }
   });
-
 
 router.get('/api/jobs/:jobId/orders', async (req, res, next) => {
   try {
     const { data } = await controller.getOrders(req.params.jobId);
-    res.json({ data }); 
-  } catch(err) {
+    res.json({ data });
+  } catch (err) {
     next(err);
   }
 });
-
 
 router.patch('/api/orders/:orderId', async (req, res, next) => {
   try {
