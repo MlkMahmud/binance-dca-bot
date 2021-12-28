@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
-import Settings from '../components/Settings';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { User } from '../types';
-import { rest, server } from '../__mocks__/server';
+import Settings from '../../components/Settings';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
+import { User } from '../../types';
+import { rest, server } from '../../__mocks__/server';
 
 jest.setTimeout(12000);
 

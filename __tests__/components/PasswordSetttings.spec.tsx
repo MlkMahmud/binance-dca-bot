@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
-import PasswordSettings from '../components/PasswordSettings';
-import { fireEvent, render, screen } from '../test-utils';
+import PasswordSettings from '../../components/PasswordSettings';
+import { fireEvent, render, screen } from '../../test-utils';
 
 const props = {
   isOpen: true,

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
-import OrderHistory from '../components/OrderHistory';
+import OrderHistory from '../../components/OrderHistory';
 import {
   fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
-} from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+} from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 const props = {
   isOpen: true,

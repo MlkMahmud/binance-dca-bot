@@ -1,7 +1,7 @@
 import React from 'react';
-import EnablePasswordForm from '../components/PasswordSettings/EnablePasswordForm';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+import EnablePasswordForm from '../../components/PasswordSettings/EnablePasswordForm';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 const props = {
   hasSetPassword: true,

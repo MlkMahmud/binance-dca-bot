@@ -1,7 +1,7 @@
 import React from 'react';
-import Portfolio from '../components/Portfolio';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+import Portfolio from '../../components/Portfolio';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 describe('Porfolio', () => {
   it('should render the error state', async () => {

@@ -1,12 +1,12 @@
 import React from 'react';
-import Jobs from '../components/Jobs';
+import Jobs from '../../components/Jobs';
 import {
   fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
-} from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+} from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 const props = {
   defaultTimezone: 'Africa/Lagos',

@@ -1,7 +1,7 @@
 import React from 'react';
-import DisablePasswordForm from '../components/PasswordSettings/DisablePasswordForm';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+import DisablePasswordForm from '../../components/PasswordSettings/DisablePasswordForm';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 const props = {
   onUpdate: jest.fn(),
