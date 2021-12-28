@@ -3,7 +3,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Stack,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
@@ -14,12 +14,12 @@ type Props = {
   hasSetPassword: boolean;
   onUpdate: () => void;
   setIsLoading: (isLoading: boolean) => void;
-}
+};
 
 type Values = {
   confirmPassword?: string;
-  password: string; 
-}
+  password: string;
+};
 
 export default function EnablePasswordForm({
   hasSetPassword,
@@ -96,13 +96,21 @@ export default function EnablePasswordForm({
         validate={validate}
       >
         {({ handleSubmit }) => (
-          <form id="enable" onSubmit={handleSubmit}>
+          <form
+            aria-label="enable password"
+            id="enable"
+            onSubmit={handleSubmit}
+          >
             {hasSetPassword ? (
               <Field name="password">
                 {({ input, meta }) => (
-                  <FormControl id="password" isInvalid={meta.error && meta.touched}>
+                  <FormControl
+                    id="password"
+                    isInvalid={meta.error && meta.touched}
+                  >
                     <FormLabel>Password: </FormLabel>
                     <PasswordInput
+                      name={input.name}
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
@@ -115,9 +123,13 @@ export default function EnablePasswordForm({
               <Stack spacing={3}>
                 <Field name="password">
                   {({ input, meta }) => (
-                    <FormControl id="password" isInvalid={meta.error && meta.touched}>
+                    <FormControl
+                      id="password"
+                      isInvalid={meta.error && meta.touched}
+                    >
                       <FormLabel>New password: </FormLabel>
                       <PasswordInput
+                        name={input.name}
                         onBlur={input.onBlur}
                         onChange={input.onChange}
                         value={input.value}
@@ -128,9 +140,13 @@ export default function EnablePasswordForm({
                 </Field>
                 <Field name="confirmPassword">
                   {({ input, meta }) => (
-                    <FormControl id="confirmPassword" isInvalid={meta.error && meta.touched}>
+                    <FormControl
+                      id="confirmPassword"
+                      isInvalid={meta.error && meta.touched}
+                    >
                       <FormLabel>Confirm password: </FormLabel>
                       <PasswordInput
+                        name={input.name}
                         onBlur={input.onBlur}
                         onChange={input.onChange}
                         value={input.value}

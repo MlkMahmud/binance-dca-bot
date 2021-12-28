@@ -3,7 +3,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Stack,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
@@ -13,11 +13,11 @@ import PasswordInput from '../PasswordInput';
 type Props = {
   onUpdate: () => void;
   setIsLoading: (isLoading: boolean) => void;
-}
+};
 
 type Values = {
   password: string;
-}
+};
 
 export default function DisablePasswordForm({ onUpdate, setIsLoading }: Props) {
   const onSubmit = async (values: Values) => {
@@ -70,7 +70,8 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }: Props) {
           Disable password protection
         </Text>
         <Text colorScheme="gray.600" fontWeight="normal">
-          You must confirm your password to disable the password protection feature
+          You must confirm your password to disable the password protection
+          feature
         </Text>
       </Stack>
       <Form
@@ -82,12 +83,20 @@ export default function DisablePasswordForm({ onUpdate, setIsLoading }: Props) {
         validate={validate}
       >
         {({ handleSubmit }) => (
-          <form id="disable" onSubmit={handleSubmit}>
+          <form
+            aria-label="disable password"
+            id="disable"
+            onSubmit={handleSubmit}
+          >
             <Field name="password">
               {({ input, meta }) => (
-                <FormControl id="password" isInvalid={meta.error && meta.touched}>
+                <FormControl
+                  id="password"
+                  isInvalid={meta.error && meta.touched}
+                >
                   <FormLabel>Password: </FormLabel>
                   <PasswordInput
+                    name={input.name}
                     onBlur={input.onBlur}
                     onChange={input.onChange}
                     value={input.value}

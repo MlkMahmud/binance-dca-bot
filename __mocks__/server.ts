@@ -75,6 +75,10 @@ const server = setupServer(
         { asset: 'BTC', free: '1.00', locked: '0.00', total: 1.0 },
       ])
     );
+  }),
+
+  rest.post('http://localhost/api/settings/password', (_req, res, ctx) => {
+    return res(ctx.json({ message: 'password succesfully enabled' }));
   })
 );
 

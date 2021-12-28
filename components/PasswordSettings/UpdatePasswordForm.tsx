@@ -3,7 +3,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Stack,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { Field, Form } from 'react-final-form';
@@ -13,12 +13,12 @@ import PasswordInput from '../PasswordInput';
 type Props = {
   setIsLoading: (loaidng: boolean) => void;
   onUpdate: () => void;
-}
+};
 
 type Values = {
   newPassword: string;
   password: string;
-}
+};
 
 export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
   const onSubmit = async (values: Values) => {
@@ -66,7 +66,8 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
     } else if (newPassword.length < 8) {
       errors.newPassword = 'New password must be at least 8 characters long.';
     } else if (newPassword === password) {
-      errors.newPassword = 'New password cannot be the same as the old password';
+      errors.newPassword =
+        'New password cannot be the same as the old password';
     }
 
     return errors;
@@ -79,7 +80,8 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
           Update password
         </Text>
         <Text colorScheme="gray.600" fontWeight="normal">
-          Please ensure your new password and your old password are not the same.
+          Please ensure your new password and your old password are not the
+          same.
         </Text>
       </Stack>
       <Form
@@ -92,13 +94,21 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
         validate={validate}
       >
         {({ handleSubmit }) => (
-          <form id="update" onSubmit={handleSubmit}>
+          <form
+            aria-label="update password"
+            id="update"
+            onSubmit={handleSubmit}
+          >
             <Stack spacing={3}>
               <Field name="password">
                 {({ input, meta }) => (
-                  <FormControl id="password" isInvalid={meta.error && meta.touched}>
+                  <FormControl
+                    id="password"
+                    isInvalid={meta.error && meta.touched}
+                  >
                     <FormLabel>Password: </FormLabel>
                     <PasswordInput
+                      name={input.name}
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
@@ -109,9 +119,13 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
               </Field>
               <Field name="newPassword">
                 {({ input, meta }) => (
-                  <FormControl id="newPassword" isInvalid={meta.error && meta.touched}>
+                  <FormControl
+                    id="newPassword"
+                    isInvalid={meta.error && meta.touched}
+                  >
                     <FormLabel>New Password: </FormLabel>
                     <PasswordInput
+                      name={input.name}
                       onBlur={input.onBlur}
                       onChange={input.onChange}
                       value={input.value}
@@ -127,4 +141,3 @@ export default function UpdatePasswordForm({ setIsLoading, onUpdate }: Props) {
     </>
   );
 }
-
