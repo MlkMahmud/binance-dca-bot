@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
   useRadio,
-  useRadioGroup
+  useRadioGroup,
 } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -16,12 +16,17 @@ import { User } from '../../types';
 import Loading from '../Loading';
 import Overlay from '../Overlay';
 
-const DisablePasswordForm = dynamic(() => import('./DisablePasswordForm'), { loading: () => <Loading /> });
-const EnablePasswordForm = dynamic(() => import('./EnablePasswordForm'), { loading: () => <Loading /> });
-const UpdatePasswordForm = dynamic(() => import('./UpdatePasswordForm'), { loading: () => <Loading /> });
+const DisablePasswordForm = dynamic(() => import('./DisablePasswordForm'), {
+  loading: ({ error }) => <Loading error={error} />,
+});
+const EnablePasswordForm = dynamic(() => import('./EnablePasswordForm'), {
+  loading: ({ error }) => <Loading error={error} />,
+});
+const UpdatePasswordForm = dynamic(() => import('./UpdatePasswordForm'), {
+  loading: ({ error }) => <Loading error={error} />,
+});
 
-
-function Action(props: RadioProps & { description: string; title: string; }) {
+function Action(props: RadioProps & { description: string; title: string }) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
@@ -53,10 +58,13 @@ type Props = {
   onClose: () => void;
   onUpdate: (user: User) => void;
   user: User;
-}
+};
 
 export default function PasswordSettings({
-  isOpen, onClose, onUpdate, user,
+  isOpen,
+  onClose,
+  onUpdate,
+  user,
 }: Props) {
   const router = useRouter();
   const [showActionScreen, setShowActionScreen] = useState(true);
@@ -74,18 +82,20 @@ export default function PasswordSettings({
       isLoading={isLoading}
       isOpen={isOpen}
       title="Security settings"
-      footer={showActionScreen ? (
-        <Button
-          colorScheme="black"
-          isDisabled={!action}
-          isFullWidth
-          onClick={() => {
-            setShowActionScreen(false);
-          }}
-        >
-          Next
-        </Button>
-      ) : null}
+      footer={
+        showActionScreen ? (
+          <Button
+            colorScheme="black"
+            isDisabled={!action}
+            isFullWidth
+            onClick={() => {
+              setShowActionScreen(false);
+            }}
+          >
+            Next
+          </Button>
+        ) : null
+      }
     >
       {showActionScreen ? (
         <Stack spacing={4} {...group}>
@@ -127,26 +137,32 @@ export default function PasswordSettings({
             Back
           </Button>
           <Box mt="10px">
-            {(action === 'enable' && (
-            <EnablePasswordForm
-              hasSetPassword={user.password.isSet}
-              onUpdate={() => {
-                onUpdate({ ...user, password: { enabled: true, isSet: true } });
-                router.replace('/login');
-              }}
-              setIsLoading={setIsLoading}
-            />
-            ))}
-            {(action === 'disable' && (
-            <DisablePasswordForm
-              onUpdate={() => {
-                onUpdate({ ...user, password: { enabled: false, isSet: true } });
-                onClose();
-              }}
-              setIsLoading={setIsLoading}
-            />
-            ))}
-            {(action === 'update') && (
+            {action === 'enable' && (
+              <EnablePasswordForm
+                hasSetPassword={user.password.isSet}
+                onUpdate={() => {
+                  onUpdate({
+                    ...user,
+                    password: { enabled: true, isSet: true },
+                  });
+                  router.replace('/login');
+                }}
+                setIsLoading={setIsLoading}
+              />
+            )}
+            {action === 'disable' && (
+              <DisablePasswordForm
+                onUpdate={() => {
+                  onUpdate({
+                    ...user,
+                    password: { enabled: false, isSet: true },
+                  });
+                  onClose();
+                }}
+                setIsLoading={setIsLoading}
+              />
+            )}
+            {action === 'update' && (
               <UpdatePasswordForm
                 onUpdate={() => {
                   router.replace('/login');

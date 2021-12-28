@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react';
 import AsyncSelect from 'react-select/async';
 import ReactSelect, { createFilter } from 'react-select';
@@ -25,14 +26,9 @@ type MenuListProps = {
   getValue: () => any[];
   isLoading: boolean;
   options: any[];
-}
+};
 
-function MenuList({
-  children,
-  getValue,
-  isLoading,
-  options,
-}: MenuListProps) {
+function MenuList({ children, getValue, isLoading, options }: MenuListProps) {
   const [value] = getValue();
   const initialOffset = options.indexOf(value) * HEIGHT;
   const numberOfList = options.length < 10 ? options.length : 10;
@@ -73,23 +69,27 @@ function MenuList({
 }
 
 type Props = {
+  inputId?: string;
   isAsync?: boolean;
   isDisabled?: boolean;
   getOptionLabel?: (option: any) => string;
-  getOptionValue?: (option: any) => string; 
+  getOptionValue?: (option: any) => string;
   loadOptions?: any;
+  name?: string;
   onChange: (option: any) => void;
-  options?: any[]
+  options?: any[];
   placeholder?: string;
   value: any;
-}
+};
 
 export default function Select({
+  inputId = '',
   isAsync,
   isDisabled = false,
   getOptionLabel,
   getOptionValue,
   loadOptions,
+  name = '',
   onChange,
   options,
   placeholder,
@@ -102,10 +102,12 @@ export default function Select({
         components={{ MenuList }}
         defaultOptions
         filterOption={createFilter({ ignoreAccents: false })}
+        inputId={inputId}
         isDisabled={isDisabled}
         getOptionLabel={getOptionLabel}
         getOptionValue={getOptionValue}
         loadOptions={loadOptions}
+        name={name}
         onChange={onChange}
         placeholder={placeholder}
         styles={styles}
@@ -117,7 +119,9 @@ export default function Select({
     <ReactSelect
       components={{ MenuList }}
       filterOption={createFilter({ ignoreAccents: false })}
+      inputId={inputId}
       isDisabled={isDisabled}
+      name={name}
       onChange={onChange}
       options={options}
       placeholder={placeholder}

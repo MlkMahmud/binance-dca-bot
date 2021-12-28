@@ -14,9 +14,8 @@ import {
 import React from 'react';
 import { Fill, Order as OrderType } from '../../types';
 
-
 type Props = OrderType & {
-  onClick: (orderId: number, symbol: string) => Promise<void>; 
+  onClick: (orderId: number, symbol: string) => Promise<void>;
 };
 
 type RowProps = {
@@ -103,6 +102,7 @@ export default function Order({
           <Row title="Executed Qty" value={executedQty} />
           <Row title="Amount:" value={cummulativeQuoteQty} />
           <AccordionButton
+            aria-label="show order fills"
             alignItems="end"
             bg="transparent"
             color="rgb(112, 122, 138)"

@@ -1,19 +1,42 @@
 import { useDisclosure } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Job } from '../../types';
 import Loading from '../Loading';
 import JobListLoadingState from './JobListLoadingState';
-import { Job } from '../../types';
 
-const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), { loading: () => <JobListLoadingState /> });
-const JobListErrorState = dynamic(() => import('./JobListErrorState'), { loading: () => <JobListLoadingState /> });
-const JobForm = dynamic(() => import('../JobForm'), { loading: () => <Loading /> });
-const JobList = dynamic(() => import('./JobList'), { loading: () => <JobListLoadingState /> });
+const JobListEmptyState = dynamic(() => import('./JobListEmptyState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
+const JobListErrorState = dynamic(() => import('./JobListErrorState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
+const JobForm = dynamic(() => import('../JobForm'), {
+  loading: ({ error }) => <Loading error={error} />,
+});
+const JobList = dynamic(() => import('./JobList'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <JobListLoadingState />;
+  },
+});
 
 type Props = {
   defaultTimezone?: string;
-}
+};
 
 export default function Jobs({ defaultTimezone }: Props) {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -22,13 +45,13 @@ export default function Jobs({ defaultTimezone }: Props) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job>();
 
-  const deleteJob = useCallback((jobId) => {
+  const deleteJob = (jobId: string) => {
     const updatedJobs = jobs.filter(({ _id }) => _id !== jobId);
     setJobs(updatedJobs);
-  }, [jobs.length]);
+  };
 
-  const updateJobs = useCallback((newJob: Job, op: string) => {
-    let updatedJobs;
+  const updateJobs = (newJob: Job, op: string) => {
+    let updatedJobs: Job[];
     switch (op) {
       case 'append':
         updatedJobs = [...jobs, newJob];
@@ -45,14 +68,13 @@ export default function Jobs({ defaultTimezone }: Props) {
         throw new Error(`Op: ${op} is invalid`);
     }
     setJobs(updatedJobs);
-    onClose();
-  }, [jobs.length]);
+  };
 
-  const openJobForm = useCallback((id = '') => {
+  const openJobForm = (id = '') => {
     const job = jobs.find(({ _id }) => _id === id);
     setSelectedJob(job);
     onOpen();
-  }, [jobs.length]);
+  };
 
   const fetchJobs = async () => {
     try {
@@ -61,10 +83,14 @@ export default function Jobs({ defaultTimezone }: Props) {
       if (response.ok) {
         const data = await response.json();
         setJobs(data);
-      } else { throw new Error(); }
+      } else {
+        throw new Error();
+      }
     } catch {
       setHasError(true);
-    } finally { setIsloading(false); }
+    } finally {
+      setIsloading(false);
+    }
   };
 
   useEffect(() => {
@@ -83,21 +109,24 @@ export default function Jobs({ defaultTimezone }: Props) {
     <>
       {jobs.length > 0 ? (
         <JobList
+          defaultTimezone={defaultTimezone}
           handleDelete={deleteJob}
           handleUpdate={updateJobs}
           jobs={jobs}
           openJobForm={openJobForm}
         />
-      ) : <JobListEmptyState onClick={openJobForm} />}
+      ) : (
+        <JobListEmptyState onClick={openJobForm} />
+      )}
 
       {isOpen && (
-      <JobForm
-        defaultTimezone={defaultTimezone}
-        isOpen={isOpen}
-        job={selectedJob}
-        onFormClose={onClose}
-        onSubmitSuccess={updateJobs}
-      />
+        <JobForm
+          defaultTimezone={defaultTimezone}
+          isOpen={isOpen}
+          job={selectedJob}
+          onFormClose={onClose}
+          onSubmitSuccess={updateJobs}
+        />
       )}
     </>
   );

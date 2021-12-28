@@ -13,14 +13,18 @@ import {
 } from '@chakra-ui/react';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
+import {
+  displayToast,
+  generateSelectOption,
+  getTimezones,
+} from '../client-utils';
+import { User } from '../types';
 import Overlay from './Overlay';
 import Popover from './Popover';
 import Select from './Select';
-import { User } from '../types';
-import { displayToast, generateSelectOption, getTimezones } from '../client-utils';
 
 type Props = {
   onClose: () => void;
@@ -37,10 +41,18 @@ export default function Settings({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const isMounted = useRef(false);
 
-  const loadTimezones = useCallback(debounce((input, cb) => {
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
-  }, 700), []);
+  }, 700);
 
   const onSubmit = async (values: User) => {
     try {
@@ -59,20 +71,21 @@ export default function Settings({
           title: 'Success',
         });
         onUpdate(user);
-        onClose();
       } else {
-        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',
         });
       }
     } catch (e) {
-      setIsLoading(false);
       displayToast({
         description: 'Something went wrong, please try again.',
         title: 'Error',
       });
+    } finally {
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -105,9 +118,7 @@ export default function Settings({
         }}
         onSubmit={onSubmit}
       >
-        {({
-          form, handleSubmit, pristine, values,
-        }) => {
+        {({ form, handleSubmit, pristine, values }) => {
           if (btnRef.current) {
             if (pristine) {
               btnRef.current.disabled = true;
@@ -116,11 +127,11 @@ export default function Settings({
             }
           }
           return (
-            <form id="settings" onSubmit={handleSubmit}>
+            <form role="form" id="settings" onSubmit={handleSubmit}>
               <Stack spacing={4}>
                 <Box>
                   <Field name="timezone">
-                    {() => (
+                    {({ input }) => (
                       <FormControl id="timezone">
                         <FormLabel mb="0">
                           <Stack align="center" isInline spacing={1}>
@@ -134,9 +145,13 @@ export default function Settings({
                           </Stack>
                         </FormLabel>
                         <Select
+                          inputId="timezone"
                           isAsync
                           loadOptions={loadTimezones}
-                          onChange={({ value }) => form.mutators.updateTimezone(value)}
+                          name={input.name}
+                          onChange={({ value }) =>
+                            form.mutators.updateTimezone(value)
+                          }
                           value={generateSelectOption(values.timezone)}
                         />
                       </FormControl>
@@ -147,17 +162,15 @@ export default function Settings({
                   <Field name="slack.url">
                     {({ input }) => (
                       <FormControl id="slackUrl">
-                        <FormLabel mb="0">
+                        <FormLabel aria-label="slack url" mb="0">
                           <Stack align="center" isInline spacing={1}>
                             <Text fontSize="17px" fontWeight="bold">
                               Slack
                             </Text>
                             <Popover title="Slack notifications">
-                              Your Slack webhook is used to send you updates about
-                              your jobs.
-                              {' '}
-                              To learn more about Slack&apos;s incoming webhooks, click
-                              {' '}
+                              Your Slack webhook is used to send you updates
+                              about your jobs. To learn more about Slack&apos;s
+                              incoming webhooks, click{' '}
                               <Link
                                 color="blue.500"
                                 href="https://api.slack.com/messaging/webhooks"
@@ -184,17 +197,15 @@ export default function Settings({
                     )}
                   </Field>
                   <Field name="slack.enabled">
-                    {() => (
-                      <Text
-                        color="gray.500"
-                        fontSize="sm"
-                        mt="0.5rem"
-                      >
-                        Enable Slack Notifications ?
-                        {'  '}
+                    {({ input }) => (
+                      <Text color="gray.500" fontSize="sm" mt="0.5rem">
+                        Enable Slack Notifications ?{'  '}
                         <Switch
                           isChecked={values.slack.enabled}
-                          onChange={({ target }) => form.mutators.enableSlack(target.checked)}
+                          name={input.name}
+                          onChange={({ target }) =>
+                            form.mutators.enableSlack(target.checked)
+                          }
                         />
                       </Text>
                     )}
@@ -205,18 +216,16 @@ export default function Settings({
                     <Field name="telegram.botToken">
                       {({ input }) => (
                         <FormControl id="botToken">
-                          <FormLabel mb="0">
+                          <FormLabel aria-label="telegram bot token" mb="0">
                             <Stack align="center" isInline spacing={1}>
                               <Text fontSize="17px" fontWeight="bold">
                                 Telegram bot token
                               </Text>
                               <Popover title="Telegram Notifications">
-                                Your Telegam bot token is used in tandem with your
-                                Telegam chatId to send you updates about your
-                                jobs.
-                                {' '}
-                                To learn more about Telegram bots, click
-                                {' '}
+                                Your Telegam bot token is used in tandem with
+                                your Telegam chatId to send you updates about
+                                your jobs. To learn more about Telegram bots,
+                                click{' '}
                                 <Link
                                   color="blue.500"
                                   href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
@@ -245,7 +254,7 @@ export default function Settings({
                     <Field name="telegram.chatId">
                       {({ input }) => (
                         <FormControl id="chatId">
-                          <FormLabel mb="0">
+                          <FormLabel aria-label="telegram chat id" mb="0">
                             <Stack align="center" isInline spacing={1}>
                               <Text fontSize="17px" fontWeight="bold">
                                 Telegram chatId
@@ -253,10 +262,7 @@ export default function Settings({
                               <Popover title="Telegram Notifications">
                                 Your Telegam chatId is used in tandem with your
                                 Telegam bot token to send you updates about your
-                                jobs.
-                                {' '}
-                                To learn more about Telegram bots, click
-                                {' '}
+                                jobs. To learn more about Telegram bots, click{' '}
                                 <Link
                                   color="blue.500"
                                   href="https://dev.to/rizkyrajitha/get-notifications-with-telegram-bot-537l"
@@ -284,17 +290,15 @@ export default function Settings({
                     </Field>
                   </Stack>
                   <Field name="telegram.enabled">
-                    {() => (
-                      <Text
-                        color="gray.500"
-                        fontSize="sm"
-                        mt="0.5rem"
-                      >
-                        Enable Telegram Notifications ?
-                        {'  '}
+                    {({ input }) => (
+                      <Text color="gray.500" fontSize="sm" mt="0.5rem">
+                        Enable Telegram Notifications ?{'  '}
                         <Switch
                           isChecked={values.telegram.enabled}
-                          onChange={({ target }) => form.mutators.enableTelegram(target.checked)}
+                          name={input.name}
+                          onChange={({ target }) =>
+                            form.mutators.enableTelegram(target.checked)
+                          }
                         />
                       </Text>
                     )}
@@ -308,4 +312,3 @@ export default function Settings({
     </Overlay>
   );
 }
-

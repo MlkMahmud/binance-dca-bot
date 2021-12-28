@@ -1,12 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import PortfolioLoadingState from './PortfolioLoadingState';
+import Loading from '../Loading';
 
-const PortfolioDefaultState = dynamic(() => import('./PortfolioDefaultState'), { loading: () => <PortfolioLoadingState /> });
-const PortfolioErrorState = dynamic(() => import('./PortfolioErrorState'), { loading: () => <PortfolioLoadingState /> });
+type Assets = Array<{
+  asset: string;
+  free: string;
+  locked: string;
+  total: number;
+}>;
+
+const PortfolioDefaultState = dynamic(() => import('./PortfolioDefaultState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <PortfolioLoadingState />;
+  },
+});
+const PortfolioErrorState = dynamic(() => import('./PortfolioErrorState'), {
+  loading: ({ error }) => {
+    if (error) {
+      return <Loading error={error} />;
+    }
+    return <PortfolioLoadingState />;
+  },
+});
 
 export default function Portfolio() {
-  const [assets, updateAssets] = useState([]);
+  const [assets, updateAssets] = useState<Assets>([
+    { asset: 'USDT', free: '0.00', locked: '0.00', total: 0.0 },
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSymbol, setSelectedSymbol] = useState('USDT');
   const [error, setError] = useState(false);
@@ -17,7 +41,9 @@ export default function Portfolio() {
       const response = await fetch('/api/balance');
       if (response.ok) {
         const balances = await response.json();
-        updateAssets(balances);
+        if (balances.length > 0) {
+          updateAssets(balances);
+        }
         setIsLoading(false);
         setError(false);
       } else {

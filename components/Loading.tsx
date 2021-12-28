@@ -1,22 +1,38 @@
-import { Flex, Spinner } from '@chakra-ui/react';
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalOverlay, Text
+} from '@chakra-ui/react';
 import React from 'react';
 
-export default function Loading() {
+type Props = { error?: Error | null };
+
+export default function Loading({ error }: Props) {
+
+  if (error) {
+    throw error;
+  }
+
   return (
-    <Flex
-      align="center"
-      bgColor="black"
-      height="100%"
-      justify="center"
-      left="0"
-      minHeight="100vh"
-      opacity=".95"
-      position="absolute"
-      top="0"
-      width="100%"
-      zIndex="7"
+    <Modal
+      isCentered
+      isOpen
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      onClose={() => {}}
     >
-      <Spinner size="xl" />
-    </Flex>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalBody
+          alignItems="center"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          padding="25px"
+        >
+          <Text>Loading...</Text>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 }

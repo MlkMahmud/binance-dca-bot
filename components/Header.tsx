@@ -1,23 +1,33 @@
 import {
-  ButtonGroup,
+  HamburgerIcon,
+  LockIcon,
+  SettingsIcon,
+  UnlockIcon,
+} from '@chakra-ui/icons';
+import {
   Flex,
   Icon,
-  IconButton
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import React from 'react';
-import { AiFillSetting } from 'react-icons/ai';
-import { FaLock, FaUnlock } from 'react-icons/fa';
+import { MdLogout } from 'react-icons/md';
 import Logo from './Logo';
 
 type Props = {
   isPasswordEnabled: boolean;
   onGlobalSettingsClick: () => void;
+  onLogoutSuccess: () => void;
   onPasswordSettingsClick: () => void;
 };
 
 export default function Header({
   isPasswordEnabled,
   onGlobalSettingsClick,
+  onLogoutSuccess,
   onPasswordSettingsClick,
 }: Props) {
   return (
@@ -35,24 +45,31 @@ export default function Header({
       zIndex={6}
     >
       <Logo />
-      <ButtonGroup>
-        <IconButton
-          aria-label="settings"
-          variant="unstyled"
-          icon={<Icon as={AiFillSetting} boxSize="25px" />}
+      <Menu>
+        <MenuButton
+          aria-label="main menu"
+          as={IconButton}
+          icon={<HamburgerIcon boxSize="25px" />}
           minW="auto"
-          onClick={onGlobalSettingsClick}
-        />
-        <IconButton
-          aria-label="settings"
           variant="unstyled"
-          icon={
-            <Icon as={isPasswordEnabled ? FaLock : FaUnlock} boxSize="25px" />
-          }
-          minW="auto"
-          onClick={onPasswordSettingsClick}
         />
-      </ButtonGroup>
+        <MenuList>
+          <MenuItem icon={<SettingsIcon />} onClick={onGlobalSettingsClick}>
+            General settings
+          </MenuItem>
+          <MenuItem
+            icon={isPasswordEnabled ? <LockIcon /> : <UnlockIcon />}
+            onClick={onPasswordSettingsClick}
+          >
+            Password settings
+          </MenuItem>
+          {isPasswordEnabled && (
+            <MenuItem icon={<Icon as={MdLogout} />} onClick={onLogoutSuccess}>
+              Logout
+            </MenuItem>
+          )}
+        </MenuList>
+      </Menu>
     </Flex>
   );
 }
