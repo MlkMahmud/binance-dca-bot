@@ -16,6 +16,7 @@ export default {
     {
       displayName: 'Unit',
       maxWorkers: 1,
+      setupFiles: ['dotenv/config'],
       testMatch: ['<rootDir>/__tests__/server/**/*.spec.ts'],
       testEnvironment: 'node',
     },
