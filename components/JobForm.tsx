@@ -277,6 +277,7 @@ export default function JobForm({
                       </FormLabel>
                       <Select
                         isAsync
+                        isDisabled={isEditMode}
                         loadOptions={loadSymbols}
                         name={input.name}
                         getOptionLabel={(option) => option.symbol}

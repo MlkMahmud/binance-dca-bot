@@ -63,7 +63,6 @@ describe('JobForm', () => {
       amount: Number(props.job.data.amount),
       jobName: props.job.data.jobName,
       schedule: props.job.repeatInterval,
-      symbol: props.job.data.symbol,
       timezone: props.job.repeatTimezone,
       useDefaultTimezone: false,
     });
