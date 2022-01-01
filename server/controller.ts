@@ -13,18 +13,17 @@ import {
   flattenObject,
   handleJoiValidationError,
   validateJobConfig,
-  validateTimezone
+  validateTimezone,
 } from './utils';
 import { JobConfig } from './utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
 
-
 type Settings = {
   slack: { enabled: boolean; url: string };
   telegram: { botToken: string; chatId: string; enabled: boolean };
   timezone: string;
-}
+};
 
 export default {
   fetchTimezones(query = '') {
@@ -43,11 +42,11 @@ export default {
       symbol: string;
       quoteAsset: string;
     }> = [];
-    symbols.forEach(({
-      filters, isSpotTradingAllowed, quoteAsset, symbol,
-    }) => {
+    symbols.forEach(({ filters, isSpotTradingAllowed, quoteAsset, symbol }) => {
       if (isSpotTradingAllowed && symbol.includes(query.toUpperCase())) {
-        const filter = filters.find(({ filterType }) => filterType === 'MIN_NOTIONAL');
+        const filter = filters.find(
+          ({ filterType }) => filterType === 'MIN_NOTIONAL'
+        );
         if (filter) {
           const { minNotional } = filter as SymbolMinNotionalFilter;
           options.push({
@@ -69,10 +68,7 @@ export default {
     }));
   },
 
-  async setPassword(data: {
-    password: string;
-    confirmPassword: string;
-  }) {
+  async setPassword(data: { password: string; confirmPassword: string }) {
     try {
       const user = await User.findOne();
       if (user.password.hash) {
@@ -90,11 +86,11 @@ export default {
       }).validateAsync(data);
       await User.findOneAndUpdate(
         {},
-        { password: { enabled: true, hash: hashSync(password, 10) } },
+        { password: { enabled: true, hash: hashSync(password, 10) } }
       );
       return {
         status: 201,
-        message: 'Password successfully enabled',
+        message: 'Password set successfully',
       };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
@@ -102,8 +98,12 @@ export default {
     }
   },
 
-  async updatePassword({ action, password = '', newPassword }: {
-    action: 'disable' | 'enable' | 'update',
+  async updatePassword({
+    action,
+    password = '',
+    newPassword,
+  }: {
+    action: 'disable' | 'enable' | 'update';
     password?: string;
     newPassword?: string;
   }) {
@@ -126,7 +126,10 @@ export default {
       }
 
       if (action === 'disable') {
-        await User.findOneAndUpdate({}, { $set: { 'password.enabled': false } });
+        await User.findOneAndUpdate(
+          {},
+          { $set: { 'password.enabled': false } }
+        );
         return { status: 200, message: 'Password sucessfully disabled' };
       }
 
@@ -142,7 +145,7 @@ export default {
         }
         await User.findOneAndUpdate(
           {},
-          { $set: { 'password.hash': hashSync(newPassword as string, 10) } },
+          { $set: { 'password.hash': hashSync(newPassword as string, 10) } }
         );
         return { status: 200, message: 'Password sucessfully updated' };
       }
@@ -168,21 +171,30 @@ export default {
     try {
       await Joi.object({
         slack: Joi.object({ enabled: Joi.bool(), url: Joi.string().uri() }),
-        telegram: Joi.object({ enabled: Joi.bool(), botToken: Joi.string(), chatId: Joi.string() }),
+        telegram: Joi.object({
+          enabled: Joi.bool(),
+          botToken: Joi.string(),
+          chatId: Joi.string(),
+        }),
         timezone: Joi.string().custom(validateTimezone),
       }).validateAsync(payload);
       const updateDoc = flattenObject(payload);
       const session = await mongoose.startSession();
       session.startTransaction();
       const userObject = await User.findOneAndUpdate(
-        {}, { $set: updateDoc }, { new: true },
+        {},
+        { $set: updateDoc },
+        { new: true }
       );
       if ('timezone' in payload) {
         await mongoose.connection
           .getClient()
           .db()
           .collection('jobs')
-          .updateMany({ 'data.useDefaultTimezone': true }, { $set: { repeatTimezone: payload.timezone } });
+          .updateMany(
+            { 'data.useDefaultTimezone': true },
+            { $set: { repeatTimezone: payload.timezone } }
+          );
       }
       await session.commitTransaction();
       return { status: 200, user: cleanUserObject(userObject) };
@@ -193,7 +205,10 @@ export default {
   },
 
   async fetchAllJobs() {
-    const jobs = await mongoose.connection.getClient().db().collection('jobs')
+    const jobs = await mongoose.connection
+      .getClient()
+      .db()
+      .collection('jobs')
       .find()
       .project({
         data: 1,
@@ -208,9 +223,12 @@ export default {
   },
 
   async fetchJob(jobId: string) {
+    if (!mongoose.isValidObjectId(jobId)) {
+      return { status: 400, message: `job id ${jobId} is invalid` };
+    }
     const _id = new mongoose.Types.ObjectId(jobId);
-    const job = await agenda.jobs({ _id });
-    return job;
+    const [job = {}] = await agenda.jobs({ _id }, {}, 1);
+    return { status: 200, data: job };
   },
 
   async createJob(config: JobConfig) {
@@ -224,6 +242,15 @@ export default {
         timezone,
         useDefaultTimezone,
       } = await validateJobConfig(config);
+      if (useDefaultTimezone) {
+        const user = await User.findOne();
+        if (!user.timezone) {
+          return {
+            status: 400,
+            message: 'default timezone has not been set yet',
+          };
+        }
+      }
       const job = agenda.create('buy-crypto', {
         amount,
         humanInterval: cronstrue.toString(schedule, { verbose: true }),
@@ -237,7 +264,7 @@ export default {
         timezone,
       });
       await job.save();
-      return { status: 200, job };
+      return { status: 201, job };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
@@ -246,9 +273,39 @@ export default {
 
   async updateJob(jobId: string, config: Partial<JobConfig>) {
     try {
-      const {
-        enable, disable, timezone, ...rest
-      } = await validateJobConfig(config, 'optional');
+      const { enable, disable, timezone, ...data } = await validateJobConfig(
+        config,
+        'optional'
+      );
+
+      if (!mongoose.isValidObjectId(jobId)) {
+        return { status: 400, message: `job id ${jobId} is invalid` };
+      }
+
+      let invalidField = null;
+      ['schedule', 'symbol', 'quoteAsset'].forEach((field) => {
+        if (field in data) {
+          invalidField = field;
+        }
+      });
+
+      if (invalidField) {
+        return {
+          status: 400,
+          message: `${invalidField} cannot be updated once set`,
+        };
+      }
+
+      if (data.useDefaultTimezone) {
+        const user = await User.findOne();
+        if (!user.timezone) {
+          return {
+            status: 400,
+            message: 'default timezone has not been set yet',
+          };
+        }
+      }
+
       const _id = new mongoose.Types.ObjectId(jobId);
       const [job] = await agenda.jobs({ _id });
       if (!job) {
@@ -267,8 +324,7 @@ export default {
       } else if (disable) {
         job.disable();
       }
-
-      job.attrs.data = { ...job.attrs.data, ...rest };
+      job.attrs.data = { ...job.attrs.data, ...data };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
       await job.save();
       return { status: 200, job };
@@ -279,6 +335,9 @@ export default {
   },
 
   async deleteJob(jobId: string) {
+    if (!mongoose.isValidObjectId(jobId)) {
+      return { status: 400, message: `job id ${jobId} is invalid` };
+    }
     const _id = new mongoose.Types.ObjectId(jobId);
     const [job] = await agenda.jobs({ _id });
     if (!job) {
@@ -295,11 +354,13 @@ export default {
   },
 
   async getOrders(jobId: string) {
-    const orders = await Order.find({ jobId }, null, { sort: { transactTime: -1 } });
+    const orders = await Order.find({ jobId }, null, {
+      sort: { transactTime: -1 },
+    });
     return { data: orders };
   },
 
-  async updateOrderStatus(payload: { orderId: number; symbol: string; }) {
+  async updateOrderStatus(payload: { orderId: number; symbol: string }) {
     try {
       const { orderId, symbol } = await Joi.object({
         orderId: Joi.number().required(),
@@ -307,8 +368,14 @@ export default {
       }).validateAsync(payload);
 
       const order = await Order.findOne({ orderId, symbol });
+      if (!order) {
+        return {
+          status: 400,
+          message: `Failed to find order with orderId :${orderId} and symbol: ${symbol}`,
+        };
+      }
       if (order.status === 'FILLED') {
-        return order;
+        return { status: 200, data: order };
       }
       const orderToUpdate = await binance.getOrder({ orderId, symbol });
       if (orderToUpdate.status === 'FILLED') {
@@ -326,13 +393,13 @@ export default {
           { orderId, symbol },
           { fills, status: orderToUpdate.status, transactTime },
           { new: true }
-         );
-        return updatedOrder;
+        );
+        return { status: 200, data: updatedOrder };
       }
-      return order;
+      return { status: 200, data: order };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
     }
-  }
+  },
 };
