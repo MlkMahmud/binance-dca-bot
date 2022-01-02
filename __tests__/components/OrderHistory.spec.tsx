@@ -93,7 +93,11 @@ describe('OrderHistory', () => {
     );
     expect(screen.getByText(sampleOrder.symbol)).toBeInTheDocument();
     expect(screen.getByText(/Updated At/)).toBeInTheDocument();
-    expect(screen.getByText('13/11/2021, 23:15:00')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        new Date('2021-11-13T22:15:00.960+00:00').toLocaleString('en-GB')
+      )
+    ).toBeInTheDocument();
     expect(screen.getByText(/Order Id/)).toBeInTheDocument();
     expect(screen.getByText(sampleOrder.orderId)).toBeInTheDocument();
     expect(screen.getByText(/Status/)).toBeInTheDocument();

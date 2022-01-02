@@ -88,7 +88,7 @@ describe('JobForm', () => {
         expect(
           screen.getByText(/Job updated successfully/)
         ).toBeInTheDocument(),
-      { timeout: 8000 }
+      { timeout: 12000 }
     );
     expect(onSubmitSuccess).toHaveBeenCalledWith(newValues, 'update');
   });
@@ -126,7 +126,7 @@ describe('JobForm', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
-      timeout: 8000,
+      timeout: 12000,
     });
     expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
   });
