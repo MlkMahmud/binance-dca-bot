@@ -6,6 +6,8 @@
     }
   },
   "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
     "module": "commonjs",
     "rootDir": "server",
     "outDir": "dist",
