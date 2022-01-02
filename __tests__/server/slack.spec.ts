@@ -5,6 +5,8 @@ import { errorPayload, successPayload } from '../../__mocks__/data';
 import database from '../../__mocks__/database';
 import slack from '../../server/lib/notifications/slack';
 import { User } from '../../server/models';
+import sentry from '../../server/lib/sentry';
+import BaseError from '../../server/error';
 
 const slackUrl = 'https://slack-webhook.com';
 
@@ -14,6 +16,9 @@ fetch.mockImplementation(() =>
 
 beforeAll(async () => {
   await database.connect();
+});
+
+beforeEach(async () => {
   await User.create({
     slack: {
       enabled: true,
@@ -23,11 +28,12 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
+  jest.restoreAllMocks();
   fetch.mockClear();
+  await database.flush();
 });
 
 afterAll(async () => {
-  await database.flush();
   await database.disconnnect();
 });
 
@@ -141,5 +147,24 @@ describe('slack', () => {
     await slack.sendMessage('error', errorPayload);
     await slack.sendMessage('success', successPayload);
     expect(fetch).toHaveBeenCalledTimes(0);
+  });
+
+  it('should throw an error if event is invalid', async () => {
+    const captureException = jest.spyOn(sentry, 'captureException');
+    const event = 'invalid';
+    await slack.sendMessage(event, successPayload);
+    expect(captureException).toHaveBeenCalledWith(
+      new BaseError('SlackError', `Invalid event: ${event}`)
+    );
+  });
+
+  it('should gracefully handle network errors', async () => {
+    const captureException = jest.spyOn(sentry, 'captureException');
+    const errorMessage = 'network error';
+    fetch.mockReturnValueOnce(new Response(errorMessage, { status: 400 }));
+    await slack.sendMessage('success', successPayload);
+    expect(captureException).toHaveBeenCalledWith(
+      new BaseError('SlackError', errorMessage)
+    );
   });
 });
