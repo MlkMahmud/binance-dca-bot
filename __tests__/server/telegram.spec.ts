@@ -1,7 +1,9 @@
 // @ts-nocheck
 jest.mock('cross-fetch');
 import fetch from 'cross-fetch';
+import BaseError from '../../server/error';
 import telegram from '../../server/lib/notifications/telegram';
+import sentry from '../../server/lib/sentry';
 import { User } from '../../server/models';
 import { errorPayload, successPayload } from '../../__mocks__/data';
 import database from '../../__mocks__/database';
@@ -15,6 +17,9 @@ fetch.mockImplementation(() =>
 
 beforeAll(async () => {
   await database.connect();
+});
+
+beforeEach(async () => {
   await User.create({
     telegram: {
       botToken,
@@ -25,11 +30,12 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
+  jest.restoreAllMocks();
   fetch.mockClear();
+  await database.flush();
 });
 
 afterAll(async () => {
-  await database.flush();
   await database.disconnnect();
 });
 
@@ -76,5 +82,29 @@ describe('telegram', () => {
     await telegram.sendMessage('success', successPayload);
     await telegram.sendMessage('error', errorPayload);
     expect(fetch).toHaveBeenCalledTimes(0);
+  });
+
+  it('should throw an error if event is invalid', async () => {
+    const captureException = jest.spyOn(sentry, 'captureException');
+    const event = 'invalid';
+    await telegram.sendMessage(event, successPayload);
+    expect(captureException).toHaveBeenCalledWith(
+      new BaseError('TelegramError', `Invalid event ${event}`)
+    );
+  });
+
+  it('should handle a telegram API error response', async () => {
+    const captureException = jest.spyOn(sentry, 'captureException');
+    const errorMessage = 'chatId is invalid';
+    fetch.mockReturnValueOnce(
+      new Response(JSON.stringify({ description: errorMessage }), {
+        status: 400,
+        headers: { 'content-type': 'application/json' },
+      })
+    );
+    await telegram.sendMessage('success', successPayload);
+    expect(captureException).toHaveBeenCalledWith(
+      new BaseError('TelegramError', errorMessage)
+    );
   });
 });

@@ -1,12 +1,12 @@
 // @ts-nocheck
 jest.mock('cross-fetch');
 import fetch from 'cross-fetch';
+import BaseError from '../../server/error';
+import slack from '../../server/lib/notifications/slack';
+import sentry from '../../server/lib/sentry';
+import { User } from '../../server/models';
 import { errorPayload, successPayload } from '../../__mocks__/data';
 import database from '../../__mocks__/database';
-import slack from '../../server/lib/notifications/slack';
-import { User } from '../../server/models';
-import sentry from '../../server/lib/sentry';
-import BaseError from '../../server/error';
 
 const slackUrl = 'https://slack-webhook.com';
 
@@ -158,7 +158,7 @@ describe('slack', () => {
     );
   });
 
-  it('should gracefully handle network errors', async () => {
+  it('should handle a slack API error response', async () => {
     const captureException = jest.spyOn(sentry, 'captureException');
     const errorMessage = 'network error';
     fetch.mockReturnValueOnce(new Response(errorMessage, { status: 400 }));
