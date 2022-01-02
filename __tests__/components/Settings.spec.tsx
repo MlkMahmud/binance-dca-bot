@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '../../test-utils';
 import { rest, server } from '../../__mocks__/server';
@@ -56,9 +57,12 @@ describe('Settings', () => {
       target: { value: values.telegram.botToken },
     });
     fireEvent.click(screen.getByText(/Save/));
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
-      timeout: 8000,
-    });
+    await waitFor(
+      () => expect(screen.getByText(/Settings updated/)).toBeInTheDocument(),
+      {
+        timeout: 8000,
+      }
+    );
     expect(onUpdate).toHaveBeenCalledWith(values);
   });
 

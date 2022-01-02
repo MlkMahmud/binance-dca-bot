@@ -16,7 +16,7 @@ import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import {
   displayToast,
@@ -62,13 +62,6 @@ export default function JobForm({
   onFormClose,
   onSubmitSuccess,
 }: Props) {
-  const isMounted = useRef(false);
-  useEffect(() => {
-    isMounted.current = true;
-    () => {
-      isMounted.current = false;
-    };
-  }, []);
   const isEditMode = !!job;
   const initialValues: Values = isEditMode
     ? {
@@ -175,20 +168,18 @@ export default function JobForm({
           title: 'Success',
         });
       } else {
+        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',
         });
       }
     } catch {
+      setIsLoading(false);
       displayToast({
         description: 'Failed to create job',
         title: 'Error',
       });
-    } finally {
-      if (isMounted.current) {
-        setIsLoading(false);
-      }
     }
   };
 

@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '../../test-utils';
 import { rest, server } from '../../__mocks__/server';
@@ -82,9 +83,13 @@ describe('JobForm', () => {
       target: { value: newValues.jobName },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
-      timeout: 8000,
-    });
+    await waitFor(
+      () =>
+        expect(
+          screen.getByText(/Job updated successfully/)
+        ).toBeInTheDocument(),
+      { timeout: 8000 }
+    );
     expect(onSubmitSuccess).toHaveBeenCalledWith(newValues, 'update');
   });
 
