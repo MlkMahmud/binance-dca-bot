@@ -58,10 +58,10 @@ describe('Porfolio', () => {
     expect(screen.queryByText(/Total/)).toBeInTheDocument();
   });
 
-  it('defaults to  a 0 USDT balance if portfolio is empty', async () => {
+  it('defaults to a 0 USDT balance if portfolio is empty', async () => {
     server.use(
       rest.get('http://localhost/api/balance', (_req, res, ctx) => {
-        return res(ctx.json([]));
+        return res(ctx.json({ data: [] }));
       })
     );
     render(<Portfolio />);

@@ -26,7 +26,11 @@ export function generateSelectOption(value: string) {
   };
 }
 
-export function displayToast({ description, status = 'error', title }: {
+export function displayToast({
+  description,
+  status = 'error',
+  title,
+}: {
   description: string;
   status?: 'error' | 'success';
   title: string;
@@ -43,23 +47,19 @@ export function displayToast({ description, status = 'error', title }: {
 }
 
 export async function getSymbols(query: string) {
-  const response = await fetch(
-    `/api/symbols?q=${query}`,
-  );
+  const response = await fetch(`/api/symbols?q=${query}`);
   if (response.ok) {
-    const symbols = await response.json();
-    return symbols;
+    const { data } = await response.json();
+    return data;
   }
   return [];
 }
 
 export async function getTimezones(query: string) {
-  const response = await fetch(
-    `/api/timezones?q=${query}`,
-  );
+  const response = await fetch(`/api/timezones?q=${query}`);
   if (response.ok) {
-    const timezones = await response.json();
-    return timezones;
+    const { data } = await response.json();
+    return data;
   }
   return [];
 }

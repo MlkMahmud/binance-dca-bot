@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
 import Settings from '../../components/Settings';
-import { fireEvent, render, screen, waitFor } from '../../test-utils';
-import { User } from '../../types';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '../../test-utils';
 import { rest, server } from '../../__mocks__/server';
 
-jest.setTimeout(12000);
+jest.setTimeout(20000);
 
 const user = {
   password: { enabled: false, isSet: false },
@@ -25,9 +28,8 @@ const values = {
 
 const props = {
   isOpen: true,
-  onClose: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onUpdate: (_user: User) => {},
+  onClose: jest.fn(),
+  onUpdate: jest.fn(),
   initialValues: user,
 };
 
@@ -54,9 +56,10 @@ describe('Settings', () => {
       target: { value: values.telegram.botToken },
     });
     fireEvent.click(screen.getByText(/Save/));
-    await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(values), {
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
       timeout: 8000,
     });
+    expect(onUpdate).toHaveBeenCalledWith(values);
   });
 
   it('should handle submission errors', async () => {
@@ -74,8 +77,9 @@ describe('Settings', () => {
       target: { value: values.telegram.botToken },
     });
     fireEvent.click(screen.getByText(/Save/));
-    await waitFor(() => expect(onUpdate).toHaveBeenCalledTimes(0), {
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
       timeout: 8000,
     });
+    expect(onUpdate).toHaveBeenCalledTimes(0);
   });
 });

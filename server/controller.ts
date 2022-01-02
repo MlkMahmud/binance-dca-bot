@@ -197,7 +197,7 @@ export default {
           );
       }
       await session.commitTransaction();
-      return { status: 200, user: cleanUserObject(userObject) };
+      return { status: 200, data: cleanUserObject(userObject) };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
@@ -264,7 +264,7 @@ export default {
         timezone,
       });
       await job.save();
-      return { status: 201, job };
+      return { status: 201, data: job };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;
@@ -327,7 +327,7 @@ export default {
       job.attrs.data = { ...job.attrs.data, ...data };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;
       await job.save();
-      return { status: 200, job };
+      return { status: 200, data: job };
     } catch (e: any) {
       const response = handleJoiValidationError(e);
       return response;

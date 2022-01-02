@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
 import OrderHistory from '../../components/OrderHistory';
 import {
@@ -13,7 +12,7 @@ const props = {
   isOpen: true,
   jobId: '61b10730ab9b1e8a9b1578ce',
   jobName: 'BNB Daily',
-  onClose: () => {},
+  onClose: jest.fn(),
 };
 
 const sampleOrder = {

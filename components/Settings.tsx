@@ -63,21 +63,22 @@ export default function Settings({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const { user, message: description } = await response.json();
+      const { data, message: description } = await response.json();
       if (response.ok) {
         displayToast({
           description: 'Settings updated',
           status: 'success',
           title: 'Success',
         });
-        onUpdate(user);
+        onUpdate(data);
+        onClose();
       } else {
         displayToast({
           description,
           title: 'Error',
         });
       }
-    } catch (e) {
+    } catch {
       displayToast({
         description: 'Something went wrong, please try again.',
         title: 'Error',

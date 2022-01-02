@@ -22,7 +22,7 @@ describe('Jobs', () => {
   it('should render empty state if there are no jobs', async () => {
     server.use(
       rest.get('http://localhost/api/jobs', (_req, res, ctx) => {
-        return res(ctx.json([]));
+        return res(ctx.json({ data: [] }));
       })
     );
     render(<Jobs {...props} />);

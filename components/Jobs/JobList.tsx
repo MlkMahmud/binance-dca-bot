@@ -142,7 +142,7 @@ export default function JobList({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const { job: updatedJob, message: description } = await response.json();
+      const { data: updatedJob, message: description } = await response.json();
       if (response.ok) {
         handleUpdate(updatedJob, 'update');
         onClose();

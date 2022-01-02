@@ -5,13 +5,13 @@ const router = Router();
 
 router.get('/api/timezones', (req, res) => {
   const timezones = controller.fetchTimezones(req.query.q as string);
-  res.json(timezones);
+  res.json({ data: timezones });
 });
 
 router.get('/api/symbols', async (req, res, next) => {
   try {
     const symbols = await controller.fetchSymbols(req.query.q as string);
-    res.json(symbols);
+    res.json({ data: symbols });
   } catch (err) {
     next(err);
   }
@@ -20,7 +20,7 @@ router.get('/api/symbols', async (req, res, next) => {
 router.get('/api/balance', async (_, res, next) => {
   try {
     const balances = await controller.fetchAccountBalance();
-    res.json(balances);
+    res.json({ data: balances });
   } catch (err) {
     next(err);
   }
@@ -79,15 +79,15 @@ router
   .get(async (_, res, next) => {
     try {
       const jobs = await controller.fetchAllJobs();
-      res.json(jobs);
+      res.json({ data: jobs });
     } catch (err) {
       next(err);
     }
   })
   .post(async (req, res, next) => {
     try {
-      const { status, ...rest } = await controller.createJob(req.body);
-      res.status(status).json(rest);
+      const { status, ...payload } = await controller.createJob(req.body);
+      res.status(status).json(payload);
     } catch (err) {
       next(err);
     }

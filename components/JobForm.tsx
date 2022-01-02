@@ -16,7 +16,7 @@ import { parseExpression } from 'cron-parser';
 import cronstrue from 'cronstrue';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import {
   displayToast,
@@ -62,6 +62,13 @@ export default function JobForm({
   onFormClose,
   onSubmitSuccess,
 }: Props) {
+  const isMounted = useRef(false);
+  useEffect(() => {
+    isMounted.current = true;
+    () => {
+      isMounted.current = false;
+    };
+  }, []);
   const isEditMode = !!job;
   const initialValues: Values = isEditMode
     ? {
@@ -140,7 +147,8 @@ export default function JobForm({
       setIsLoading(true);
       if (isEditMode) {
         const response = await fetch(`/api/symbols?q=${values.symbol}`);
-        const [symbol] = await response.json();
+        const { data } = await response.json();
+        const [symbol] = data;
         if (symbol.minNotional > +values.amount) {
           setIsLoading(false);
           return {
@@ -158,7 +166,7 @@ export default function JobForm({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const { job: newJob, message: description } = await response.json();
+      const { data: newJob, message: description } = await response.json();
       if (response.ok) {
         onSubmitSuccess(newJob, op);
         displayToast({
@@ -178,7 +186,9 @@ export default function JobForm({
         title: 'Error',
       });
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
 

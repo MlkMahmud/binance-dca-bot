@@ -40,7 +40,7 @@ export default function Portfolio() {
       setIsLoading(true);
       const response = await fetch('/api/balance');
       if (response.ok) {
-        const balances = await response.json();
+        const { data: balances } = await response.json();
         if (balances.length > 0) {
           updateAssets(balances);
         }

@@ -299,9 +299,10 @@ describe('POST /api/jobs', () => {
     const response = await request(app).post('/api/jobs').send(job);
     expect(response.status).toEqual(201);
     const res = await request(app).get('/api/jobs');
+    const jobs = res.body.data;
     expect(res.status).toEqual(200);
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0]).toHaveProperty('data', {
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]).toHaveProperty('data', {
       amount: job.amount,
       humanInterval: 'At 11:00 PM, every day',
       jobName: job.jobName,
@@ -309,8 +310,8 @@ describe('POST /api/jobs', () => {
       symbol: job.symbol,
       useDefaultTimezone: job.useDefaultTimezone,
     });
-    expect(res.body[0]).toHaveProperty('repeatInterval', job.schedule);
-    expect(res.body[0]).toHaveProperty('repeatTimezone', job.timezone);
+    expect(jobs[0]).toHaveProperty('repeatInterval', job.schedule);
+    expect(jobs[0]).toHaveProperty('repeatTimezone', job.timezone);
   });
 
   it('should not create a job with missing config parameters', async () => {
@@ -324,7 +325,7 @@ describe('POST /api/jobs', () => {
     );
     const res = await request(app).get('/api/jobs');
     expect(res.status).toEqual(200);
-    expect(res.body).toHaveLength(0);
+    expect(res.body.data).toHaveLength(0);
   });
 
   it('should not create a job with useDefaultTimezone if default timezone is not set', async () => {
@@ -338,7 +339,7 @@ describe('POST /api/jobs', () => {
     );
     const res = await request(app).get('/api/jobs');
     expect(res.status).toEqual(200);
-    expect(res.body).toHaveLength(0);
+    expect(res.body.data).toHaveLength(0);
   });
 });
 
@@ -403,7 +404,7 @@ describe('PATCH /api/jobs/:jobId', () => {
       .patch(`/api/jobs/${job._id}`)
       .send(values);
     expect(response.status).toEqual(200);
-    const updatedJob = response.body.job;
+    const updatedJob = response.body.data;
     expect(updatedJob).toHaveProperty('_id', job._id);
     expect(updatedJob.data).toHaveProperty('amount', values.amount);
     expect(updatedJob.data).toHaveProperty('jobName', values.jobName);
