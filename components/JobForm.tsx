@@ -140,7 +140,8 @@ export default function JobForm({
       setIsLoading(true);
       if (isEditMode) {
         const response = await fetch(`/api/symbols?q=${values.symbol}`);
-        const [symbol] = await response.json();
+        const { data } = await response.json();
+        const [symbol] = data;
         if (symbol.minNotional > +values.amount) {
           setIsLoading(false);
           return {
@@ -158,7 +159,7 @@ export default function JobForm({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const { job: newJob, message: description } = await response.json();
+      const { data: newJob, message: description } = await response.json();
       if (response.ok) {
         onSubmitSuccess(newJob, op);
         displayToast({
@@ -167,18 +168,18 @@ export default function JobForm({
           title: 'Success',
         });
       } else {
+        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',
         });
       }
     } catch {
+      setIsLoading(false);
       displayToast({
         description: 'Failed to create job',
         title: 'Error',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -277,6 +278,7 @@ export default function JobForm({
                       </FormLabel>
                       <Select
                         isAsync
+                        isDisabled={isEditMode}
                         loadOptions={loadSymbols}
                         name={input.name}
                         getOptionLabel={(option) => option.symbol}

@@ -1,4 +1,4 @@
-import { NextFunction,  Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import next from 'next';
 import path from 'path';
@@ -20,13 +20,18 @@ const logger = rootLogger.child({ module: 'app' });
     await nextApp.prepare();
     app.all('*', (req, res) => handler(req, res));
     app.use(sentry.Handlers.errorHandler());
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err: Error, req: Request, res: Response, _: NextFunction) => {
       logger.error({ err, req });
       res.status(500);
       res.end();
     });
     await mongoose.connect(DB_URL);
-    await User.findOneAndUpdate({}, {}, { upsert: true, setDefaultsOnInsert: true });
+    await User.findOneAndUpdate(
+      {},
+      {},
+      { upsert: true, setDefaultsOnInsert: true }
+    );
     // @ts-ignore
     agenda.mongo(mongoose.connection.getClient().db(), 'jobs');
     await agenda.start();
@@ -37,4 +42,4 @@ const logger = rootLogger.child({ module: 'app' });
     logger.error({ err });
     process.exit(1);
   }
-}());
+})();

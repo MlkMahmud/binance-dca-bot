@@ -1,10 +1,8 @@
 import bunyan from 'bunyan';
 
-export default bunyan.createLogger({
+const logger = bunyan.createLogger({
   name: 'dca-bot',
-  streams: [
-    { level: 'info', stream: process.stdout },
-  ],
+  streams: [{ level: 'info', stream: process.stdout }],
   serializers: {
     err: bunyan.stdSerializers.err,
     req: ({ method, url }: { method: string; url: string }) => ({
@@ -13,3 +11,9 @@ export default bunyan.createLogger({
     }),
   },
 });
+
+if (process.env.NODE_ENV === 'test') {
+  logger.level(bunyan.FATAL + 1);
+}
+
+export default logger;

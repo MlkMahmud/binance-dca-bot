@@ -1,12 +1,12 @@
 import React from 'react';
-import Jobs from '../components/Jobs';
+import Jobs from '../../components/Jobs';
 import {
   fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
-} from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+} from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 const props = {
   defaultTimezone: 'Africa/Lagos',
@@ -22,7 +22,7 @@ describe('Jobs', () => {
   it('should render empty state if there are no jobs', async () => {
     server.use(
       rest.get('http://localhost/api/jobs', (_req, res, ctx) => {
-        return res(ctx.json([]));
+        return res(ctx.json({ data: [] }));
       })
     );
     render(<Jobs {...props} />);

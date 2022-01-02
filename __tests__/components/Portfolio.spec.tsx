@@ -1,7 +1,7 @@
 import React from 'react';
-import Portfolio from '../components/Portfolio';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+import Portfolio from '../../components/Portfolio';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
 describe('Porfolio', () => {
   it('should render the error state', async () => {
@@ -58,10 +58,10 @@ describe('Porfolio', () => {
     expect(screen.queryByText(/Total/)).toBeInTheDocument();
   });
 
-  it('defaults to  a 0 USDT balance if portfolio is empty', async () => {
+  it('defaults to a 0 USDT balance if portfolio is empty', async () => {
     server.use(
       rest.get('http://localhost/api/balance', (_req, res, ctx) => {
-        return res(ctx.json([]));
+        return res(ctx.json({ data: [] }));
       })
     );
     render(<Portfolio />);

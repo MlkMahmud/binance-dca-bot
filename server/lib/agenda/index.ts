@@ -6,7 +6,7 @@ const agenda = new Agenda();
 const jobs = readdirSync(resolve(__dirname, 'jobs'));
 
 jobs.forEach((job) => {
-  if (!job.includes('.map')) {
+  if (!job.endsWith('.map')) {
     require(`./jobs/${job}`)(agenda);
   }
 });

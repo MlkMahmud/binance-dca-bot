@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
-import LoginForm from '../components/LoginForm';
-import { rest, server } from '../__mocks__/server';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
+import LoginForm from '../../components/LoginForm';
+import { rest, server } from '../../__mocks__/server';
+import { fireEvent, render, screen, waitFor } from '../../test-utils';
 
 describe('LoginForm', () => {
   it('should render a login form', () => {
-    render(<LoginForm onLoginSuccess={() => {}} />);
+    render(<LoginForm onLoginSuccess={() => jest.fn()} />);
     const form = screen.getByRole('form', { name: 'login' });
     expect(form).toBeInTheDocument();
     expect(form).toHaveFormValues({ password: '' });

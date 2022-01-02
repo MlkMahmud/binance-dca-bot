@@ -68,6 +68,7 @@ export default function Jobs({ defaultTimezone }: Props) {
         throw new Error(`Op: ${op} is invalid`);
     }
     setJobs(updatedJobs);
+    onClose();
   };
 
   const openJobForm = (id = '') => {
@@ -81,7 +82,7 @@ export default function Jobs({ defaultTimezone }: Props) {
       setIsloading(true);
       const response = await fetch('/api/jobs');
       if (response.ok) {
-        const data = await response.json();
+        const { data } = await response.json();
         setJobs(data);
       } else {
         throw new Error();

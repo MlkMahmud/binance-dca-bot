@@ -1,10 +1,9 @@
 import fetch from 'cross-fetch';
+import { Event, JobEventPayload } from '.';
 import BaseError from '../../error';
 import { User } from '../../models';
 import rootLogger from '../logger';
 import sentry from '../sentry';
-import { Event, JobEventPayload } from '.';
-
 
 function generateMessage(event: Event, job: JobEventPayload) {
   const message: { blocks: Array<any> } = { blocks: [] };
@@ -34,11 +33,17 @@ function generateMessage(event: Event, job: JobEventPayload) {
             { type: 'mrkdwn', text: `*Job Name:*\n${job.name}` },
             { type: 'mrkdwn', text: `*Status:*\n${job.status}` },
             { type: 'mrkdwn', text: `*Original Quantity:*\n${job.origQty}` },
-            { type: 'mrkdwn', text: `*Executed Quantity:*\n${job.executedQty}` },
-            { type: 'mrkdwn', text: `*Cummulative Quote Quantity:*\n${job.cummulativeQuoteQty}` },
+            {
+              type: 'mrkdwn',
+              text: `*Executed Quantity:*\n${job.executedQty}`,
+            },
+            {
+              type: 'mrkdwn',
+              text: `*Cummulative Quote Quantity:*\n${job.cummulativeQuoteQty}`,
+            },
             { type: 'mrkdwn', text: `*NextRunAt:*\n${job.nextRunAt}` },
           ],
-        },
+        }
       );
       break;
     case 'error':
@@ -66,7 +71,7 @@ function generateMessage(event: Event, job: JobEventPayload) {
             { type: 'mrkdwn', text: `*Job Name:*\n${job.name}` },
             { type: 'mrkdwn', text: `*Reason:*\n${job.reason}` },
           ],
-        },
+        }
       );
       break;
     default:

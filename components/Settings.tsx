@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { diff } from 'deep-object-diff';
 import debounce from 'lodash.debounce';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
 import { FaSlack, FaTelegramPlane } from 'react-icons/fa';
 import {
@@ -41,14 +41,6 @@ export default function Settings({
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const isMounted = useRef(false);
-
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   const loadTimezones = debounce((input, cb) => {
     getTimezones(input).then((timezones) => cb(timezones));
@@ -63,29 +55,28 @@ export default function Settings({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const { user, message: description } = await response.json();
+      const { data, message: description } = await response.json();
       if (response.ok) {
         displayToast({
           description: 'Settings updated',
           status: 'success',
           title: 'Success',
         });
-        onUpdate(user);
+        onUpdate(data);
+        onClose();
       } else {
+        setIsLoading(false);
         displayToast({
           description,
           title: 'Error',
         });
       }
-    } catch (e) {
+    } catch {
+      setIsLoading(false);
       displayToast({
         description: 'Something went wrong, please try again.',
         title: 'Error',
       });
-    } finally {
-      if (isMounted.current) {
-        setIsLoading(false);
-      }
     }
   };
 

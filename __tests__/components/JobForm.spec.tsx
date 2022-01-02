@@ -1,10 +1,15 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React from 'react';
-import JobForm from '../components/JobForm';
-import { fireEvent, render, screen, waitFor } from '../test-utils';
-import { rest, server } from '../__mocks__/server';
+import JobForm from '../../components/JobForm';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '../../test-utils';
+import { rest, server } from '../../__mocks__/server';
 
-jest.setTimeout(15000);
+jest.setTimeout(20000);
 
 const newValues = {
   amount: '600',
@@ -30,8 +35,8 @@ const props = {
     repeatInterval: '0 23 * * *',
     repeatTimezone: 'Africa/Lagos',
   },
-  onFormClose: () => {},
-  onSubmitSuccess: () => {},
+  onFormClose: jest.fn(),
+  onSubmitSuccess: jest.fn(),
 };
 
 describe('JobForm', () => {
@@ -63,7 +68,6 @@ describe('JobForm', () => {
       amount: Number(props.job.data.amount),
       jobName: props.job.data.jobName,
       schedule: props.job.repeatInterval,
-      symbol: props.job.data.symbol,
       timezone: props.job.repeatTimezone,
       useDefaultTimezone: false,
     });
@@ -80,12 +84,13 @@ describe('JobForm', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(
-      () => {
-        expect(screen.getAllByText(/Job updated successfully/)).toHaveLength(2);
-        expect(onSubmitSuccess).toHaveBeenCalledWith(newValues, 'update');
-      },
-      { timeout: 8000 }
+      () =>
+        expect(
+          screen.getByText(/Job updated successfully/)
+        ).toBeInTheDocument(),
+      { timeout: 12000 }
     );
+    expect(onSubmitSuccess).toHaveBeenCalledWith(newValues, 'update');
   });
 
   it('should validate input fields', () => {
@@ -120,12 +125,9 @@ describe('JobForm', () => {
       target: { value: newValues.jobName },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    await waitFor(
-      () => {
-        expect(screen.getAllByText(errorMessage)).toHaveLength(2);
-        expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
-      },
-      { timeout: 8000 }
-    );
+    await waitForElementToBeRemoved(() => screen.getByText(/Loading.../), {
+      timeout: 12000,
+    });
+    expect(onSubmitSuccess).toHaveBeenCalledTimes(0);
   });
 });
