@@ -27,3 +27,15 @@ jobs:
         run: npm test
         env:
           JWT_SECRET: supersecretphrase
+
+  bump-package-version:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: 'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit-message: 'CI: bumps version to {{version}} [skip ci]'
