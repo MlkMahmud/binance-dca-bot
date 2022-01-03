@@ -57,7 +57,7 @@ jobs:
         run: npm build
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_DSN: ${{ secret.SENTRY_DSN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENABLED: true
-          SENTRY_ORG: ${{ secret.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secret.SENTRY_PROJECT }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
