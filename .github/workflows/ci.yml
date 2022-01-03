@@ -55,7 +55,7 @@ jobs:
         run: npm ci
 
       - name: Upload source maps to Sentry
-        run: npm build
+        run: npm run build
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
