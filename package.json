@@ -6,11 +6,10 @@
   "scripts": {
     "build": "npm-run-all build:*",
     "build:next": "next build",
-    "build:server": "babel server --out-dir dist --extensions '.ts' --source-maps",
+    "build:server": "tsc --project tsconfig.server.json",
     "dev": "cross-env NODE_ENV=development nodemon",
     "postbuild": "node scripts/postbuild",
     "prepare": "husky install",
-    "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production node dist/index | bunyan",
     "test": "cross-env NODE_ENV=test jest"
   },
