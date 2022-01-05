@@ -4,6 +4,5 @@
       "plugins": ["transform-dynamic-import"]
     }
   },
-  "plugins": ["@babel/plugin-transform-runtime"],
-  "presets": ["next/babel", "@babel/preset-env", "@babel/preset-typescript"]
+  "presets": ["next/babel"]
 }

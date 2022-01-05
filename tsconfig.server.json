@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "ts-node": {
+    "compilerOptions": {
+      "rootDir": "."
+    }
+  },
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": "server",
+    "outDir": "dist",
+    "target": "es2017",
+    "isolatedModules": false,
+    "noEmit": false,
+    "noEmitOnError": true
+  },
+  "include": ["server/**/*.ts"]
+}
