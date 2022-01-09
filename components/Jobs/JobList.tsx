@@ -225,6 +225,7 @@ export default function JobList({
           right="20px"
           width="60px"
           variant="unstyled"
+          zIndex={4}
         />
       </Box>
       {isOpen && (
