@@ -27,11 +27,7 @@ const logger = rootLogger.child({ module: 'app' });
       res.end();
     });
     await mongoose.connect(DB_URL);
-    await User.findOneAndUpdate(
-      {},
-      {},
-      { upsert: true, setDefaultsOnInsert: true }
-    );
+    await User.findOneAndUpdate({}, {}, { upsert: true, runValidators: true });
     // @ts-ignore
     agenda.mongo(mongoose.connection.getClient().db(), 'jobs');
     await agenda.start();
