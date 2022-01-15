@@ -1,8 +1,8 @@
 const { resolve } = require('path');
 const sh = require('shelljs');
 
-const version = process.env.PROJECT_VERSION
-  ? process.env.PROJECT_VERSION.trim()
+const version = process.env.SENTRY_RELEASE
+  ? process.env.SENTRY_RELEASE.trim()
   : 'current';
 
 if (process.env.SENTRY_ENABLED === 'true' && process.env.SENTRY_DSN) {

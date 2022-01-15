@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, ValidatorProps } from 'mongoose';
+import moment from 'moment-timezone';
 
 const {
   SLACK_ENABLED,
@@ -6,7 +7,7 @@ const {
   TELEGRAM_BOT_TOKEN = '',
   TELEGRAM_CHAT_ID = '',
   TELEGRAM_ENABLED,
-  TIME_ZONE = '',
+  TIMEZONE = '',
 } = process.env;
 
 export default model(
@@ -29,8 +30,30 @@ export default model(
     },
 
     timezone: {
+      default: () => {
+        // Allow setting empty string
+        if (TIMEZONE) {
+          const timezone = moment.tz
+            .names()
+            .find((name) => name.toLowerCase() === TIMEZONE.toLowerCase());
+          if (!timezone) {
+            return TIMEZONE;
+          }
+          return timezone;
+        }
+        return TIMEZONE;
+      },
       type: String,
-      default: TIME_ZONE,
+      validate: {
+        message: ({ value }: ValidatorProps) =>
+          `${value} is not a valid timezone`,
+        validator: function (tz: string) {
+          if (tz) {
+            return moment.tz.zone(tz) !== null;
+          }
+          return true;
+        },
+      },
     },
-  }),
+  })
 );

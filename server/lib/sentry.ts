@@ -1,7 +1,7 @@
 import * as sentry from '@sentry/node';
 
-const version = process.env.PROJECT_VERSION
-  ? process.env.PROJECT_VERSION.trim()
+const version = process.env.SENTRY_RELEASE
+  ? process.env.SENTRY_RELEASE.trim()
   : 'current';
 
 sentry.init({
