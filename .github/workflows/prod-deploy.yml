@@ -25,12 +25,12 @@ jobs:
         run: npm ci
 
       - name: Set Project version
-        run: echo "PROJECT_VERSION=$(git describe --tags)" >> $GITHUB_ENV
+        run: echo "SENTRY_RELEASE=$(git describe --tags)" >> $GITHUB_ENV
 
       - name: Build and upload sourcemaps
         run: npm run build
         env:
-          PROJECT_VERSION: ${{ env.PROJECT_VERSION }}
+          PROJECT_VERSION: ${{ env.SENTRY_RELEASE }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_ENABLED: true
