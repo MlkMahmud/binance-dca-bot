@@ -1,4 +1,4 @@
-name: deploy to production
+name: Deploy to production
 
 on:
   push:
@@ -6,33 +6,14 @@ on:
       - '*'
 
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        nodejs: [14.x]
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Run deployment script
+        uses: appleboy/ssh-action@master
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Set Project version
-        run: echo "SENTRY_RELEASE=$(git describe --tags)" >> $GITHUB_ENV
-
-      - name: Build and upload sourcemaps
-        run: npm run build
-        env:
-          PROJECT_VERSION: ${{ env.SENTRY_RELEASE }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          SENTRY_ENABLED: true
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          host: ${{ secrets.SSH_HOST }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: /bin/bash deploy.sh
+          username: ${{ secrets.SSH_USER }}
