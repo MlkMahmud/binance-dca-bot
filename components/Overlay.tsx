@@ -16,7 +16,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { useMediaQuery } from '../client-utils';
@@ -30,19 +30,13 @@ type Props = {
   onClose: () => void;
   subTitle?: string;
   title: string;
-}
+};
 
 const Overlay = React.forwardRef<HTMLButtonElement, Props>(
-  ({
-    children,
-    formId,
-    footer,
-    isLoading,
-    isOpen,
-    onClose,
-    subTitle,
-    title,
-  }, ref) => {
+  (
+    { children, formId, footer, isLoading, isOpen, onClose, subTitle, title },
+    ref
+  ) => {
     const isMobile = useMediaQuery('(max-width: 600px)');
     const footerContent = footer || (
       <Stack spacing={2} width="100%">
@@ -56,11 +50,7 @@ const Overlay = React.forwardRef<HTMLButtonElement, Props>(
         >
           Save
         </Button>
-        <Button
-          colorScheme="red"
-          isFullWidth
-          onClick={onClose}
-        >
+        <Button colorScheme="red" isFullWidth onClick={onClose}>
           Cancel
         </Button>
       </Stack>
@@ -83,10 +73,7 @@ const Overlay = React.forwardRef<HTMLButtonElement, Props>(
             </Box>
             <DrawerCloseButton />
             <DrawerBody>{children}</DrawerBody>
-            <DrawerFooter
-              borderTop="1px solid #E2E8F0"
-              mt="20px"
-            >
+            <DrawerFooter borderTop="1px solid #E2E8F0" mt="20px">
               {footerContent}
             </DrawerFooter>
           </DrawerContent>
@@ -95,7 +82,7 @@ const Overlay = React.forwardRef<HTMLButtonElement, Props>(
     }
 
     return (
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal isCentered isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <Box borderBottom="1px solid #E2E8F0">
@@ -110,16 +97,13 @@ const Overlay = React.forwardRef<HTMLButtonElement, Props>(
           </Box>
           <ModalCloseButton />
           <ModalBody>{children}</ModalBody>
-          <ModalFooter
-            borderTop="1px solid #E2E8F0"
-            mt="20px"
-          >
+          <ModalFooter borderTop="1px solid #E2E8F0" mt="20px">
             {footerContent}
           </ModalFooter>
         </ModalContent>
       </Modal>
     );
-  },
+  }
 );
 
 Overlay.displayName = 'Overlay';
