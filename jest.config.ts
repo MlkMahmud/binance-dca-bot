@@ -1,7 +1,6 @@
 export default {
   projects: [
     {
-      displayName: 'Components',
       globals: {
         'ts-jest': {
           isolatedModules: true,
@@ -14,7 +13,6 @@ export default {
       testEnvironment: 'jsdom',
     },
     {
-      displayName: 'Unit',
       setupFiles: ['dotenv/config'],
       testMatch: ['<rootDir>/__tests__/server/**/*.spec.ts'],
       testEnvironment: 'node',

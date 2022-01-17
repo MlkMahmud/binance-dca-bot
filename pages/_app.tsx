@@ -1,12 +1,14 @@
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 import { ChakraProvider } from '@chakra-ui/react';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
 import React from 'react';
 import theme from '../theme';
 
-export default function App({ Component, pageProps, err }: AppProps & { err: any }) {
+export default function App({
+  Component,
+  pageProps,
+  err,
+}: AppProps & { err: any }) {
   return (
     <>
       <Head>
