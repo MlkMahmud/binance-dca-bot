@@ -1,5 +1,5 @@
 import { compareSync, hashSync } from 'bcrypt';
-import { SymbolMinNotionalFilter } from 'binance-api-node';
+import { AssetBalance, SymbolMinNotionalFilter } from 'binance-api-node';
 import cronstrue from 'cronstrue';
 import Joi from 'joi';
 import jwt from 'jsonwebtoken';
@@ -18,6 +18,10 @@ import {
 import { JobConfig } from './utils';
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
+
+interface Balance extends AssetBalance {
+  total: number;
+}
 
 type Settings = {
   slack: { enabled: boolean; url: string };
@@ -62,10 +66,16 @@ export default {
 
   async fetchAccountBalance() {
     const { balances } = await binance.accountInfo();
-    return balances.map((balance) => ({
-      ...balance,
-      total: Number(balance.free) + Number(balance.locked),
-    }));
+    const nonZeroBalances: Balance[] = [];
+    balances.forEach((balance) => {
+      if (+balance.free > 0 || +balance.locked > 0) {
+        nonZeroBalances.push({
+          ...balance,
+          total: Number(balance.free) + Number(balance.locked),
+        });
+      }
+    });
+    return nonZeroBalances;
   },
 
   async setPassword(data: { password: string; confirmPassword: string }) {
