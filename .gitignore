@@ -106,3 +106,5 @@ dist
 *.map
 
 env.sh
+
+.vscode/

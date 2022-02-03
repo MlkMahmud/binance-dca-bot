@@ -18,8 +18,11 @@
     "url": "git+https://github.com/MlkMahmud/binance-dca-bot.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Malik Mahmud",
+    "email": "almalikmahmud@gmail.com"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MlkMahmud/binance-dca-bot/issues"
   },
