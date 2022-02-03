@@ -8,12 +8,31 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [14.17]
     steps:
       - uses: actions/checkout@v2
 
       - name: Set relase version
         run: |
           echo "SENTRY_RELEASE=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Upload sourcemaps
+        run: |
+          npm install
+          npm run build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ENABLED: ${{ SENTRY_ENABLED }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.PROJECT }}
+          SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
 
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
@@ -27,9 +46,6 @@ jobs:
           BINANCE_TESTNET_ENABLED: false
           DB_URL: ${{ secrets.DB_URL }}
           JWT_SECRET: $${{ secrets.JWT_SECRET }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NODE_ENV: production
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          SENTRY_ENABLED: ${{ secrets.SENTRY_ENABLED }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
