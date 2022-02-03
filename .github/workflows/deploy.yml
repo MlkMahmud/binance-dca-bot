@@ -41,11 +41,11 @@ jobs:
           heroku_app_name: ${{ secrets.HEROKU_APP }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
         env:
-          BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
-          BINANCE_API_SECRET: ${{ secrets.BINANCE_API_SECRET }}
-          BINANCE_TESTNET_ENABLED: false
-          DB_URL: ${{ secrets.DB_URL }}
-          JWT_SECRET: $${{ secrets.JWT_SECRET }}
-          NODE_ENV: production
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
+          HD_INANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
+          HD_BINANCE_API_SECRET: ${{ secrets.BINANCE_API_SECRET }}
+          HD_BINANCE_TESTNET_ENABLED: false
+          HD_DB_URL: ${{ secrets.DB_URL }}
+          HD_JWT_SECRET: $${{ secrets.JWT_SECRET }}
+          HD_NODE_ENV: production
+          HD_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          HD_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}

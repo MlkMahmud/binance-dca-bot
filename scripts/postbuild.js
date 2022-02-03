@@ -5,7 +5,7 @@ const version = process.env.SENTRY_RELEASE
   ? process.env.SENTRY_RELEASE.trim()
   : 'current';
 
-if (process.env.SENTRY_ENABLED === 'true' && process.env.SENTRY_DSN) {
+if (process.env.SENTRY_ENABLED === 'true') {
   const cliPath = resolve('./node_modules/.bin/sentry-cli');
   const release = `binance-dca-bot@${version}`;
   sh.exec(`${cliPath} releases new ${release}`);
