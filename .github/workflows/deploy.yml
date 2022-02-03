@@ -31,7 +31,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ENABLED: ${{ secrets.SENTRY_ENABLED }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.PROJECT }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
 
       - name: Deploy to Heroku
