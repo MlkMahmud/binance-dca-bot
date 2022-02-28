@@ -218,6 +218,7 @@ export default function JobList({
           bottom="40px"
           color="white"
           colorScheme="black"
+          display="inline-flex"
           height="60px"
           icon={<Icon as={FaPlus} boxSize="24px" />}
           onClick={() => openJobForm()}
