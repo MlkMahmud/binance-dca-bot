@@ -283,10 +283,7 @@ export default {
 
   async updateJob(jobId: string, config: Partial<JobConfig>) {
     try {
-      const { enable, disable, timezone, ...data } = await validateJobConfig(
-        config,
-        'optional'
-      );
+      const { timezone, ...data } = await validateJobConfig(config, 'optional');
 
       if (!mongoose.isValidObjectId(jobId)) {
         return { status: 400, message: `job id ${jobId} is invalid` };
@@ -327,12 +324,6 @@ export default {
           status: 400,
           message: 'Job is currently running. Try again in a few seconds',
         };
-      }
-
-      if (enable) {
-        job.enable();
-      } else if (disable) {
-        job.disable();
       }
       job.attrs.data = { ...job.attrs.data, ...data };
       job.attrs.repeatTimezone = timezone || job.attrs.repeatTimezone;

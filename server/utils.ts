@@ -15,7 +15,10 @@ export type JobConfig = {
 };
 
 export function cleanUserObject({
-  password, slack, telegram, timezone,
+  password,
+  slack,
+  telegram,
+  timezone,
 }: {
   password: { enabled: boolean; hash: string };
   slack: { enabled: boolean; url: string };
@@ -66,30 +69,40 @@ export function formatDateString(date: Date, options = {}) {
   });
 }
 
-export async function validateJobConfig(config: Partial<JobConfig>, mode: PresenceMode = 'required') {
+export async function validateJobConfig(
+  config: Partial<JobConfig>,
+  mode: PresenceMode = 'required'
+) {
   const schema = Joi.object({
     amount: Joi.number().presence(mode),
-    enable: Joi.bool(),
-    disable: Joi.bool(),
+    paused: Joi.bool(),
     jobName: Joi.string().presence(mode),
     schedule: Joi.string().presence(mode).custom(validateCronSyntax),
-    symbol: Joi.string().presence(mode).external(async (value) => {
-      if (mode === 'required') {
-        try {
-          // @ts-ignore
-          await binance.exchangeInfo({ symbol: value });
-        } catch {
-          throw new ValidationError('', [{ message: `Failed to validate symbol: ${value}` }], null);
+    symbol: Joi.string()
+      .presence(mode)
+      .external(async (value) => {
+        if (mode === 'required') {
+          try {
+            // @ts-ignore
+            await binance.exchangeInfo({ symbol: value });
+          } catch {
+            throw new ValidationError(
+              '',
+              [{ message: `Failed to validate symbol: ${value}` }],
+              null
+            );
+          }
         }
-      }
-    }),
+      }),
     timezone: Joi.string().presence(mode).custom(validateTimezone),
-    quoteAsset: Joi.string().presence(mode).custom((value, helpers) => {
-      if (config.symbol?.endsWith(value)) {
-        return value;
-      }
-      return helpers.message({ custom: `${value} is an invalid asset.` });
-    }),
+    quoteAsset: Joi.string()
+      .presence(mode)
+      .custom((value, helpers) => {
+        if (config.symbol?.endsWith(value)) {
+          return value;
+        }
+        return helpers.message({ custom: `${value} is an invalid asset.` });
+      }),
     useDefaultTimezone: Joi.bool().presence(mode),
   })
     .oxor('enable', 'disable')
@@ -108,8 +121,8 @@ export function handleJoiValidationError(err: Error) {
   throw err;
 }
 
-export function flattenObject(object: {[key:string]: any} = {}) {
-  const document: {[key:string]: any} = {};
+export function flattenObject(object: { [key: string]: any } = {}) {
+  const document: { [key: string]: any } = {};
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i += 1) {
     const key = keys[i];
