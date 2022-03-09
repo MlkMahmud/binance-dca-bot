@@ -79,7 +79,7 @@ export default function JobList({
     <Job
       key={job._id}
       amount={`${job.data.amount} ${job.data.quoteAsset}`}
-      disabled={job.disabled}
+      disabled={job.data.paused ? true : false}
       id={job._id}
       interval={job.data.humanInterval}
       isMobile={isMobile}
@@ -130,12 +130,10 @@ export default function JobList({
   const onUpdate = async () => {
     try {
       setIsLoading(true);
-      const job = jobs.find(({ _id }) => _id === jobId);
-      const payload: { enable?: boolean; disable?: boolean } = {};
-      if (job?.disabled) {
-        payload.enable = true;
-      } else {
-        payload.disable = true;
+      const job = jobs.find(({ _id }) => _id === jobId) as JobType;
+      const payload = { paused: true };
+      if (job.data.paused) {
+        payload.paused = false;
       }
       const response = await fetch(`/api/jobs/${jobId}`, {
         method: 'PATCH',
@@ -218,6 +216,7 @@ export default function JobList({
           bottom="40px"
           color="white"
           colorScheme="black"
+          display="inline-flex"
           height="60px"
           icon={<Icon as={FaPlus} boxSize="24px" />}
           onClick={() => openJobForm()}

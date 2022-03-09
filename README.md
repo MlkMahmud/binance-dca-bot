@@ -135,7 +135,7 @@ Enable Slack  and Telegram Notifications
 
 
 ## Todo
-- [ ] Fix: unpausing a job causes the job to run immediately, instead of waiting for next scheduled interval.
+- [x] Fix: unpausing a job causes the job to run immediately, instead of waiting for next scheduled interval.
 
 
 ## Built with

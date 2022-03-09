@@ -4,7 +4,7 @@ export type Fill = {
   price: string;
   qty: string;
   tradeId: number;
-}
+};
 
 export type Job = {
   _id: string;
@@ -15,13 +15,13 @@ export type Job = {
     quoteAsset: string;
     symbol: string;
     useDefaultTimezone: boolean;
+    paused?: boolean;
   };
-  disabled: boolean;
   nextRunAt: Date;
   lastRunAt: Date | null;
   repeatInterval: string;
   repeatTimezone: string;
-}
+};
 
 export type Order = {
   cummulativeQuoteQty: string;
@@ -32,11 +32,11 @@ export type Order = {
   status: 'FILLED' | 'PARTIALLY_FILLED';
   symbol: string;
   transactTime: string;
-}
+};
 
 export type User = {
   password: { enabled: boolean; isSet: boolean };
-  slack: { enabled: boolean; url: string },
-  telegram: { enabled: boolean; chatId: string; botToken: string; };
+  slack: { enabled: boolean; url: string };
+  telegram: { enabled: boolean; chatId: string; botToken: string };
   timezone: string;
 };
