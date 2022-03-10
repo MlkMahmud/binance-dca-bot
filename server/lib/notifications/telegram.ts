@@ -13,7 +13,9 @@ function generateMessageText(event: Event, job: JobEventPayload) {
       text = `*Job Success*\n_${job.transactTime}_\n\n\n*Job Name:* ${job.name}\n\n*Status:* ${job.status}\n\n*Original Quantity:* ${job.origQty}\n\n*Executed Quantity:* ${job.executedQty}\n\n*Cummulative Quote Quantity:* ${job.cummulativeQuoteQty}\n\n*NextRunAt:* ${job.nextRunAt}`;
       break;
     case 'error':
-      text = `*Job Error*\n_${job.date}_\n\n\n*Job Name:* ${job.name}\n\n*Reason:* ${markdownEscape(job.reason as string)}`;
+      text = `*Job Error*\n_${job.date}_\n\n\n*Job Name:* ${
+        job.name
+      }\n\n*Reason:* ${markdownEscape(job.reason as string)}`;
       break;
     default:
       throw new BaseError('TelegramError', `Invalid event ${event}`);
@@ -30,7 +32,7 @@ export default {
         logger.info({ job }, `Sending ${event} notification`);
         const text = generateMessageText(event, job);
         const response = await fetch(
-          `https://api.telegram.org/${telegram.botToken}/sendMessage`,
+          `https://api.telegram.org/bot${telegram.botToken}/sendMessage`,
           {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
@@ -39,7 +41,7 @@ export default {
               parse_mode: 'markdown',
               text,
             }),
-          },
+          }
         );
         if (response.ok) logger.info(`${event} notification sent successfully`);
         else {

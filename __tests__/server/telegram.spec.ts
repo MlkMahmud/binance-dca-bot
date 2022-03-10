@@ -43,7 +43,7 @@ describe('telegram', () => {
   it('should send a success notification', async () => {
     await telegram.sendMessage('success', successPayload);
     expect(fetch).toHaveBeenCalledWith(
-      `https://api.telegram.org/${botToken}/sendMessage`,
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
       {
         body: JSON.stringify({
           chat_id: chatId,
@@ -59,7 +59,7 @@ describe('telegram', () => {
   it('should send an error notfification', async () => {
     await telegram.sendMessage('error', errorPayload);
     expect(fetch).toHaveBeenCalledWith(
-      `https://api.telegram.org/${botToken}/sendMessage`,
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
       {
         body: JSON.stringify({
           chat_id: chatId,
