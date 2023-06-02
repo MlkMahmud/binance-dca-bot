@@ -75,7 +75,7 @@ npm start
 
 ## Deployment
 
-There are no strong constraints regarding deployments. The bot is a [Next.js](https://nextjs.org) application powered by a custom Express server, so there are a myriad of options to choose from. I personally host my mine on an [Azure Virtual Machine](https://docs.microsoft.com/en-us/azure/virtual-machines/) and I automate my deployments using GitHub Actions. If you choose to go in a different route, feel free to delete the [prod-deploy](./.github/workflows/prod-deploy.yml) and [bump-version](./.github/workflows/bump-version.yml) workflow files.
+There are no strong constraints regarding deployments. The bot is a [Next.js](https://nextjs.org) application powered by a custom Express server, so there are a myriad of options to choose from. I personally host my mine on an [Azure Virtual Machine](https://docs.microsoft.com/en-us/azure/virtual-machines/) and I automate my deployments using GitHub Actions.
 
 Some of my personal favourite options for deployment:
 - [Render](https://render.com/docs/deploy-node-express-app)
